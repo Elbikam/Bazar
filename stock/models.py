@@ -1,16 +1,15 @@
 from typing import Any
 from django.db import models
-##############################
-import random
+
 #############################
 # Create your models here.
 class Barcode(models.Model):
-    code = models.CharField(primary_key=True,max_length=255, unique=True)
+    code = models.BigIntegerField(primary_key=True, auto_created=True)
     date =models.DateField(auto_now=True)
     qte = models.PositiveBigIntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
-    
-    
+
+     
     def __str__(self):
         return f"create at: {self.id}|{self.date}|{self.qte}"
     
