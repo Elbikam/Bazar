@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>list</title>
+</head>
+<body>
+    <ul>
+        <h1>list The</h1>
+            {% for item in list %}
+                <ul> {{item}} </ul>
+            {% empty%} 
+                <h3> no items</h3>    
+            {% endfor %} 
+    </ul>    
+</body>
+</html>    

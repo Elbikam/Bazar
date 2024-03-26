@@ -14,13 +14,17 @@ class Barcode(models.Model):
         return f"create at: {self.id}|{self.date}|{self.qte}"
     
 class The(Barcode):
-    type_the = [("C","Chaara"), ("M","Mkarkab"),]
-    embalage_the =[("C","carton"),("Z","zanbile"),("Ca","cadeau"),("S","sac"), ("Kh","khshab"),]
+    type_the = [("chaara","Chaara"), ("mkarkab","Mkarkab"),]
+    embalage_the =[("carton","carton"),("zanbil","zanbile"),("cadeau","cadeau"),("sac","sac"), ("Khshab","khshab"),]
     brand = models.CharField(max_length=50)
     type = models.CharField(max_length=20,choices=type_the)
     poid= models.IntegerField()
     ref = models.CharField(max_length=20)
     embalage= models.CharField(max_length=20,choices=embalage_the)
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code.save()
+        super().save(*args, **kwargs)
 
     def getBrand(self):
         return self.brand
@@ -33,7 +37,7 @@ class The(Barcode):
     def getRef(self):
         return self.ref
     def __str__(self):
-        return f"brand: {self.brand}|tyep:{self.type}|poid: {self.poid}"
+        return f"{self.brand}|tyep:{self.type}|poid: {self.poid}|qte: {self.qte}"
 
     
 
