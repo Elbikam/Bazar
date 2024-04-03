@@ -1,30 +1,38 @@
 from typing import Any
 from django.db import models
+from datetime import date
+
 
 #############################
 # Create your models here.
 class Barcode(models.Model):
-    code = models.BigIntegerField(primary_key=True, auto_created=True)
-    date =models.DateField(auto_now=True)
-    qte = models.PositiveBigIntegerField()
+    id = models.BigIntegerField(primary_key=True)
+    date =models.DateField(auto_now_add=True)
+    qte_entry = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
+    brand = models.CharField(max_length=20)
+    qte_onHand = models.PositiveIntegerField(default=0)
+    qte_alert = models.PositiveIntegerField(default=0)
+
 
      
     def __str__(self):
-        return f"create at: {self.id}|{self.date}|{self.qte}"
+        return f"create at: {self.code}|{self.date}|{self.qte}"
     
 class The(Barcode):
     type_the = [("chaara","Chaara"), ("mkarkab","Mkarkab"),]
     embalage_the =[("carton","carton"),("zanbil","zanbile"),("cadeau","cadeau"),("sac","sac"), ("Khshab","khshab"),]
-    brand = models.CharField(max_length=50)
     type = models.CharField(max_length=20,choices=type_the)
-    poid= models.IntegerField()
+    poid= models.CharField(max_length=20)
     ref = models.CharField(max_length=20)
     embalage= models.CharField(max_length=20,choices=embalage_the)
     def save(self, *args, **kwargs):
-        if not self.code:
-            self.code.save()
-        super().save(*args, **kwargs)
+        try:
+            super().save(*args, **kwargs)
+            print("Okey")
+        except:
+            print("alrady exit ")
+                
 
     def getBrand(self):
         return self.brand
@@ -39,7 +47,24 @@ class The(Barcode):
     def __str__(self):
         return f"{self.brand}|tyep:{self.type}|poid: {self.poid}|qte: {self.qte}"
 
-    
+#//////////////////////////////////////////////////////////////////////////////////////////
+class Parfum(Barcode):
+    type_p = [('M','Man'),('W','Woman'),('A','All')]
+    sub_brand = models.CharField(max_length=30)
+    type_parfum = models.CharField(max_length=30 ,choices=type_p)
+    volume = models.CharField(max_length=10)
+
+    def save(self, *args, **kwargs):
+        try:
+            super().save(*args, **kwargs)
+            print("Okey")
+        except:
+            print("alrady exit ")
+    def __str__(self):
+        return f"{self.brand} | {self.sub_brand} | {self.type_parfum}"        
+                
+
+
 
 
     

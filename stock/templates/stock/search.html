@@ -1,0 +1,49 @@
+{% extends "stock/layout.html" %}
+{% block body %}
+<link href="/static/stock/table.css" rel="stylesheet">
+
+   
+<form method="get" action="{% url 'stock:search The' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Search The </button>
+    <br>
+</form>
+<a href="{% url 'stock:index' %}"> Home </a>
+<br>
+<table>
+{% if results %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>date</th>
+                <th>brand</th>
+                <th>type</th>
+                <th>ref</th>
+                <th>poid (g)</th>
+                <th>qte</th>
+                <th>embalage</th>
+                <th>prix</th>
+            </tr>
+        </thead>
+    {% for item in results %}
+        <tr>
+            <td>{{item.id}}</td>
+            <td>{{item.date|date:'Y-m-d'}}</td>
+            <td>{{item.brand}}</td>
+            <td>{{item.type}}</td>
+            <td>{{item.ref}}</td>
+            <td>{{item.poid}}</td>
+            <td>{{item.qte}}</td>
+            <td>{{item.embalage}}</td>
+            <td>{{item.price}}</td>  
+        </tr>                
+    {% endfor %}
+    
+{% else %}
+<p>>>> not exist</p>
+{% endif %}
+</table>
+
+{% endblock %}

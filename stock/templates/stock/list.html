@@ -1,16 +1,35 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>list</title>
-</head>
-<body>
-    <ul>
-        <h1>list The</h1>
-            {% for item in list %}
-                <ul> {{item}} </ul>
-            {% empty%} 
-                <h3> no items</h3>    
-            {% endfor %} 
-    </ul>    
-</body>
-</html>    
+{% extends "stock/layout.html" %}
+{% block body %}
+
+    <h2> list The</h2>
+    <table class="table table-striped">
+        <thead></thead>
+            <tr>
+                <th>#</th>
+                <th>date</th>
+                <th>brand</th>
+                <th>type</th>
+                <th>qte</th>
+                <th>prix</th>
+                <th>ref</th>
+                <th>embalage</th>
+            </tr>
+        </thead>
+        {% for item in list %}
+            <tr>
+                <td>{{item.code}}</td>
+                <td>{{item.date|date:'Y-m-d'}}</td>
+                <td>{{item.brand}}</td>
+                <td>{{item.type}}</td>
+                <td>{{item.qte}}</td>
+                <td>{{item.price}}</td>  
+                <td>{{item.ref}}</td>
+                <td>{{item.embalage}}</td>    
+            </tr>     
+        {% empty%} 
+            <h3> no items</h3>    
+        {% endfor %} 
+    </table>    
+    
+    <a href="{% url 'stock:search_view' %}">search </a>   
+{% endblock %}

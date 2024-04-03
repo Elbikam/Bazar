@@ -1,20 +1,21 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpRequest
-from .forms import TheForm
-from stock.models import The
-from stock.forms import TheForm
 
+from stock.models import *
+from stock.forms import *
+from datetime import date
+from django.core import validators
+#-----------------------------------------------------------------------
 # Create your views here.
 def index(request):
     return render(request,"stock/index.html",{'index':'Nina Bazar'})
 
 #----------------------------------------------------------------------
-def add_item(request):
+def add_The(request):
     if request.method == 'POST':
         form = TheForm(request.POST)
         if form.is_valid():
-            code = form.cleaned_data['code']
-            date = form.cleaned_data['date']
+            id = form.cleaned_data['id']
             qte = form.cleaned_data['qte']
             price = form.cleaned_data['price']
             brand = form.cleaned_data['brand']
@@ -22,21 +23,56 @@ def add_item(request):
             poid = form.cleaned_data['poid']
             ref = form.cleaned_data['ref']
             embalage = form.cleaned_data['embalage']
-
-            # Retrieve item from database using barcode
             try:
-                item = The.objects.get(code=code)
-                message = f">>> item with barcode {code} already exists."
+                item = The.objects.get(id=id)
+                message = f">>> item with barcode {id} already exists."
             except The.DoesNotExist:
-                item = The.objects.create(code=code,date=date,qte=qte,price=price,brand=brand,type=type,poid=poid,ref=ref,embalage=embalage)
-                message = f"Item '{brand}' with barcode {code} has been added."
+                item = The.objects.create(id=id,qte=qte,price=price,brand=brand,type=type,poid=poid,ref=ref,embalage=embalage)
+                message = f"Item '{brand}' with barcode {id} has been added."
                 
-            return render(request, 'stock/add_item.html', {'form': form, 'message': message})
+            return render(request,'stock/add_The.html', {'form': form,'message':message})
     else:
         form = TheForm()
-    return render(request, 'stock/add_item.html', {'form': form})
+    return render(request, 'stock/add_The.html', {'form': form})
 
- #---------------------------------------------------------------------------------
+#/////////////////////////////////////////////////////////////////////////////////////////////////
 def list(request):
     l=The.objects.all()
     return render(request,'stock/list.html',{'list':l})
+#//////////////////////////////////////////////////////////////////////////////////////////////////
+
+def search_view(request):
+    if request.method == 'GET':
+        form = SearchForm(request.GET)
+        results = []
+        if form.is_valid():
+            search_query = form.cleaned_data['search_query']
+            results = The.objects.filter(brand__icontains=search_query)
+        return render(request, 'stock/search.html', {'form': form, 'results': results})
+
+#///////////////////////////////////////////////////////////////////////////////////////////////////// 
+
+def add_Parfum(request):
+    if request.method == 'POST':
+        form = ParfumForm(request.POST)
+        if form.is_valid():
+            id = form.cleaned_data['id']
+            qte_entry = form.cleaned_data['qte_entry']
+            price = form.cleaned_data['price']
+            brand = form.cleaned_data['brand']
+            sub_brand = form.cleaned_data['sub_brand']
+            type_parf = form.cleaned_data['type_parf']
+            volume = form.cleaned_data['volume']
+          
+            try:
+                item = Parfum.objects.get(id=id)
+                message = f">>> item with barcode {id} already exists."
+            except Parfum.DoesNotExist:
+                item = Parfum.objects.create(id=id,qte_entry=qte_entry,price=price,brand=brand,sub_brand=sub_brand,volume=volume)
+                message = f"Item '{brand}' and with barcode {id} has been added."
+                
+            return render(request,'stock/add_Parfum.html', {'form': form,'message':message})
+    else:
+        form = ParfumForm()
+    return render(request, 'stock/add_Parfum.html', {'form': form})
+    f
