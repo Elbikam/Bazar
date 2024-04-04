@@ -3,10 +3,10 @@
 <link href="/static/stock/table.css" rel="stylesheet">
 
    
-<form method="get" action="{% url 'stock:search The' %}">
+<form method="get" action="{% url 'stock:search' %}">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Search The </button>
+    <button type="submit">Search</button>
     <br>
 </form>
 <a href="{% url 'stock:index' %}"> Home </a>
@@ -19,12 +19,9 @@
                 <th>id</th>
                 <th>date</th>
                 <th>brand</th>
-                <th>type</th>
-                <th>ref</th>
-                <th>poid (g)</th>
-                <th>qte</th>
-                <th>embalage</th>
-                <th>prix</th>
+                <th>price</th>
+                <th>qte_entry</th>
+                <th>qte_onHand</th> 
             </tr>
         </thead>
     {% for item in results %}
@@ -32,12 +29,9 @@
             <td>{{item.id}}</td>
             <td>{{item.date|date:'Y-m-d'}}</td>
             <td>{{item.brand}}</td>
-            <td>{{item.type}}</td>
-            <td>{{item.ref}}</td>
-            <td>{{item.poid}}</td>
-            <td>{{item.qte}}</td>
-            <td>{{item.embalage}}</td>
-            <td>{{item.price}}</td>  
+            <td>{{item.price}}</td>
+            <td>{{item.qte_entry}}</td>
+            <td>{{item.qte_onHand}}</td>
         </tr>                
     {% endfor %}
     

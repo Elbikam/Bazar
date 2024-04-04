@@ -8,14 +8,14 @@ from datetime import date
 class Barcode(models.Model):
     id = models.BigIntegerField(primary_key=True)
     date =models.DateField(auto_now_add=True)
-    qte_entry = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=5, decimal_places=2)
     brand = models.CharField(max_length=20)
-    qte_onHand = models.PositiveIntegerField(default=0)
-    qte_alert = models.PositiveIntegerField(default=0)
+    qte_entry = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=5,decimal_places=2)
+    qte_onHand = models.PositiveIntegerField()
+   
 
 
-     
+      
     def __str__(self):
         return f"create at: {self.code}|{self.date}|{self.qte}"
     

@@ -16,9 +16,10 @@ def add_The(request):
         form = TheForm(request.POST)
         if form.is_valid():
             id = form.cleaned_data['id']
-            qte = form.cleaned_data['qte']
-            price = form.cleaned_data['price']
             brand = form.cleaned_data['brand']
+            qte_entry = form.cleaned_data['qte_entry']
+            qte_onHand = form.cleaned_data['qte_onHand']
+            price = form.cleaned_data['price']
             type = form.cleaned_data['type']
             poid = form.cleaned_data['poid']
             ref = form.cleaned_data['ref']
@@ -27,7 +28,7 @@ def add_The(request):
                 item = The.objects.get(id=id)
                 message = f">>> item with barcode {id} already exists."
             except The.DoesNotExist:
-                item = The.objects.create(id=id,qte=qte,price=price,brand=brand,type=type,poid=poid,ref=ref,embalage=embalage)
+                item = The.objects.create(id=id,brand=brand,qte_entry=qte_entry,qte_onHand =qte_onHand,price=price,type=type,poid=poid,ref=ref,embalage=embalage)
                 message = f"Item '{brand}' with barcode {id} has been added."
                 
             return render(request,'stock/add_The.html', {'form': form,'message':message})
@@ -47,7 +48,7 @@ def search_view(request):
         results = []
         if form.is_valid():
             search_query = form.cleaned_data['search_query']
-            results = The.objects.filter(brand__icontains=search_query)
+            results = Barcode.objects.filter(brand__icontains=search_query)
         return render(request, 'stock/search.html', {'form': form, 'results': results})
 
 #///////////////////////////////////////////////////////////////////////////////////////////////////// 
@@ -58,6 +59,7 @@ def add_Parfum(request):
         if form.is_valid():
             id = form.cleaned_data['id']
             qte_entry = form.cleaned_data['qte_entry']
+            qte_onHand = form.cleaned_data['qte_onHand']
             price = form.cleaned_data['price']
             brand = form.cleaned_data['brand']
             sub_brand = form.cleaned_data['sub_brand']
@@ -68,7 +70,7 @@ def add_Parfum(request):
                 item = Parfum.objects.get(id=id)
                 message = f">>> item with barcode {id} already exists."
             except Parfum.DoesNotExist:
-                item = Parfum.objects.create(id=id,qte_entry=qte_entry,price=price,brand=brand,sub_brand=sub_brand,volume=volume)
+                item = Parfum.objects.create(id=id,qte_entry=qte_entry,qte_onHand=qte_onHand,price=price,brand=brand,sub_brand=sub_brand,volume=volume)
                 message = f"Item '{brand}' and with barcode {id} has been added."
                 
             return render(request,'stock/add_Parfum.html', {'form': form,'message':message})
