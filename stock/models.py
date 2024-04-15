@@ -17,7 +17,7 @@ class Barcode(models.Model):
 
       
     def __str__(self):
-        return f"create at: {self.code}|{self.date}|{self.qte}"
+        return f"create at: {self.id}|{self.brand}|{self.qte_onHand}"
     
 class The(Barcode):
     type_the = [("chaara","Chaara"), ("mkarkab","Mkarkab"),]

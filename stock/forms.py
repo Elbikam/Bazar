@@ -28,10 +28,10 @@ class SearchForm(forms.Form):
 class ParfumForm(forms.Form):
     type_p = [('M','Man'),('W','Woman'),('A','All')]
     id = forms.CharField(max_length=13,)
+    brand = forms.CharField(max_length=30,label="brand")
     qte_entry = forms.IntegerField(min_value=1,label="qte_entry")
     qte_onHand = forms.IntegerField(min_value=1,label="qte_onHand")
     price = forms.DecimalField(label="prix")
-    brand = forms.CharField(max_length=30,label="brand")
     sub_brand = forms.CharField(max_length=30,label="sub_brand parfum")
     type_parf = forms.ChoiceField(choices=type_p,label="type parfum")
     volume = forms.CharField(max_length=10,label="volume (ml)")
