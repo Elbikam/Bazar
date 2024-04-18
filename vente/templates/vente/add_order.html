@@ -1,0 +1,41 @@
+{% extends "vente/layout_vente.html" %}
+{% block body %}
+
+<form method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <br>
+    <button type="submit">Submit</button>
+</form>
+<p>
+    <h3>order detail</h3>
+    <table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>item</th>
+            <th>description</th>
+            <th>qte</th>
+            <th>price</th>
+    
+        </tr>
+    </thead>
+    {% for i in list_od %}
+       <tr>
+           <td>{{i.order_id_id}}</td>
+           <td>{{i.item_id}}</td>
+           <td>{{i.description}}</td>
+           <td>{{i.qte}}</td>
+           <td>{{i.price}}</td>
+           
+
+
+        </tr>
+    {% empty%} 
+      <h3> no items</h3>    
+    {% endfor %} 
+    </table>
+</p>
+
+
+{% endblock %}
