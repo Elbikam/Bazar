@@ -19,13 +19,13 @@ class SubCategory(Category):
     sub_cat = models.CharField(max_length=10, choices=SUBCAT_CHOICES)
 
 class Item(models.Model):
-    id = models.BigIntegerField(primary_key=True, primary_key=True)
+    id = models.BigIntegerField(primary_key=True)
     date =models.DateField(auto_now_add=True)
     item  = models.CharField(max_length=10)
     description = models.CharField(max_length=50)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     qte_entry = models.PositiveIntegerField()
-    price = models.FloatField(max_digits=5,decimal_places=2)
+    price = models.FloatField()
     qte_onHand = models.PositiveIntegerField()
   
     def __str__(self):
