@@ -1,68 +1,40 @@
-from typing import Any
 from django.db import models
-from datetime import date
-
-
 #############################
 # Create your models here.
-class Barcode(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+CAT_CHOICES = [
+    ('THE', 'THE'),
+    ('PARFUM', 'PARFUM'),
+    ('BOKHOUR', 'BOKHOUR'),
+    ]
+
+SUBCAT_CHOICES = [
+    ('CH', 'CHAARA'),
+    ('MK', 'MKARKAB'),
+    ('LAT', 'LATAFA'),
+    ]
+
+class Category(models.Model):
+    name = models.CharField(max_length=10, choices=CAT_CHOICES)
+class SubCategory(Category):
+    sub_cat = models.CharField(max_length=10, choices=SUBCAT_CHOICES)
+
+class Item(models.Model):
+    id = models.BigIntegerField(primary_key=True, primary_key=True)
     date =models.DateField(auto_now_add=True)
-    brand = models.CharField(max_length=20)
+    item  = models.CharField(max_length=10)
+    description = models.CharField(max_length=50)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     qte_entry = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=5,decimal_places=2)
+    price = models.FloatField(max_digits=5,decimal_places=2)
     qte_onHand = models.PositiveIntegerField()
+  
+    def __str__(self):
+        """
+        String representation of the item.
+        """
+        return f"{self.item} - Category: {self.category}, Quantity: {self.qte_entry}"
    
-
-
-      
-    def __str__(self):
-        return f"create at: {self.id}|{self.brand}|{self.qte_onHand}"
     
-class The(Barcode):
-    type_the = [("chaara","Chaara"), ("mkarkab","Mkarkab"),]
-    embalage_the =[("carton","carton"),("zanbil","zanbile"),("cadeau","cadeau"),("sac","sac"), ("Khshab","khshab"),]
-    type = models.CharField(max_length=20,choices=type_the)
-    poid= models.CharField(max_length=20)
-    ref = models.CharField(max_length=20)
-    embalage= models.CharField(max_length=20,choices=embalage_the)
-    def save(self, *args, **kwargs):
-        try:
-            super().save(*args, **kwargs)
-            print("Okey")
-        except:
-            print("alrady exit ")
-                
-
-    def getBrand(self):
-        return self.brand
-    def getType(self):
-        return self.type
-    def getPoid(self):
-        return self.poid
-    def getEmbl(self):
-        return self.embalage
-    def getRef(self):
-        return self.ref
-    def __str__(self):
-        return f"{self.brand}|tyep:{self.type}|poid: {self.poid}|qte: {self.qte}"
-
-#//////////////////////////////////////////////////////////////////////////////////////////
-class Parfum(Barcode):
-    type_p = [('M','Man'),('W','Woman'),('A','All')]
-    sub_brand = models.CharField(max_length=30)
-    type_parfum = models.CharField(max_length=30 ,choices=type_p)
-    volume = models.CharField(max_length=10)
-
-    def save(self, *args, **kwargs):
-        try:
-            super().save(*args, **kwargs)
-            print("Okey")
-        except:
-            print("alrady exit ")
-    def __str__(self):
-        return f"{self.brand} | {self.sub_brand} | {self.type_parfum}"        
-                
 
 
 

@@ -5,6 +5,7 @@ from stock.models import *
 from stock.forms import *
 from datetime import date
 from django.core import validators
+
 #-----------------------------------------------------------------------
 # Create your views here.
 def index(request):
@@ -77,4 +78,4 @@ def add_Parfum(request):
     else:
         form = ParfumForm()
     return render(request, 'stock/add_Parfum.html', {'form': form})
-    f
+    
