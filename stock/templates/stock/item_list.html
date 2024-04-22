@@ -1,0 +1,12 @@
+{% extends 'stock/base.html' %}
+{% block content %}
+
+<h3>list</h3>
+
+{% for item in object_list %}
+   <ul>
+      <li>{{item}}</li>
+   </ul>   
+{% endfor %}      
+    
+{% endblock %}
