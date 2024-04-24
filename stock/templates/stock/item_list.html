@@ -1,12 +1,8 @@
 {% extends 'stock/base.html' %}
 {% block content %}
-
-<h3>list</h3>
-
+<h2>Item List</h2>
 {% for item in object_list %}
-   <ul>
-      <li>{{item}}</li>
-   </ul>   
-{% endfor %}      
-    
+     <p>{{item.id}}</p>
+     <p>{{item.description}}</p>
+{% endfor %}     
 {% endblock %}
