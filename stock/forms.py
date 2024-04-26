@@ -41,6 +41,9 @@ class TheForm(forms.ModelForm):
     class Meta:
         model = The
         fields = ['id','item','description','quantity','price','category','packaging','weight','ref']
+        def __init__(self,*args, **kwargs):
+            super(TheForm,self).__init__(*args, **kwargs)
+
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class ParfumForm(forms.ModelForm):
     TYPE_CHOICES = [
@@ -60,4 +63,6 @@ class ParfumForm(forms.ModelForm):
     class Meta:
         model = Parfum
         fields = ['id','item','description','quantity','price','sub_brand','type','volum']
+        def __init__(self,*args, **kwargs):
+            super(ParfumForm,self).__init__(*args, **kwargs)
 

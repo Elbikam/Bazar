@@ -1,11 +1,15 @@
 {% extends 'stock/base.html' %}
 {% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
 <h2>create the</h2>
+<div>
 <form method="POST" action=".">{% csrf_token %}
     {{ form.as_p}}
 
     <input type="submit" value="Save">
 </form>
+</div>
 
    
 

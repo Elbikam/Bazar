@@ -1,5 +1,7 @@
 {% extends 'stock/base.html' %}
 {% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
 <h2>create Parfum</h2>
 <form method="POST" action=".">{% csrf_token %}
     {{ form.as_p}}

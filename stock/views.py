@@ -20,11 +20,20 @@ class ItemListView(ListView):
     
 class  ItemDetailView(DetailView):
     model = Item
-    #template_name = 'stock/the_detail.html'
-    #queryset = The.objects.all()
+
+    def get_object(self):
+       print('inside function')
+       id_ = self.kwargs.get("id")
+       return get_object_or_404(Item, id=id_)
+    
+
+class ItemDeleteView(DeleteView):
+    model = Item 
     def get_object(self):
        id_ = self.kwargs.get("id")
        return get_object_or_404(Item, id=id_)
+    def get_success_url(self):
+        return reverse('stock:item-list')
 
 #///////////////////////////////////////////////////////////////////////////////
 class TheCreateView(CreateView):
@@ -61,18 +70,7 @@ class TheUpdateView(UpdateView):
         print(form.cleaned_data)
         return super().form_valid(form)
 
-class ItemDeleteView(DeleteView):
-    model = Item 
-    def get_object(self):
-       id_ = self.kwargs.get("id")
-       return get_object_or_404(Item, id=id_)
-    def get_success_url(self):
-        return reverse('stock:item-list')
 #/////////////////////////////////////////////////////////////////////////////////////////////////////
-# class ParfumListView(ListView):
-#     model = Parfum
-#     queryset = Parfum.objects.all()
-
 class ParfumCreateView(CreateView):
     form_class = ParfumForm
     model = Parfum
@@ -85,12 +83,10 @@ class ParfumCreateView(CreateView):
 class  ParfumDetailView(DetailView):
     model = Parfum
     template_name = 'stock/parfum_detail.html'
-    queryset = Parfum.objects.all()
     def get_object(self):
        id_ = self.kwargs.get("id")
        return get_object_or_404(Parfum, id=id_)
     
-
 class  ParfumListView(ListView):
     model = Parfum
     template_name = 'stock/parfum_list.html'
@@ -99,12 +95,13 @@ class  ParfumListView(ListView):
 class ParfumUpdateView(UpdateView):
     model = Parfum
     form_class = ParfumForm
-    #template_name_suffix = "_update_form"
-
+    template_name = 'stock/parfum_update.html'
     def get_object(self):
         id_ = self.kwargs.get("id")
         return get_object_or_404(Parfum, id=id_)
     
     def form_valid(self, form):
         print(form.cleaned_data)
-        return super().form_valid(form)
+        return super().form_valid(form)  
+#////////////////////////////////////////////////////////////////////////////////////////////
+
