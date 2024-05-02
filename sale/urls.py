@@ -1,6 +1,6 @@
 from django.urls import path
 
-
+# from sale.views import OrderCreateView, OrderDetailCreateView
 
 
 
@@ -8,5 +8,8 @@ app_name="sale"
 
 urlpatterns = [
     
-    # path('<int:id>/', ItemDetailView.as_view(), name="item-detail"),
+    # path('order/', OrderCreateView.as_view(), name="order-create"),
+    # path('', OrderDetailCreateView.as_view(), name="order-detail"),
+  
+    
 ]
