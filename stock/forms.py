@@ -15,7 +15,7 @@ class TheForm(forms.ModelForm):
     ]
     WEIGHT_CHOICES = [
     ('200', '200'),
-    ('200', '500'),
+    ('500', '500'),
     ('1000', '1000'),
     ('2000', '2000'),
     ('3000', '3000'),
@@ -41,8 +41,8 @@ class TheForm(forms.ModelForm):
     class Meta:
         model = The
         fields = ['id','item','description','quantity','price','category','packaging','weight','ref']
-        def __init__(self,*args, **kwargs):
-            super(TheForm,self).__init__(*args, **kwargs)
+        def save(self,*args, **kwargs):
+            super(TheForm,self).save(*args, **kwargs)
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class ParfumForm(forms.ModelForm):
@@ -63,6 +63,6 @@ class ParfumForm(forms.ModelForm):
     class Meta:
         model = Parfum
         fields = ['id','item','description','quantity','price','sub_brand','type','volum']
-        def __init__(self,*args, **kwargs):
-            super(ParfumForm,self).__init__(*args, **kwargs)
+        def save(self,*args, **kwargs):
+            super(ParfumForm,self).save(*args, **kwargs)
 

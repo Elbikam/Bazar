@@ -37,13 +37,16 @@ class ItemDeleteView(DeleteView):
 
 #///////////////////////////////////////////////////////////////////////////////
 class TheCreateView(CreateView):
+    
     form_class = TheForm
     queryset = The.objects.all()
     template_name = 'stock/the_create.html'
+    
+    
 
     def form_valid(self, form):
         return super().form_valid(form)
-    
+        
 class  TheListView(ListView):
     model = The
     template_name = 'stock/the_list.html'

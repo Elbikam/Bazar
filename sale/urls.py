@@ -1,15 +1,13 @@
 from django.urls import path
+from .views import (SaleOrderCreate,
+                    SaleList
+                    )
 
-# from sale.views import OrderCreateView, OrderDetailCreateView
-
-
+               
 
 app_name="sale"
 
 urlpatterns = [
-    
-    # path('order/', OrderCreateView.as_view(), name="order-create"),
-    # path('', OrderDetailCreateView.as_view(), name="order-detail"),
-  
-    
-]
+    path('',SaleOrderCreate.as_view(), name="sale-create"),
+    path('list/', SaleList.as_view(), name="sale-list"),
+    ]

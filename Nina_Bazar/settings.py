@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'crispy_forms',
     'crispy_bootstrap5',
-    'django_autoslug'
+   # 'django_autoslug'
   
  
 ]
