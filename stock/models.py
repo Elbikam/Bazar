@@ -62,6 +62,8 @@ class Parfum(Item):
     ('ALL', 'ALL'),
     ]
     VOLUM_CHOICES = [
+    ('30 ml', '30 ml'),    
+    ('50 ml', '50 ml'),
     ('100 ml', '100 ml'),
     ('500 ml', '500 ml'),
     ('1000 ml', '1000 ml'),
