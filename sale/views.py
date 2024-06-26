@@ -51,7 +51,8 @@ class SaleOrderCreate(CreateView):
 
             if orders.is_valid():
                 orders.instance = self.object
-                print(orders)
+                orders.save()
+                
 
                 return redirect('sale:sale-list')
             else:
