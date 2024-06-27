@@ -32,16 +32,14 @@ class Sale(models.Model):
     date = models.DateField(auto_now=True)
      
     def get_absolute_url(self):
-        return reverse('sale-list', kwargs={'sale_id': self.sale_id})
-    
-
-
-
+        return reverse("sale:sale-list", kwargs={"sale_id":self.pk})
+   
     def save(self,*args, **kwargs):
         Sale.ID += 1
         self.sale_id = self.PREFEX + str(Sale.ID).zfill(6)
         super(Sale,self).save(*args,**kwargs)
-    
+    def __str__(self):
+        return f"sale id: {self.sale_id}"
     @property
     def get_HT(self):
         bill_total = decimal.Decimal(0.00)

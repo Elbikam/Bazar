@@ -9,7 +9,7 @@
         {{ form.as_p }}
 
         <table class="table">
-            {{ orders.management_form }}
+            {{ form.management_form }}
 
             {% for form in orders.forms %}
                 {% if forloop.first %}
@@ -37,8 +37,8 @@
                 </tr>
             {% endfor %}
         </table>
-        <input type="submit" value="Save"/>
-        <a href="/sale/list"> back to the list</a>
+        <input type="submit" value="Save"/> 
+       
     </form>
     
 </div>
