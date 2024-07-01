@@ -8,7 +8,10 @@ from sale.models import (Sale,
 class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
-        fields = ['customer']
+        fields = ['phone']
+        exclude = ()
+        
+        
 
 
 
@@ -16,6 +19,7 @@ class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ['item','quantity']
+        
         # exclude = ['description','price','subtotal']
 
 OrderFormSet = inlineformset_factory(Sale,Order,form=OrderForm,

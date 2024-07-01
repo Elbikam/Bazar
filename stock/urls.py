@@ -28,7 +28,7 @@ urlpatterns = [
     path('',ItemListView.as_view(), name= 'item-list'),
     path('thelist/',TheListView.as_view(), name= 'the-list'),
     path('the/', TheCreateView.as_view(), name='the-create'),
-    path('<int:id>/update', TheUpdateView.as_view(), name='the-update'),
+    path('the/<int:id>/update', TheUpdateView.as_view(), name='the-update'),
     path('the/<int:id>', TheDetailView.as_view(), name="the-detail"),
     #PARFUM
     path('parfum/', ParfumCreateView.as_view(), name='parfum-create'),

@@ -13,9 +13,9 @@ class Item(models.Model):
     
     def __str__(self):
         return f"{self.item} - Category: {self.description}, Quantity: {self.quantity}, price:{self.price}"
-    def get_absolute_url(self):
-        pass
-    #    return reverse("stock:item-detail", kwargs={"id": self.id})
+    # def get_absolute_url(self):
+        # pass
+    
 # ////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
 class The(Item):
     SUBCAT_CHOICES = [

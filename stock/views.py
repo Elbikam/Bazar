@@ -63,14 +63,13 @@ class  TheDetailView(DetailView):
 class TheUpdateView(UpdateView):
     model = The
     form_class = TheForm
-    template_name_suffix = "_update_form"
+    template_name = 'stock/the_update_form.html'
 
     def get_object(self):
         id_ = self.kwargs.get("id")
         return get_object_or_404(The, id=id_)
     
     def form_valid(self, form):
-        print(form.cleaned_data)
         return super().form_valid(form)
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,7 +103,6 @@ class ParfumUpdateView(UpdateView):
         return get_object_or_404(Parfum, id=id_)
     
     def form_valid(self, form):
-        print(form.cleaned_data)
         return super().form_valid(form)  
 #////////////////////////////////////////////////////////////////////////////////////////////
 

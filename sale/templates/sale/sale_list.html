@@ -2,9 +2,18 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h4>Sale list </h4>
+<h4>sale list</h4>
+
 {% for sale in object_list %}
      <p>{{sale}}</p>
-{% endfor %}  
+     {% empty %}
+     <li>No profile yet.</li>
+ {% endfor %}
 
-{% endblock  %}
+
+
+
+
+
+
+{% endblock %}

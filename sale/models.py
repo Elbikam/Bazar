@@ -6,9 +6,12 @@ from django.urls import reverse
 # Create your models here.
 #///////////////////////////// CUSTOMER ///////////////////////////////////
 class Customer(models.Model):
-    name = models.CharField(max_length=30, blank=True, null=True)
+    name = models.CharField(max_length=30)
     class Meta:
         abstract = True
+
+class Persone(Customer):
+    pass
 
 class Revendeur(Customer):
     PREFX = 'R'
@@ -26,18 +29,22 @@ class Revendeur(Customer):
 #/////////////////////////////// Sale ////////////////////////////////////////////
 class Sale(models.Model):
     PREFEX = 'SO'
-    ID = 0  
-    customer = models.CharField(max_length=20,blank=True,null=True)
-    sale_id = models.CharField(max_length=10, unique=True,primary_key=True)
+    sale_id = models.CharField(max_length=10)
+    phone = models.CharField(max_length=10,null=True)
     date = models.DateField(auto_now=True)
      
     def get_absolute_url(self):
-        return reverse("sale:sale-list", kwargs={"sale_id":self.pk})
-   
-    def save(self,*args, **kwargs):
-        Sale.ID += 1
-        self.sale_id = self.PREFEX + str(Sale.ID).zfill(6)
+       return reverse("sale:sale-list")
+    
+    def save(self,*args,**kwargs):
+        self.sale_id = self.PREFEX + str(self.pk)
         super(Sale,self).save(*args,**kwargs)
+        
+   
+    
+       
+        
+        
     def __str__(self):
         return f"sale id: {self.sale_id}"
     @property
@@ -70,6 +77,7 @@ class Order(models.Model):
         self.description = self.item.description
         self.price = self.item.price
         self.subtotal = (self.quantity)*(self.item.price)
+        Item.objects.get(id=self.item).quantity = decimal.Decimal(self.quantity) - (Item.objects.get(id=self.item).quantity)
         super(Order,self).save(*args,**kwargs)
 
 
