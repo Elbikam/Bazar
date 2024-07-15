@@ -10,6 +10,7 @@ from django.views.generic import (
     DeleteView    
     )
 from .forms import TheForm, ParfumForm
+from sale.models import Sale,Order
 
 
 def dashboard():
@@ -34,6 +35,8 @@ class ItemDeleteView(DeleteView):
        return get_object_or_404(Item, id=id_)
     def get_success_url(self):
         return reverse('stock:item-list')
+
+
 
 #///////////////////////////////////////////////////////////////////////////////
 class TheCreateView(CreateView):

@@ -1,11 +1,11 @@
-from django import forms
-from django.forms import inlineformset_factory
+from django import *
+from django.forms import inlineformset_factory,ModelForm
 from sale.models import (Sale,
                           Order)
 
 
 
-class SaleForm(forms.ModelForm):
+class SaleForm(ModelForm):
     class Meta:
         model = Sale
         fields = ['phone']
@@ -15,7 +15,7 @@ class SaleForm(forms.ModelForm):
 
 
 
-class OrderForm(forms.ModelForm):
+class OrderForm(ModelForm):
     class Meta:
         model = Order
         fields = ['item','quantity']
@@ -23,4 +23,4 @@ class OrderForm(forms.ModelForm):
         # exclude = ['description','price','subtotal']
 
 OrderFormSet = inlineformset_factory(Sale,Order,form=OrderForm,
-                extra=1,can_delete=True,can_delete_extra=True)        
+                extra=1,can_delete=True,can_delete_extra=True,error_messages='plz entre correct word')        

@@ -41,6 +41,7 @@ class TheForm(forms.ModelForm):
     class Meta:
         model = The
         fields = ['id','item','description','quantity','price','category','packaging','weight','ref']
+        exclude = ['update_qte']
         def save(self,*args, **kwargs):
             super(TheForm,self).save(*args, **kwargs)
 

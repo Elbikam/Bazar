@@ -77,8 +77,7 @@ class Order(models.Model):
         self.description = self.item.description
         self.price = self.item.price
         self.subtotal = (self.quantity)*(self.item.price)
-        Item.objects.get(id=self.item).quantity = decimal.Decimal(self.quantity) - (Item.objects.get(id=self.item).quantity)
-        super(Order,self).save(*args,**kwargs)
+        super().save(*args,**kwargs)
 
 
 #/////////////////////////// PAYMENT //////////////////////////////////////
