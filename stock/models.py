@@ -5,18 +5,16 @@ from django.urls import reverse
 # Create your models here.
 
 class Item(models.Model):
+    
     id = models.BigIntegerField(primary_key=True)
     date =models.DateField(auto_now_add=True)
     item  = models.CharField(max_length=10)
     description = models.CharField(max_length=50)
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
-
-
-
-   
     
     def __str__(self):
+
         return f"{self.item} - Category: {self.description}, Quantity: {self.quantity}, price:{self.price}"
    
 # ////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
@@ -52,6 +50,7 @@ class The(Item):
     packaging = models.CharField(max_length=15, choices=PACKAGE_CHOICES)
     weight = models.CharField(max_length=15, choices=WEIGHT_CHOICES)
     ref = models.CharField(max_length=15, choices=REFERANCE_CHOICES)
+    
     def __str__(self):
         return f"The : {self.item} - Category: {self.category}, package: {self.packaging}, weight :{self.weight}, ref :{self.ref} "
     def get_absolute_url(self):

@@ -11,6 +11,7 @@ from django.views.generic import (
     )
 from .forms import TheForm, ParfumForm
 from sale.models import Sale,Order
+from collections import defaultdict
 
 
 def dashboard():
@@ -23,7 +24,6 @@ class  ItemDetailView(DetailView):
     model = Item
 
     def get_object(self):
-       print('inside function')
        id_ = self.kwargs.get("id")
        return get_object_or_404(Item, id=id_)
     
@@ -35,6 +35,35 @@ class ItemDeleteView(DeleteView):
        return get_object_or_404(Item, id=id_)
     def get_success_url(self):
         return reverse('stock:item-list')
+
+
+def update_stock(request):
+    stock = {}
+    orders_totals = defaultdict(int)
+    orders = Order.objects.values('item_id_id', 'quantity')
+    for o in orders:
+        orders_totals[o['item_id_id']] += o['quantity']
+    
+    for k,v in orders_totals.items():
+        item = Item.objects.get(id=k)
+        qte = item.quantity - v
+        stock[item] = qte
+
+       
+    return render(request,'stock/update_stock.html',{'stock':stock})    
+       
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -66,17 +66,17 @@ class Sale(models.Model):
 
 class Order(models.Model):
     so_id = models.ForeignKey(Sale, on_delete=models.CASCADE)
+    item_id= models.ForeignKey(Item, on_delete=models.CASCADE)
     item = models.CharField(max_length=13)
     description = models.CharField(max_length=30)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
-    subtotal = models.DecimalField(max_digits=6, decimal_places=2)
+    
     
     def save(self, *args,**kwargs):
-        self.item = Item.objects.get(id=self.item)
-        self.description = self.item.description
-        self.price = self.item.price
-        self.subtotal = (self.quantity)*(self.item.price)
+        self.item_id = Item.objects.get(id=self.item)
+        self.description = self.item_id.description
+        self.price = self.item_id.price
         super().save(*args,**kwargs)
 
 

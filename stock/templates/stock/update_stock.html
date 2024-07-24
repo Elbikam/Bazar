@@ -1,0 +1,29 @@
+{% extends 'stock/base.html' %}
+{% block content %}
+<h2>Update Stock</h2>
+<table class="table">
+     <thead>
+     <tr>
+          <th scope="col">#pk</th>
+          <th scope="col">item</th>
+          <th scope="col">description</th>
+          <th scope="col">quantity</th>
+          <th scope="col">update_qte</th>
+     </tr>
+     
+     </thead>
+     <tbody>
+     {% for k,v  in stock.items %}
+     <tr>
+          <th scope="row">{{k.pk}}</th>
+          <td>{{k.item}}</td>
+          <td>{{k.description}}</td>
+          <td>{{k.quantity}}</td>
+          <td>{{v}}</td>
+          
+     </tr>
+     {% endfor %}  
+     </tbody>
+</table>
+
+{% endblock %}

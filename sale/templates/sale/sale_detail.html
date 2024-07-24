@@ -1,0 +1,115 @@
+{% extends 'sale/base.html' %} {% load static %}
+{% block content %}
+
+<div>
+
+<section class="receipt container-ticket">
+	<div class="ticket">
+		<div class="head-ticket">
+			<p class="x-bold">NINA BAZAR</p>
+			<p class="bold">Guelmim</p>
+			<p class="bold">Tel/..........</p>
+			<br>
+		
+			
+			<!-- <p>Receipt code : IMS{{sale}}{{sale.slug|upper}}</p> -->
+			<div class="code-barre">
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+		</div>
+		
+			<div class="orders">
+				<div class="col2">
+					<p>{{sale|upper}}</p>
+				</div>
+
+				<div class="hr-sm"></div>
+				<div class="col2">
+					<p>Quantity</p>
+					<p class="prix"><b>{{sale.quantity}}</b></p>
+				</div>
+				<div class="col2">
+					<p>Total</p>
+					<p class="prix"><b>{{sale.total_value}}<b></p>
+				</div>
+				<br>
+				<div class="col2">
+					<p>Payment Method</p>
+					<p class="prix"><b>{{sale.payment_method}}<b></p>
+				</div>
+				<div class="col2">
+					<p>Amount recived</p>
+					<p class="prix"><b>Ksh {{sale.amount_received}}</b></p>
+				</div>
+				<div class="col2">
+					<p>Balance</p>
+					<p class="prix"><b>{{sale.balance}}</b></p>
+				</div>
+			</div>
+			<div class="hr-lg"></div> -->
+			<!-- <div class="carte">
+				<p class="title-carte">Customer: {{sale.customer_name}}</p>
+				<br>
+				<p>Served by: {{sale.profile}}</p>
+			</div>
+			<div class="hr-lg"></div>
+		</div> -->
+		<div class="footer-ticket"> -->
+			<p class="title-footer">THANK YOU</p>
+		</div>
+	</div>
+	<div class="text-center mt-3">
+		<a class="btn btn-outline-success btn-sm "><i class="fa fa-print"></i> Print</a>
+	<div>
+</section>
+</div>
+{% endblock %}
