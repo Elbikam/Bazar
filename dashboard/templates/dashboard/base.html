@@ -9,12 +9,17 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <nav>
+
+    <nav class="navbar navbar-light" style="background-color: #258a97;">
+   
         <ul>
             <li><a href="{% url 'dashboard:dashboard' %}">Dashboard</a></li>
             <li><a href="{% url 'sale:sale-list' %}">Sales</a></li>
             <li><a href="{% url 'sale:sale_create' %}">Create Sale</a></li>
-            <li><a href="{% url 'stock:item-update'  %}">Stock Update</a></li> <!-- Example placeholder for dynamic detail view -->
+            <li><a href="{% url 'stock:create-the' %}">Create The</a></li>
+            <li><a href="{% url 'stock:create-parfum' %}">Create Parfum</a></li>
+            <li><a href="{% url 'stock:item-update'  %}">Stock Update</a></li>
+            <li><a href="{% url 'stock:item_search' %}">Search Items</a></li>
         </ul>
     </nav>
     <main>
@@ -22,7 +27,7 @@
         <!-- Page-specific content goes here -->
         {% endblock %}
     </main>
-    <footer>
+    <footer style="background-color: #258a97;">
         <p>&copy; 2024 Nina Bazar</p>
     </footer>
 </body>

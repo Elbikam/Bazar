@@ -67,3 +67,9 @@ class ParfumForm(forms.ModelForm):
         def save(self,*args, **kwargs):
             super(ParfumForm,self).save(*args, **kwargs)
 
+
+
+
+class ItemSearchForm(forms.Form):
+    query = forms.CharField(label='Search', max_length=100)
+

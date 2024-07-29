@@ -1,0 +1,43 @@
+<!-- templates/stock/item_search.html -->
+{% extends "stock/base.html" %}
+{% block title %}Item Search{% endblock %}
+{% block content %}
+<h1>Search Items</h1>
+
+<form method="get" action="{% url 'stock:item_search' %}">
+    {{ form.as_p }}
+    <button type="submit">Search</button>
+</form>
+
+{% if items or the_items or parfum_items %}
+    <h2>Search Results</h2>
+    
+    <h3>Items</h3>
+    <ul>
+        {% for item in items %}
+            <li>{{ item.item }} - {{ item.description }}</li>
+        {% empty %}
+            <li>No items found.</li>
+        {% endfor %}
+    </ul>
+    
+    <h3>The </h3>
+    <ul>
+        {% for the in the_items %}
+            <li>{{ the.item }} - {{ the.description }} - Category: {{ the.category }} - Package: {{ the.packaging }} - Weight: {{ the.weight }} - Ref: {{ the.ref }}</li>
+        {% empty %}
+            <li>No items found.</li>
+        {% endfor %}
+    </ul>
+    
+    <h3>Parfum </h3>
+    <ul>
+        {% for parfum in parfum_items %}
+            <li>{{ parfum.item }} - {{ parfum.description }} - Brand: {{ parfum.sub_brand }} - Type: {{ parfum.type }} - Volume: {{ parfum.volum }}</li>
+        {% empty %}
+            <li>No items found.</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}
+

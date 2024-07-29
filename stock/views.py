@@ -9,10 +9,10 @@ from django.views.generic import (
     UpdateView,
     DeleteView    
     )
-from .forms import TheForm, ParfumForm
+from .forms import TheForm, ParfumForm,ItemSearchForm
 from sale.models import Sale,Order
 from collections import defaultdict
-
+from django.db.models import Q
 
 def dashboard():
     pass
@@ -129,3 +129,42 @@ class ParfumUpdateView(UpdateView):
         return super().form_valid(form)  
 #////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+def item_search(request):
+    form = ItemSearchForm(request.GET or None)
+    items = Item.objects.none()  # Initialize empty QuerySet
+    the_items = The.objects.none()
+    parfum_items = Parfum.objects.none()
+
+    if form.is_valid():
+        query = form.cleaned_data.get('query')
+        # Search in Item model
+        items = Item.objects.filter(
+            Q(item__icontains=query) | 
+            Q(description__icontains=query)
+        )
+        # Search in The model
+        the_items = The.objects.filter(
+            Q(item__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(category__icontains=query) |
+            Q(packaging__icontains=query) |
+            Q(weight__icontains=query) |
+            Q(ref__icontains=query)
+        )
+        # Search in Parfum model
+        parfum_items = Parfum.objects.filter(
+            Q(item__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(sub_brand__icontains=query) |
+            Q(type__icontains=query) |
+            Q(volum__icontains=query)
+        )
+    
+    return render(request, 'stock/item_search.html', {
+        'form': form,
+        'items': items,
+        'the_items': the_items,
+        'parfum_items': parfum_items
+    })
