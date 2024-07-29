@@ -30,7 +30,7 @@ class Revendeur(Customer):
 class Sale(models.Model):
     PREFEX = 'SO'
     sale_id = models.CharField(max_length=10)
-    phone = models.CharField(max_length=10,null=True)
+    customer = models.CharField(max_length=10,null=True)
     date = models.DateField(auto_now=True)
      
     def get_absolute_url(self):
@@ -40,8 +40,9 @@ class Sale(models.Model):
         self.sale_id = self.PREFEX + str(self.pk)
         super(Sale,self).save(*args,**kwargs)
         
-   
-    
+
+    def get_absolute_url(self):
+       return reverse("sale:sale-detail", kwargs={"id":self.pk})
        
         
         
@@ -66,18 +67,23 @@ class Sale(models.Model):
 
 class Order(models.Model):
     so_id = models.ForeignKey(Sale, on_delete=models.CASCADE)
-    item_id= models.ForeignKey(Item, on_delete=models.CASCADE)
+    item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
     item = models.CharField(max_length=13)
     description = models.CharField(max_length=30)
     quantity = models.IntegerField()
-    price = models.DecimalField(max_digits=6, decimal_places=2)
-    
-    
-    def save(self, *args,**kwargs):
-        self.item_id = Item.objects.get(id=self.item)
-        self.description = self.item_id.description
-        self.price = self.item_id.price
-        super().save(*args,**kwargs)
+    price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.item_id:
+            item = Item.objects.get(id=self.item_id.id)
+            self.price = item.price
+            self.item = item.item  # Adjust based on your Item model
+            self.description = item.description
+        super().save(*args, **kwargs)
+
+    @property
+    def subtotal(self):
+        return self.quantity * self.price
 
 
 #/////////////////////////// PAYMENT //////////////////////////////////////
@@ -98,3 +104,13 @@ class Cash(Payment):
 
 class Cheque(Payment):
     pass
+
+
+class Ticket(models.Model):
+    ticket_id = models.CharField(max_length=10, unique=True)
+    customer_name = models.CharField(max_length=100)
+    issue_description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Ticket {self.ticket_id} - {self.customer_name}"

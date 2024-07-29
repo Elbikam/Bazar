@@ -1,0 +1,29 @@
+<!-- dashboard/templates/dashboard/dashboard.html -->
+{% extends "dashboard/base.html" %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="dashboard">
+    <div class="metrics">
+        <div class="metric">
+            <h3>Total Sales</h3>
+            <p>{{ total_sales }}</p>
+        </div>
+        <div class="metric">
+            <h3>Total Orders</h3>
+            <p>{{ total_orders }}</p>
+        </div>
+        <div class="metric">
+            <h3>Total Revenue</h3>
+            <p>${{ total_revenue|floatformat:2 }}</p>
+        </div>
+    </div>
+    <div class="recent-sales">
+        <h2>Recent Sales</h2>
+        <ul>
+            {% for sale in recent_sales %}
+                <li>{{ sale.sale_id }} - {{ sale.date }} - ${{ sale.get_HT }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

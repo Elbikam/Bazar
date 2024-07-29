@@ -1,115 +1,50 @@
-{% extends 'sale/base.html' %} {% load static %}
+{% extends "sale/base.html" %}
+{% load static %}
 {% block content %}
+<!-- Sale Detail -->
+<h4>Sale Detail</h4>
+<hr>
 
-<div>
+<div class="sale-details">
+    <p><strong>Sale ID:</strong> {{ sale.sale_id }}</p>
+    <p><strong>Phone:</strong> {{ sale.phone }}</p>
+    <p><strong>Date:</strong> {{ sale.date }}</p>
+</div>
 
-<section class="receipt container-ticket">
-	<div class="ticket">
-		<div class="head-ticket">
-			<p class="x-bold">NINA BAZAR</p>
-			<p class="bold">Guelmim</p>
-			<p class="bold">Tel/..........</p>
-			<br>
-		
-			
-			<!-- <p>Receipt code : IMS{{sale}}{{sale.slug|upper}}</p> -->
-			<div class="code-barre">
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-				<span></span>
-			</div>
-		</div>
-		
-			<div class="orders">
-				<div class="col2">
-					<p>{{sale|upper}}</p>
-				</div>
+<h5>Orders</h5>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Item</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in sale_orders %}
+        <tr>
+            <td>{{ order.item_id_id}}</td>
+            <td>{{ order.item }}</td>
+            <td>{{ order.description }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.price }}</td>
+            <td>{{ order.subtotal }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-				<div class="hr-sm"></div>
-				<div class="col2">
-					<p>Quantity</p>
-					<p class="prix"><b>{{sale.quantity}}</b></p>
-				</div>
-				<div class="col2">
-					<p>Total</p>
-					<p class="prix"><b>{{sale.total_value}}<b></p>
-				</div>
-				<br>
-				<div class="col2">
-					<p>Payment Method</p>
-					<p class="prix"><b>{{sale.payment_method}}<b></p>
-				</div>
-				<div class="col2">
-					<p>Amount recived</p>
-					<p class="prix"><b>Ksh {{sale.amount_received}}</b></p>
-				</div>
-				<div class="col2">
-					<p>Balance</p>
-					<p class="prix"><b>{{sale.balance}}</b></p>
-				</div>
-			</div>
-			<div class="hr-lg"></div> -->
-			<!-- <div class="carte">
-				<p class="title-carte">Customer: {{sale.customer_name}}</p>
-				<br>
-				<p>Served by: {{sale.profile}}</p>
-			</div>
-			<div class="hr-lg"></div>
-		</div> -->
-		<div class="footer-ticket"> -->
-			<p class="title-footer">THANK YOU</p>
-		</div>
-	</div>
-	<div class="text-center mt-3">
-		<a class="btn btn-outline-success btn-sm "><i class="fa fa-print"></i> Print</a>
-	<div>
-</section>
+<div class="total-amount">
+    <p><strong>HT:</strong> {{ sale.get_HT }}</p>
+    <p><strong>TVA:</strong> {{ sale.get_TVA }}</p>
+    <p><strong>TTC:</strong> {{ sale.get_TTC }}</p>
+</div>
+
+<!-- PDF Generation Button -->
+<div class="pdf-button">
+    <a href="{% url 'sale:generate_ticket_pdf' sale.id %}" class="btn btn-primary" target="_blank">Download Ticket as PDF</a>
 </div>
 {% endblock %}

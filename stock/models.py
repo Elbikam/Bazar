@@ -15,7 +15,7 @@ class Item(models.Model):
     
     def __str__(self):
 
-        return f"{self.item} - Category: {self.description}, Quantity: {self.quantity}, price:{self.price}"
+        return self.item
    
 # ////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
 class The(Item):

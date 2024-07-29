@@ -36,37 +36,28 @@ class ItemDeleteView(DeleteView):
     def get_success_url(self):
         return reverse('stock:item-list')
 
+def sum_list(l):
+    t=0
+    for i in l:
+        t += i
+    return t   
+
 
 def update_stock(request):
-    stock = {}
-    orders_totals = defaultdict(int)
-    orders = Order.objects.values('item_id_id', 'quantity')
-    for o in orders:
-        orders_totals[o['item_id_id']] += o['quantity']
-    
-    for k,v in orders_totals.items():
-        item = Item.objects.get(id=k)
-        qte = item.quantity - v
-        stock[item] = qte
+    stock = Item.objects.all()
+    order_total= {}
+    current_stock = {}
+    for i in stock:
+        item = i.order_set.values_list('quantity',flat=True)
+        order_total[i] = item
 
+    for k,v in order_total.items():
+        order_total[k] = sum_list(v)
+        qte = k.quantity - order_total[k]
+        current_stock[k] = qte
+            
+    return render(request,'stock/update_stock.html',{'current_stock':current_stock})    
        
-    return render(request,'stock/update_stock.html',{'stock':stock})    
-       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #///////////////////////////////////////////////////////////////////////////////
 class TheCreateView(CreateView):
     

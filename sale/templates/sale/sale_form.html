@@ -37,16 +37,58 @@
                 </tr>
            {% endfor %}
         </table>
+        <div class="total-amount">
+            <strong>Total Amount: $<span id="total-amount">0.00</span></strong>
+        </div>
         <input type="submit" value="submit"/> 
     </form>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript">
-   $('.formset_row').formset({
-        addText: 'add orders',
-        deleteText: 'remove',
-        prefix: 'order_set',
+    function updatePrice(itemInput) {
+        const row = $(itemInput).closest('.formset_row');
+        const itemId = $(itemInput).val();
+        const priceInput = row.find('input[name$=-price]');
+        
+        $.ajax({
+            url: "{% url 'sale:item-price-api' %}",  // Ensure this matches the URL name in urls.py
+            data: {
+                'item_id': itemId
+            },
+            success: function(data) {
+                if (data.price) {
+                    priceInput.val(data.price);
+                    calculateTotal();
+                }
+            }
         });
+    }
+
+    function calculateTotal() {
+        let total = 0;
+        $('form .formset_row').each(function() {
+            const quantity = parseFloat($(this).find('input[name$=-quantity]').val()) || 0;
+            const price = parseFloat($(this).find('input[name$=-price]').val()) || 0;
+            total += quantity * price;
+        });
+        $('#total-amount').text(total.toFixed(2));
+    }
+
+    $(document).ready(function() {
+        $('.formset_row').formset({
+            addText: 'Add Order',
+            deleteText: 'Remove',
+            prefix: 'order_set',
+        });
+
+        $('form').on('change', 'input[name$=-item_id]', function() {
+            updatePrice(this);
+        });
+
+        $('form').on('change', 'input[name$=-quantity]', calculateTotal);
+
+        calculateTotal(); // Initial calculation
+    });
 </script>
 {% endblock %}
