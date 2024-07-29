@@ -17,3 +17,8 @@ class DashboardView(TemplateView):
         context['total_revenue'] = Order.objects.aggregate(total_revenue=Sum('price'))['total_revenue']
         context['recent_sales'] = Sale.objects.order_by('-date')[:5]
         return context
+
+
+
+class MainPageView(TemplateView):
+    template_name = 'dashboard/main_page.html'
