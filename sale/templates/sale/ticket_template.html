@@ -56,36 +56,39 @@
 <div class="ticket-details">
     <p><strong>Sale ID:</strong> {{ sale.sale_id }}</p>
     <p><strong>Customer:</strong> {{ sale.customer }}</p>
-    <p><strong>Date:</strong> {{ sale.date }}</p>
+    <p><strong>Date:</strong> {{ sale.date|date:"d/m/Y   H:m:s"}}</p>
 </div>
 <table class="table">
     <thead>
         <tr>
-            <th>id</th> 
             <th>Description</th>
             <th>Quantity</th>
             <th>Price</th>
+            <tr>discount</tr>
             <th>Subtotal</th>
+            <th>Discount</th>
         </tr>
     </thead>
     <tbody>
         {% for order in orders %}
         <tr>
-            <td>{{ order.item_id_id }}</td>
-            <td>{{ order.description }}</td>
+            <td>{{ order.item_id_id }} {{ order.description }}</td>
             <td>{{ order.quantity }}</td>
             <td>{{ order.price|floatformat:2 }}</td>
-            <td>{{ order.subtotal|floatformat:2 }}</td>
+            <td>{{ order.discount|floatformat:2 }}</td>
+            <td>{{ order.get_subtotal|floatformat:2 }}</td>
+            <td>{{ order.get_subtotal_with_discount|floatformat:2 }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+<hr>
 <div class="total-amount">
     <p><strong>HT:</strong> {{ sale.get_HT|floatformat:2 }}</p>
     <p><strong>TVA:</strong> {{ sale.get_TVA|floatformat:2 }}</p>
     <p><strong>TTC:</strong> {{ sale.get_TTC|floatformat:2 }}</p>
 </div>
-
+<hr>
 <div class="footer-ticket">
     <p class="title-footer">MERCI POUR VOTRE VISITE</p>
 </div>

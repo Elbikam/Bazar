@@ -16,22 +16,23 @@
     <thead>
         <tr>
             <th>Id</th>
-            <th>Item</th>
             <th>Description</th>
             <th>Quantity</th>
             <th>Price</th>
             <th>Subtotal</th>
+            <th>Discount</th>
         </tr>
     </thead>
     <tbody>
         {% for order in sale_orders %}
         <tr>
             <td>{{ order.item_id_id}}</td>
-            <td>{{ order.item }}</td>
             <td>{{ order.description }}</td>
             <td>{{ order.quantity }}</td>
             <td>{{ order.price }}</td>
-            <td>{{ order.subtotal }}</td>
+            <td>{{ order.get_subtotal}}</td>
+            <td>{{ order.get_subtotal_with_discount}}</td>
+
         </tr>
         {% endfor %}
     </tbody>

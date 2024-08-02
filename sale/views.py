@@ -53,6 +53,9 @@ class SaleOrderCreate(CreateView):
                 orders.instance = self.object
                 orders.save()
                 return super().form_valid(form)
+            else:
+                return self.render_to_response(self.get_context_data(form=form))
+
             
           
                 

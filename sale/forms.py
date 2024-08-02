@@ -18,7 +18,7 @@ class SaleForm(ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['item_id', 'quantity']
+        fields = ['item_id', 'quantity','discount']
         widgets = {
             'item_id': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
             'quantity': forms.NumberInput(attrs={'placeholder': 'Enter quantity'}),

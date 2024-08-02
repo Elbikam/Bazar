@@ -31,15 +31,17 @@ class Sale(models.Model):
     PREFEX = 'SO'
     sale_id = models.CharField(max_length=10)
     customer = models.CharField(max_length=10,null=True)
-    date = models.DateField(auto_now=True)
+    date = models.DateTimeField(auto_now=True)
      
-    def get_absolute_url(self):
-       return reverse("sale:sale-list")
-    
-    def save(self,*args,**kwargs):
-        self.sale_id = self.PREFEX + str(self.pk)
-        super(Sale,self).save(*args,**kwargs)
-        
+
+    def save(self, *args, **kwargs):
+        if not self.sale_id:
+            super().save(*args, **kwargs)  
+            self.sale_id = f"{self.PREFEX}{self.pk}"
+            self.save(update_fields=['sale_id'])
+        else:
+            super(Sale, self).save(*args, **kwargs)
+
 
     def get_absolute_url(self):
        return reverse("sale:sale-detail", kwargs={"id":self.pk})
@@ -53,7 +55,7 @@ class Sale(models.Model):
         bill_total = decimal.Decimal(0.00)
         orders = self.order_set.all()
         for order in orders:
-            bill_total = bill_total + order.subtotal
+            bill_total = bill_total + order.get_subtotal_with_discount
         return bill_total
     @property
     def get_TVA(self):
@@ -63,7 +65,11 @@ class Sale(models.Model):
     def get_TTC(self):
         ttc = self.get_HT*decimal.Decimal(1.20)
         return round(ttc,2)
-
+    @property
+    def total_of_items(self):
+        items = self.order_set.all()
+        return len(items)
+        
 
 class Order(models.Model):
     so_id = models.ForeignKey(Sale, on_delete=models.CASCADE)
@@ -72,19 +78,29 @@ class Order(models.Model):
     description = models.CharField(max_length=30)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-
-    def save(self, *args, **kwargs):
-        if self.item_id:
-            item = Item.objects.get(id=self.item_id.id)
-            self.price = item.price
-            self.item = item.item  # Adjust based on your Item model
-            self.description = item.description
-        super().save(*args, **kwargs)
-
+    discount = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)  # Fixed amount discount
+    
     @property
-    def subtotal(self):
+    def get_subtotal(self):
+        # Ensure price and quantity are not None
+        if self.price is None or self.quantity is None:
+            return decimal.Decimal(0.00)
         return self.quantity * self.price
 
+    @property
+    def get_subtotal_with_discount(self):
+        subtotal = self.get_subtotal
+        discount_total = self.discount * self.quantity
+        subtotal_with_discount = subtotal - discount_total
+        return max(subtotal_with_discount, decimal.Decimal(0))
+
+    def save(self, *args, **kwargs):
+        self.item_id = Item.objects.get(id=self.item_id_id)
+        self.description = self.item_id.description
+        self.price = self.item_id.price
+        super().save(*args, **kwargs)
+
+    
 
 #/////////////////////////// PAYMENT //////////////////////////////////////
 
