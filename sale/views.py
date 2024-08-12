@@ -10,54 +10,91 @@ from django.views.generic import (
     
 )
 from django.urls import reverse_lazy,reverse
-from sale.forms import OrderFormSet,SaleForm,TicketForm
-from sale.models import Sale,Order,Ticket
+from sale.forms import ( OrderForm,OrderFormSet,PersoneForm,SaleForm,
+                        PaymentForm,CashForm,TicketForm)
+from sale.models import Sale,Order,Payment,Cash,Persone
 from stock.models import Item
 from django.shortcuts import render, get_object_or_404,redirect
 from django.http import JsonResponse
 from django.http import HttpResponse
 from weasyprint import HTML
 from django.template.loader import render_to_string
-
+from django.views.generic import View
 #//////////////////////////////////////////////////////////////////////
 class SaleList(ListView):
     model = Sale
-  
-class SaleCreate(CreateView):
-    model = Sale
-    fields = ['customer']
-    
 
-class SaleOrderCreate(CreateView):
-    model = Sale
-    fields = ['customer']
-    # success_url = reverse_lazy('sale:sale-detail')
-    
-    def get_context_data(self, **kwargs):
-        """Insert the form into the context dict."""
-        data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data['orders'] = OrderFormSet(self.request.POST)
-        else:
-            data['orders'] = OrderFormSet()
-        return data
-    
+from django.shortcuts import render, redirect
+from django.views import View
+from django.db import transaction
+from .forms import PersoneForm, SaleForm, OrderFormSet, CashForm
+from .models import Persone, Sale, Order, Payment
+# /////////////////////////////////////////////////////////////////////////////////
+def is_form_not_empty(form):
+    return any(field.value() for field in form if field.name != 'DELETE')
 
-    def form_valid(self, form):
-        """If the form is valid, save the associated model."""
-        context = self.get_context_data()
-        orders = context['orders']
-        with transaction.atomic():
-            self.object = form.save()
-            if orders.is_valid():
-                orders.instance = self.object
-                orders.save()
-                return super().form_valid(form)
-            else:
-                return self.render_to_response(self.get_context_data(form=form))
+def is_formset_not_empty(formset):
+    return any(is_form_not_empty(form) for form in formset)
+# //////////////////////////////////////////////////////////////////////////////////
+class SaleOrderCreateView(View):
+    template_name = 'sale/sale_form.html'  
+
+    def get(self, request, *args, **kwargs):
+        persone_form = PersoneForm()
+        
+        sale_form = SaleForm()
+        orders = OrderFormSet()
+        cash_form = CashForm()
+        context = {
+            'persone_form': persone_form,
+            'sale_form': sale_form,
+            'orders': orders,
+            'cash_form': cash_form,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        persone_form = PersoneForm(request.POST)
+        sale_form = SaleForm(request.POST, persone=persone_form.instance)
+
+        # sale_form = SaleForm(request.POST)
+        orders = OrderFormSet(request.POST)
+        cash_form = CashForm(request.POST)
+
+        if persone_form.is_valid() and sale_form.is_valid() and orders.is_valid() and cash_form.is_valid():
+            with transaction.atomic():
+                # Save the Person
+                persone = persone_form.save()
+
+                # Save the Sale
+                sale = sale_form.save(commit=False)
+                sale.customer = persone
+                sale.save()
+                
+                # Save Orders              
+                
+                for order_form in orders:
+                    if is_form_not_empty(order_form): 
+                       order = order_form.save(commit=False)
+                       order.so_id = sale
+                       order.save()
+
+                # Save Payment
+                payment = cash_form.save(commit=False)
+                payment.sale_id = sale
+                payment.save()
+            
+            return redirect('sale:sale-detail', pk=sale.pk)  # Redirect to the sale detail view
 
             
-          
+        # If form is not valid, re-render the form with errors
+        context = {
+            'persone_form': persone_form,
+            'sale_form': sale_form,
+            'orders': orders,
+            'cash_form': cash_form,
+        }
+        return render(request, self.template_name, context)
                 
 def get_item_price(request):
     item_id = request.GET.get('item_id')
@@ -67,57 +104,13 @@ def get_item_price(request):
     except Item.DoesNotExist:
         price = 0
     
-    return JsonResponse({'price': price})       
+    return JsonResponse({'price': price})  
+
 
 class SaleDetailView(DetailView):
     model = Sale
     template_name = 'sale/sale_detail.html'
-    context_object_name = 'sale'
-
-    def get_object(self):
-       id_ = self.kwargs.get("id")
-       return get_object_or_404(Sale, id=id_)
- 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        instance = self.get_object()
-        context['sale_orders'] = instance.order_set.all()
-        return context
-
-
-
-    
-class SaleUpdateView(UpdateView):
-    molde = Sale
-    form_class = SaleForm
-    template_name = 'sale/sale_update.html'
-
-    def get_object(self):
-        id_ = self.kwargs.get("id")
-        return get_object_or_404(Sale, id=id_)
-    
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data['orders'] = OrderFormSet(self.request.POST, instance=self.get_object())
-        else:
-            data['orders'] = OrderFormSet(instance=self.get_object())
-        return data
-    
-    def form_valid(self, form):
-        context = self.get_context_data()
-        orders = context['orders']
-        with transaction.atomic():
-            self.object = form.save()
-            if orders.is_valid():
-                orders.instance = self.object
-                orders.save()
-                return super().form_valid(form)
-        return super().form_invalid(form)
-    
-
-
-
+    context_object_name = 'sale'  # This will be the name of the object in the template
 
 def generate_ticket_pdf(request, sale_id):
     sale = get_object_or_404(Sale, id=sale_id)
@@ -125,7 +118,7 @@ def generate_ticket_pdf(request, sale_id):
         'sale': sale,
         'orders': sale.order_set.all(),
     }
-    html_string = render_to_string('sale/ticket_template.html', context)
+    html_string = render_to_string('sale/sale_ticket.html', context)
     html = HTML(string=html_string)
     pdf = html.write_pdf()
 

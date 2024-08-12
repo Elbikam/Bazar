@@ -8,6 +8,7 @@
     {{ form.as_p }}
     <button type="submit">Search</button>
 </form>
+<table class="table">
 
 {% if items or the_items or parfum_items %}
     <h2>Search Results</h2>
@@ -20,7 +21,8 @@
             <li>No items found.</li>
         {% endfor %}
     </ul>
-    
+</table>
+<table>   
     <h3>The </h3>
     <ul>
         {% for the in the_items %}
@@ -29,7 +31,8 @@
             <li>No items found.</li>
         {% endfor %}
     </ul>
-    
+</table>  
+<table>
     <h3>Parfum </h3>
     <ul>
         {% for parfum in parfum_items %}
@@ -38,6 +41,7 @@
             <li>No items found.</li>
         {% endfor %}
     </ul>
+</table>     
 {% endif %}
 {% endblock %}
 

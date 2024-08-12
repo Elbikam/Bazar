@@ -27,3 +27,4 @@ urlpatterns = [
     path("stock/",include("stock.urls")),
     path("admin/", admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+admin.site.site_header = settings.ADMIN_SITE_HEADER

@@ -11,12 +11,18 @@ class Item(models.Model):
     item  = models.CharField(max_length=10)
     description = models.CharField(max_length=50)
     quantity = models.PositiveIntegerField()
+    alert_qte = models.PositiveIntegerField(default=100)
     price = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     
     def __str__(self):
 
         return self.item
-   
+    def get_current_qte(self):
+        total_order = self.order_set.all()
+        current_qte = self.quantity
+        for q in total_order.values_list('quantity',flat=True):
+            current_qte -= q
+        return current_qte  
 # ////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
 class The(Item):
     SUBCAT_CHOICES = [
@@ -55,7 +61,7 @@ class The(Item):
         return f"The : {self.item} - Category: {self.category}, package: {self.packaging}, weight :{self.weight}, ref :{self.ref} "
     def get_absolute_url(self):
        return reverse("stock:the-detail", kwargs={"id":self.id})
-
+   
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class Parfum(Item):
     TYPE_CHOICES = [
@@ -77,7 +83,8 @@ class Parfum(Item):
         return f"Parfum : {self.item} - Category: {self.sub_brand}, type: {self.type}, volum: {self.volum} "
     def get_absolute_url(self):
        return reverse("stock:parfum-detail", kwargs={"id":self.id})
-
+    
+     
 
 
 

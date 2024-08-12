@@ -33,6 +33,7 @@ class TheForm(forms.ModelForm):
     item  = forms.CharField()
     description = forms.CharField(max_length=50)
     quantity = forms.IntegerField()
+    alert_qte = forms.IntegerField()
     price = forms.DecimalField(max_digits=5, decimal_places=2)
     category = forms.ChoiceField(choices=SUBCAT_CHOICES)
     packaging = forms.ChoiceField(choices=PACKAGE_CHOICES)
@@ -58,6 +59,7 @@ class ParfumForm(forms.ModelForm):
     ('500 ml', '500 ml'),
     ('1000 ml', '1000 ml'),
     ]
+    alert_qte = forms.IntegerField()
     sub_brand = forms.CharField(max_length=30)
     type = forms.ChoiceField(choices=TYPE_CHOICES)
     volum = forms.ChoiceField(choices=VOLUM_CHOICES)

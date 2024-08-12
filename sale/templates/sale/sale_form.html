@@ -6,8 +6,13 @@
 <hr>
 <div class="col-md-4">
     <form id="sale-order-form" action="" method="post">{% csrf_token %}
-        {{ form.as_p }}
+        <h5>Person Information</h5>
+        {{ persone_form.as_p }}
+        <h5>Sale Information</h5>
+        {{sale_form.as_p}}
         <table class="table"> 
+            <!-- Orders Formset -->
+            <h5>Orders</h5>
             {{ orders.management_form }}
             {% for form in orders.forms %}
                 {% if forloop.first %}
@@ -34,6 +39,9 @@
                 </tr>
             {% endfor %}
         </table>
+        <!-- Payment Form -->
+        <h5>Payment Information</h5>
+        {{ cash_form.as_p }}
         <div class="total-amount">
             <strong>Total Amount: <span id="total-amount">0.00</span></strong>
         </div>
@@ -65,11 +73,10 @@
         $('form .formset_row').each(function() {
             const quantity = parseFloat($(this).find('input[name$=-quantity]').val()) || 0;
             const price = parseFloat($(this).find('input[name$=-price]').val()) || 0;
-            const discount = parseFloat($(this).find('input[name$=-discount]').val()) || 0;
+
             const subtotal = quantity * price;
-            const discountTotal = discount * quantity;
-            const subtotalWithDiscount = Math.max(subtotal - discountTotal, 0);
-            total += subtotalWithDiscount;
+            const amount = Math.max(subtotal * 1.2, 0);
+            total += amount;
         });
         $('#total-amount').text(total.toFixed(2));
     }
@@ -85,10 +92,9 @@
             updatePrice(this);
         });
 
-        $('form').on('change', 'input[name$=-quantity], input[name$=-discount]', calculateTotal);
+        $('form').on('change', 'input[name$=-quantity]', calculateTotal);
 
         calculateTotal(); // Initial calculation
     });
 </script>
 {% endblock %}
-

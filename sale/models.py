@@ -3,15 +3,20 @@ from django.db import models
 from stock.models import Item
 import decimal
 from django.urls import reverse
+
 # Create your models here.
 #///////////////////////////// CUSTOMER ///////////////////////////////////
 class Customer(models.Model):
-    name = models.CharField(max_length=30)
-    class Meta:
-        abstract = True
+    customer = models.CharField(max_length=30)
+    def __str__(self):
+        return f"customer id{self.pk}"
+
+
 
 class Persone(Customer):
     pass
+    def __str__(self):
+        return f"{self.customer}" 
 
 class Revendeur(Customer):
     PREFX = 'R'
@@ -28,26 +33,23 @@ class Revendeur(Customer):
         return f"account: {self.account}|first name:{self.first_name}|last name: {self.last_name}| city: {self.city}| matricul : {self.matricule}"
 #/////////////////////////////// Sale ////////////////////////////////////////////
 class Sale(models.Model):
-    PREFEX = 'SO'
+    # Fields specific to the sale
     sale_id = models.CharField(max_length=10)
-    customer = models.CharField(max_length=10,null=True)
+    customer = models.ForeignKey(Customer,on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now=True)
-     
 
     def save(self, *args, **kwargs):
         if not self.sale_id:
-            super().save(*args, **kwargs)  
-            self.sale_id = f"{self.PREFEX}{self.pk}"
+            super().save(*args, **kwargs)
+            self.sale_id = f"SO{self.pk}"
             self.save(update_fields=['sale_id'])
         else:
             super(Sale, self).save(*args, **kwargs)
-
+    
 
     def get_absolute_url(self):
-       return reverse("sale:sale-detail", kwargs={"id":self.pk})
-       
-        
-        
+        return reverse("sale:sale-detail", kwargs={"pk":self.pk})
+    
     def __str__(self):
         return f"sale id: {self.sale_id}"
     @property
@@ -55,7 +57,7 @@ class Sale(models.Model):
         bill_total = decimal.Decimal(0.00)
         orders = self.order_set.all()
         for order in orders:
-            bill_total = bill_total + order.get_subtotal_with_discount
+            bill_total = bill_total + order.get_subtotal
         return bill_total
     @property
     def get_TVA(self):
@@ -74,48 +76,42 @@ class Sale(models.Model):
 class Order(models.Model):
     so_id = models.ForeignKey(Sale, on_delete=models.CASCADE)
     item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
-    item = models.CharField(max_length=13)
     description = models.CharField(max_length=30)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
-    discount = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)  # Fixed amount discount
     
     @property
     def get_subtotal(self):
-        # Ensure price and quantity are not None
         if self.price is None or self.quantity is None:
             return decimal.Decimal(0.00)
         return self.quantity * self.price
 
-    @property
-    def get_subtotal_with_discount(self):
-        subtotal = self.get_subtotal
-        discount_total = self.discount * self.quantity
-        subtotal_with_discount = subtotal - discount_total
-        return max(subtotal_with_discount, decimal.Decimal(0))
-
+    
     def save(self, *args, **kwargs):
-        self.item_id = Item.objects.get(id=self.item_id_id)
-        self.description = self.item_id.description
-        self.price = self.item_id.price
+        if self.item_id:
+           self.description = self.item_id.description
+           self.price = self.item_id.price
         super().save(*args, **kwargs)
 
-    
+    def __str__(self):
+        return f"order: {self.pk} "
 
 #/////////////////////////// PAYMENT //////////////////////////////////////
 
 class Payment(models.Model):
-    sale_id = models.ForeignKey(Sale, on_delete=models.CASCADE)
-   
-class Cash(Payment):
-    total = models.DecimalField(max_digits=6, decimal_places=2)
-    amount_received = models.FloatField(default=False, blank=False, null=False)
-    balance = models.FloatField(default=False, blank=False, null=False)
+    sale_id = models.OneToOneField(Sale, on_delete=models.CASCADE)
+    class Meta:
+        abstract = True 
 
-    def save(self,*args,**kwargs):
-        amt_received = self.amount_received
-        self.balance = amt_received - self.total
-        super(Cash,self).save(*args,**kwargs)
+class Cash(Payment):
+    amount_received = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    is_pay = models.BooleanField()
+
+    def get_change(self):
+        change = self.amount_received - self.sale_id.get_TTC 
+        return change
+
+   
      
 
 class Cheque(Payment):
