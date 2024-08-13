@@ -20,6 +20,7 @@ from django.http import HttpResponse
 from weasyprint import HTML
 from django.template.loader import render_to_string
 from django.views.generic import View
+import decimal
 #//////////////////////////////////////////////////////////////////////
 class SaleList(ListView):
     model = Sale
@@ -38,6 +39,7 @@ def is_formset_not_empty(formset):
 # //////////////////////////////////////////////////////////////////////////////////
 class SaleOrderCreateView(View):
     template_name = 'sale/sale_form.html'  
+
 
     def get(self, request, *args, **kwargs):
         persone_form = PersoneForm()
@@ -78,6 +80,7 @@ class SaleOrderCreateView(View):
                        order = order_form.save(commit=False)
                        order.so_id = sale
                        order.save()
+                   
 
                 # Save Payment
                 payment = cash_form.save(commit=False)

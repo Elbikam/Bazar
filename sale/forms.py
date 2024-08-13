@@ -27,13 +27,14 @@ class PersoneForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['item_id', 'quantity']
+        fields = ['item_id','quantity','price']
         widgets = {
             'item_id': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
             'quantity': forms.NumberInput(attrs={'placeholder': 'Enter quantity'}),
+            'price': forms.NumberInput(attrs={'placeholder': 'Edite price'}),
         }
 
-    price = forms.DecimalField(max_digits=6, decimal_places=2, required=False, widget=forms.HiddenInput())
+    # price = forms.DecimalField(max_digits=6, decimal_places=2, required=False, widget=forms.HiddenInput())
    
 
 OrderFormSet = inlineformset_factory(Sale,Order,form=OrderForm,

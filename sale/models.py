@@ -9,14 +9,14 @@ from django.urls import reverse
 class Customer(models.Model):
     customer = models.CharField(max_length=30)
     def __str__(self):
-        return f"customer id{self.pk}"
+        return f"{self.customer}"
 
 
 
 class Persone(Customer):
     pass
     def __str__(self):
-        return f"{self.customer}" 
+        return f"{self.pk}" 
 
 class Revendeur(Customer):
     PREFX = 'R'
@@ -37,7 +37,7 @@ class Sale(models.Model):
     sale_id = models.CharField(max_length=10)
     customer = models.ForeignKey(Customer,on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now=True)
-
+    
     def save(self, *args, **kwargs):
         if not self.sale_id:
             super().save(*args, **kwargs)
@@ -74,6 +74,7 @@ class Sale(models.Model):
         
 
 class Order(models.Model):
+
     so_id = models.ForeignKey(Sale, on_delete=models.CASCADE)
     item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
     description = models.CharField(max_length=30)
@@ -86,11 +87,11 @@ class Order(models.Model):
             return decimal.Decimal(0.00)
         return self.quantity * self.price
 
+   
     
     def save(self, *args, **kwargs):
         if self.item_id:
            self.description = self.item_id.description
-           self.price = self.item_id.price
         super().save(*args, **kwargs)
 
     def __str__(self):
