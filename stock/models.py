@@ -1,3 +1,4 @@
+from typing import Any
 from django.db import models
 from django.urls import reverse
 
@@ -5,24 +6,33 @@ from django.urls import reverse
 # Create your models here.
 
 class Item(models.Model):
-    
     id = models.BigIntegerField(primary_key=True)
-    date =models.DateField(auto_now_add=True)
-    item  = models.CharField(max_length=10)
+    date = models.DateField(auto_now_add=True)
+    item = models.CharField(max_length=10)
     description = models.CharField(max_length=50)
-    quantity = models.PositiveIntegerField()
-    alert_qte = models.PositiveIntegerField(default=100)
+    quantity = models.PositiveIntegerField()  # To be updated later as needed
+    initial_quantity = models.PositiveIntegerField(editable=False)  # Constant value for initial stock
+    alert_qte = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
-    
-    def __str__(self):
 
+    def save(self, *args, **kwargs):
+        # Store the initial quantity only when creating the item
+        if not self.pk:  # Only set on object creation
+            self.initial_quantity = self.quantity
+        super().save(*args, **kwargs)
+
+    @property
+    def qte_inStock(self):
+        return self.quantity
+
+    @qte_inStock.setter
+    def qte_inStock(self, value):
+        self.quantity = value  # This updates the current quantity
+
+
+    def __str__(self):
         return self.item
-    def get_current_qte(self):
-        total_order = self.order_set.all()
-        current_qte = self.quantity
-        for q in total_order.values_list('quantity',flat=True):
-            current_qte -= q
-        return current_qte  
+
 # ////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
 class The(Item):
     SUBCAT_CHOICES = [

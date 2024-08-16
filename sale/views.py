@@ -79,6 +79,10 @@ class SaleOrderCreateView(View):
                     if is_form_not_empty(order_form): 
                        order = order_form.save(commit=False)
                        order.so_id = sale
+                       item = order.item_id
+                       item = Item.objects.get(id=item.id)
+                       item.qte_inStock -= order.quantity
+                       item.save()
                        order.save()
                    
 

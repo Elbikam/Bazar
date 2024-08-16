@@ -48,13 +48,30 @@
         <input type="submit" value="Submit"/> 
     </form>
 </div>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript">
+    $(document).ready(function() {
+        $('.formset_row').formset({
+            addText: 'Add Order',
+            deleteText: 'Remove',
+            prefix: 'order_set',
+        });
+
+        $('form').on('change', 'input[name$=-item_id]', function() {
+            updatePrice(this);
+        });
+
+        $('form').on('change', 'input[name$=-quantity]', calculateTotal);
+
+        calculateTotal(); // Initial calculation
+    });
     function updatePrice(itemInput) {
         const row = $(itemInput).closest('.formset_row');
         const itemId = $(itemInput).val();
         const priceInput = row.find('input[name$=-price]');
+       
         
         $.ajax({
             url: "{% url 'sale:item-price-api' %}",
@@ -81,20 +98,20 @@
         $('#total-amount').text(total.toFixed(2));
     }
 
-    $(document).ready(function() {
-        $('.formset_row').formset({
-            addText: 'Add Order',
-            deleteText: 'Remove',
-            prefix: 'order_set',
-        });
+    // $(document).ready(function() {
+    //     $('.formset_row').formset({
+    //         addText: 'Add Order',
+    //         deleteText: 'Remove',
+    //         prefix: 'order_set',
+    //     });
 
-        $('form').on('change', 'input[name$=-item_id]', function() {
-            updatePrice(this);
-        });
+    //     $('form').on('change', 'input[name$=-item_id]', function() {
+    //         updatePrice(this);
+    //     });
 
-        $('form').on('change', 'input[name$=-quantity]', calculateTotal);
+    //     $('form').on('change', 'input[name$=-quantity]', calculateTotal);
 
-        calculateTotal(); // Initial calculation
-    });
+    //     calculateTotal(); // Initial calculation
+    // });
 </script>
 {% endblock %}

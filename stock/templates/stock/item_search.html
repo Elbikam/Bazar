@@ -2,7 +2,7 @@
 {% extends "stock/base.html" %}
 {% block title %}Item Search{% endblock %}
 {% block content %}
-<h1>Search Items</h1>
+<h3>Search Items</h3>
 
 <form method="get" action="{% url 'stock:item_search' %}">
     {{ form.as_p }}
@@ -13,24 +13,44 @@
 {% if items or the_items or parfum_items %}
     <h2>Search Results</h2>
     
-    <h3>Items</h3>
-    <ul>
-        {% for item in items %}
-            <li>{{ item.item }} - {{ item.description }}</li>
-        {% empty %}
-            <li>No items found.</li>
-        {% endfor %}
-    </ul>
-</table>
-<table>   
+<table class="table">   
     <h3>The </h3>
-    <ul>
-        {% for the in the_items %}
-            <li>{{ the.item }} - {{ the.description }} - Category: {{ the.category }} - Package: {{ the.packaging }} - Weight: {{ the.weight }} - Ref: {{ the.ref }}</li>
-        {% empty %}
-            <li>No items found.</li>
-        {% endfor %}
-    </ul>
+    <thead>
+    <tr>
+        <th scope="col">#pk</th>
+        <th scope="col">item</th>
+        <th scope="col">description</th>
+        <th scope="col">date</th>
+        <th scope="col">initial quantity</th>
+        <th scope="col">cateory</th>
+        <th scope="col">packaging</th>
+        <th scope="col">weight (g)</th>
+        <th scope="col">ref</th>
+        <th scope="col">qte_inStock</th>
+
+
+
+    </tr> 
+    </thead>
+    <tbody> 
+    {% for the in the_items %}
+    <tr>
+        <th scope="row">{{the.pk}}</th>
+        <td>{{the.item}}</td>
+        <td>{{the.description}}</td>
+        <td>{{the.date}}</td>
+        <td>{{the.initial_quantity}}</td>
+        <td>{{the.category}}</td>
+        <td>{{the.packaging}}</td>
+        <td>{{the.weight}}</td>
+        <td>{{the.ref}}</td>
+        <td>{{the.qte_inStock}}</td>
+    {% empty %}
+        <li>No The found.</li>
+    </tr>    
+    {% endfor %}
+    </tbody>
+    
 </table>  
 <table>
     <h3>Parfum </h3>

@@ -1,11 +1,7 @@
 from django.contrib import admin
 
-from sale.models import Sale, Order,Persone,Customer
-
-class PersoneAdmin(admin.ModelAdmin): 
-    list_display = ['customer']
-   
-    
+from sale.models import Sale, Order
+ 
     
 class OrderInline(admin.TabularInline):  # or admin.StackedInline
     model = Order
@@ -20,4 +16,3 @@ class SaleAdmin(admin.ModelAdmin):
 
 admin.site.register(Sale, SaleAdmin)
 admin.site.register(Order)
-admin.site.register(Persone,PersoneAdmin)

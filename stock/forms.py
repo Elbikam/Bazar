@@ -39,9 +39,10 @@ class TheForm(forms.ModelForm):
     packaging = forms.ChoiceField(choices=PACKAGE_CHOICES)
     weight = forms.ChoiceField(choices=WEIGHT_CHOICES)
     ref = forms.ChoiceField(choices=REFERANCE_CHOICES)
+    
     class Meta:
         model = The
-        fields = ['id','item','description','quantity','price','category','packaging','weight','ref']
+        fields = ['id','item','description','quantity','alert_qte','price','category','packaging','weight','ref']
         exclude = ['update_qte']
         def save(self,*args, **kwargs):
             super(TheForm,self).save(*args, **kwargs)

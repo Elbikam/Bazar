@@ -36,27 +36,16 @@ class ItemDeleteView(DeleteView):
     def get_success_url(self):
         return reverse('stock:item-list')
 
-def sum_list(l):
-    t=0
-    for i in l:
-        t += i
-    return t   
 
 
-def update_stock(request):
-    stock = Item.objects.all()
-    order_total= {}
-    current_stock = {}
-    for i in stock:
-        item = i.order_set.values_list('quantity',flat=True)
-        order_total[i] = item
-
-    for k,v in order_total.items():
-        order_total[k] = sum_list(v)
-        qte = k.quantity - order_total[k]
-        current_stock[k] = qte
+def alert_stock(request):
+    alert = []
+    items = Item.objects.all()
+    for i in items:
+        if i.quantity < i.alert_qte:
+            alert.append(i)
             
-    return render(request,'stock/update_stock.html',{'current_stock':current_stock})    
+    return render(request,'stock/alert_stock.html',{'alert':alert})    
        
 #///////////////////////////////////////////////////////////////////////////////
 class TheCreateView(CreateView):

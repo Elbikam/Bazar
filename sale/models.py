@@ -81,6 +81,7 @@ class Order(models.Model):
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True)
     
+ 
     @property
     def get_subtotal(self):
         if self.price is None or self.quantity is None:

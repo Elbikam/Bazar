@@ -5,7 +5,7 @@ from stock.views import (
     ItemListView,
     ItemDetailView,
     ItemDeleteView,
-    update_stock,
+    alert_stock,
     #The
     TheCreateView,
     TheListView,
@@ -27,7 +27,7 @@ urlpatterns = [
     #Item
     path('<int:id>/', ItemDetailView.as_view(), name="item-detail"),
     path('<int:id>/delete/', ItemDeleteView.as_view(), name='the-delete'),
-    path('update/',view=update_stock, name="item-update"),
+    path('alert/',view=alert_stock, name="alert"),
     path('search/', item_search, name='item_search'),
     #The
     path('',ItemListView.as_view(), name= 'item-list'),

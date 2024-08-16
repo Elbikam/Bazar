@@ -15,14 +15,14 @@
         </div>
         <div class="metric">
             <h3>Total Revenue</h3>
-            <p>${{ total_revenue|floatformat:2 }}</p>
+            <p>{{ total_revenue|floatformat:2 }}</p>
         </div>
     </div>
     <div class="recent-sales">
         <h2>Recent Sales</h2>
         <ul>
             {% for sale in recent_sales %}
-                <li>{{ sale.sale_id }} - {{ sale.date }} - ${{ sale.get_HT }}</li>
+                <li>{{ sale.sale_id }} - {{ sale.date }} - {{ sale.get_TTC }}</li>
             {% endfor %}
         </ul>
     </div>

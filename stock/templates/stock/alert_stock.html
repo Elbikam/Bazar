@@ -1,6 +1,6 @@
 {% extends 'stock/base.html' %}
 {% block content %}
-<h2>Update Stock</h2>
+<h3>Alert </h3>
 <table class="table">
      <thead>
      <tr>
@@ -8,20 +8,25 @@
           <th scope="col">date</th>
           <th scope="col">item</th>
           <th scope="col">description</th>
-          <th scope="col">quantity</th>
-          <th scope="col">update_qte</th>
+          <th scope="col">initial_quantity</th>
+          <th scope="col">alert</th>
+          <th scope="col">qte_inStock</th>
+          
      </tr>
      
      </thead>
      <tbody>
-     {% for k,v  in current_stock.items %}
+     {% for k in alert %}
      <tr>
           <th scope="row">{{k.pk}}</th>
           <td>{{k.date}}</td>
           <td>{{k.item}}</td>
           <td>{{k.description}}</td>
+          <td>{{k.initial_quantity}}</td>
+          <td>{{k.alert_qte}}</td>
           <td>{{k.quantity}}</td>
-          <td>{{v}}</td>
+     {% empty %}
+        <li>No alert qte  yet.</li>
           
      </tr>
      {% endfor %}  
