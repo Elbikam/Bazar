@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Add your ticket CSS styles here */
+    </style>
+</head>
+<body>
+    <div>
+        <p >{{ company_info.logo_path }}</p>
+        <h1 style="text-align: center;">{{ company_info.name }}</h1>
+        <p>{{ company_info.address }}</p>
+        <p>{{ company_info.phone }}</p>
+    </div>
+    <h2>Sale ID: {{ sale.id }}</h2>
+    <p>Date: {{ sale.date|date:"d/m/Y H:i:s" }}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.description }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.get_subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h4 style="text-align:center;">Total HT: {{ HT_total }}</h4>
+    <h4 style="text-align: center;">TVA: {{ TVA_total }}</h4>
+    <h4 style="text-align: center;">Total TTC: {{ TTC_total }}</h4>
+    <h3 style="text-align: left;">Payment</h3>
+    <p style="text-align: left;"><strong>amount received :</strong> {{ sale.cash.amount_received}}</p>
+    <p style="text-align: left;"><strong>change:</strong> {{ sale.cash.get_change}}</p>
+</div>
+    
+</body>
+</html>
+

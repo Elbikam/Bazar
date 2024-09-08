@@ -1,11 +1,10 @@
-<!-- sale_detail.html -->
-{% extends "sale/base.html" %}
-{% load static %}
+{% extends 'sale/base.html' %}
 {% block content %}
-<h1>Sale Details</h1>
-<hr>
-<p><strong>Sale ID:</strong> {{ sale.sale_id }}</p>
-<p><strong>Customer:</strong> {{ sale.customer.customer }}</p>
+{% load static %}
+{% load crispy_forms_tags %}
+<h1>Sale</h1>
+<h3> Sale Details</h3>
+<p><strong>Sale ID:</strong> {{ sale.pk }}</p>
 <p><strong>Date:</strong> {{ sale.date|date:"d/m/Y H:i:s" }}</p>
 
 <p><strong>Total of Items:</strong> {{ sale.total_of_items }}</p>
@@ -14,10 +13,10 @@
 <p><strong>Total TTC:</strong> {{ sale.get_TTC }}</p>
 
 <h2>Orders</h2>
-<table>
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>id</th>
+            <th>ID</th>
             <th>Description</th>
             <th>Quantity</th>
             <th>Price</th>
@@ -25,9 +24,9 @@
         </tr>
     </thead>
     <tbody>
-        {% for order in sale.order_set.all %}
+        {% for order in sale.inlineorder_set.all %}
         <tr>
-            <td>{{ order.item_id_id }}</td>
+            <td>{{ order.item.pk }}</td>
             <td>{{ order.description }}</td>
             <td>{{ order.quantity }}</td>
             <td>{{ order.price }}</td>
@@ -35,7 +34,7 @@
         </tr>
         {% empty %}
         <tr>
-            <td colspan="6">No orders found.</td>
+            <td colspan="5">No orders found.</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -45,9 +44,29 @@
 <p><strong>Amount received :</strong> {{ sale.cash.amount_received }}</p>
 <p><strong>Change:</strong> {{ sale.cash.get_change }}</p>
 
-
-<!-- PDF Generation Button -->
-<div class="pdf-button">
-    <a href="{% url 'sale:generate_ticket_pdf' sale.id %}" class="btn btn-primary" target="_blank">Ticket</a>
+<!-- Buttons for PDF Download and Print -->
+<div class="pdf-buttons">
+    <!-- Download PDF Button -->
+    <a href="{% url 'sale:generate_ticket_pdf' sale_id=sale.pk %}" class="btn btn-primary" download="ticket-{{ sale.pk }}.pdf">Download Ticket as PDF</a>
+    
+    <!-- Print Ticket Button -->
+    <button onclick="printTicket()" class="btn btn-secondary">Print Ticket</button>
 </div>
+
+<!-- Print Styles -->
+<style>
+    @media print {
+        .pdf-buttons {
+            display: none; /* Hide buttons when printing */
+        }
+        
+    }
+</style>
+
+<script>
+    function printTicket() {
+        window.print(); // Opens the print dialog to print the current page
+    }
+</script>
+
 {% endblock %}

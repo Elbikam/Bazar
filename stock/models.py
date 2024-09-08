@@ -1,39 +1,43 @@
-from typing import Any
 from django.db import models
+import decimal
 from django.urls import reverse
+from decimal import Decimal
 
-#############################
-# Create your models here.
+class Product(models.Model):
+    def detail(self):
+        pass
 
-class Item(models.Model):
+    class Meta: 
+        abstract = True
+     
+class Item(Product):
+    date = models.DateField(auto_now=True)
     id = models.BigIntegerField(primary_key=True)
-    date = models.DateField(auto_now_add=True)
-    item = models.CharField(max_length=10)
-    description = models.CharField(max_length=50)
-    quantity = models.PositiveIntegerField()  # To be updated later as needed
-    initial_quantity = models.PositiveIntegerField(editable=False)  # Constant value for initial stock
+    item = models.CharField(max_length=30)
+    description = models.CharField(max_length=100)
+    quantity = models.PositiveIntegerField()
+    initial_quantity = models.PositiveIntegerField(editable=False)
     alert_qte = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
-
-    def save(self, *args, **kwargs):
-        # Store the initial quantity only when creating the item
-        if not self.pk:  # Only set on object creation
-            self.initial_quantity = self.quantity
-        super().save(*args, **kwargs)
-
+    price = models.DecimalField(max_digits=5, decimal_places=2, default=0.00) 
+    
     @property
     def qte_inStock(self):
         return self.quantity
-
     @qte_inStock.setter
     def qte_inStock(self, value):
         self.quantity = value  # This updates the current quantity
+    
+    def detail(self):
+        return f"{self.item} {self.description}"
+
+    def save(self, *args, **kwargs):
+        if self.quantity < 0:            
+            raise ValueError("Quantity cannot be negative.") 
+        if self._state.adding and not self.initial_quantity:
+            self.initial_quantity = self.quantity
+        super().save(*args, **kwargs) 
 
 
-    def __str__(self):
-        return self.item
-
-# ////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
 class The(Item):
     SUBCAT_CHOICES = [
     ('CHAARA', 'CHAARA'),
@@ -46,6 +50,7 @@ class The(Item):
      ('KHSHAB', 'KHSHAB'),
     ]
     WEIGHT_CHOICES = [
+    ('100', '100'),    
     ('200', '200'),
     ('500', '500'),
     ('1000', '1000'),
@@ -61,18 +66,21 @@ class The(Item):
     ('3505B', '3505B'),
     ('41022', '41022'),
     ]
-
     category = models.CharField(max_length=15, choices=SUBCAT_CHOICES)
     packaging = models.CharField(max_length=15, choices=PACKAGE_CHOICES)
     weight = models.CharField(max_length=15, choices=WEIGHT_CHOICES)
     ref = models.CharField(max_length=15, choices=REFERANCE_CHOICES)
-    
+         
+    def detail(self):
+        return f"{self.item} -cat:{self.category}-packaging:{self.packaging} -weight(g):{self.weight}-ref:{self.ref}"
+
+
+
     def __str__(self):
         return f"The : {self.item} - Category: {self.category}, package: {self.packaging}, weight :{self.weight}, ref :{self.ref} "
     def get_absolute_url(self):
        return reverse("stock:the-detail", kwargs={"id":self.id})
-   
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class Parfum(Item):
     TYPE_CHOICES = [
     ('MAN', 'MAN'),
@@ -89,11 +97,17 @@ class Parfum(Item):
     sub_brand = models.CharField(max_length=20)
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     volum = models.CharField(max_length=10, choices=VOLUM_CHOICES)
+
+
+    def detail(self):
+        return f"parfum:{self.item}-sub_brand:{self.sub_brand}-type:{self.type}-volum:{self.volum}"
+    
     def __str__(self):
         return f"Parfum : {self.item} - Category: {self.sub_brand}, type: {self.type}, volum: {self.volum} "
     def get_absolute_url(self):
        return reverse("stock:parfum-detail", kwargs={"id":self.id})
-    
+
+
      
 
 

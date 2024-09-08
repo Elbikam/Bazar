@@ -1,0 +1,90 @@
+{% extends 'sale/ticket_base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+<style>
+    @media print {
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 10mm;
+        }
+        hr {
+            border: 1px solid #000;
+        }
+        .footer-ticket {
+            position: absolute;
+            bottom: 10mm;
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="container" style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+    <hr style="border: 2px solid #000000; margin-bottom: 20px;">
+    
+    <!-- Invoice Header -->
+    <div class="row">
+        <div class="col-md-6">
+            <p><strong>Vendor:</strong> {{ sale_vendor.vendor.name }}</p>
+            <p><strong>Facture ID:</strong> {{ sale_vendor.pk }}</p>
+            <p><strong>Date:</strong> {{ sale_vendor.date|date:"d/m/Y H:i:s" }}</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <p><strong>Total of Items:</strong> {{ sale_vendor.total_of_items }}</p>
+            <p><strong>Total HT:</strong> {{ sale_vendor.get_HT }}</p>
+            <p><strong>Total TVA:</strong> {{ sale_vendor.get_TVA }}</p>
+            <p><strong>Total TTC:</strong> {{ sale_vendor.get_TTC }}</p>
+        </div>
+    </div>
+
+    <!-- Orders Section -->
+    <h2 style="border-bottom: 2px solid #333; padding-bottom: 5px; margin-top: 20px;">Orders</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+            <tr style="background-color: #f4f4f4; font-weight: bold;">
+                <th style="border: 1px solid #333; padding: 8px; text-align: center;">ID</th>
+                <th style="border: 1px solid #333; padding: 8px;">Description</th>
+                <th style="border: 1px solid #333; padding: 8px; text-align: right;">Quantity</th>
+                <th style="border: 1px solid #333; padding: 8px; text-align: right;">Price</th>
+                <th style="border: 1px solid #333; padding: 8px; text-align: right;">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in sale_vendor.inlineorder_set.all %}
+            <tr>
+                <td style="border: 1px solid #333; padding: 8px; text-align: center;">{{ order.item.pk }}</td>
+                <td style="border: 1px solid #333; padding: 8px;">{{ order.description }}</td>
+                <td style="border: 1px solid #333; padding: 8px; text-align: right;">{{ order.quantity }}</td>
+                <td style="border: 1px solid #333; padding: 8px; text-align: right;">{{ order.price }}</td>
+                <td style="border: 1px solid #333; padding: 8px; text-align: right;">{{ order.get_subtotal }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="border: 1px solid #333; padding: 8px; text-align: center;">No orders found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" style="border: 1px solid #333; padding: 8px; text-align: right;"><strong>Total Amount:</strong></td>
+                <td style="border: 1px solid #333; padding: 8px; text-align: right;">{{ sale_vendor.get_TTC }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <!-- Status Section -->
+    <h2 style="border-bottom: 2px solid #333; padding-bottom: 5px; margin-top: 20px;">Status</h2>
+    <p><strong>Balance:</strong> {{ sale_vendor.vendor.get_balance }}</p>
+</div>
+{% endblock %}

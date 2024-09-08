@@ -1,67 +1,130 @@
-<!-- templates/stock/item_search.html -->
-{% extends "stock/base.html" %}
-{% block title %}Item Search{% endblock %}
+{% extends 'stock/base.html' %}
 {% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<h1>Stock</h1>
 <h3>Search Items</h3>
 
-<form method="get" action="{% url 'stock:item_search' %}">
-    {{ form.as_p }}
+<form method="get" action="{% url 'stock:item-search' %}">
+    {{ form |crispy  }}
     <button type="submit">Search</button>
 </form>
 <table class="table">
 
 {% if items or the_items or parfum_items %}
     <h2>Search Results</h2>
-    
-<table class="table">   
+    <table class="table">   
+        <h3>Items</h3>
+        <thead>
+            <tr>
+                <th scope="col">#pk</th>
+                <th scope="col">date </th>
+                <th scope="col">item</th>
+                <th scope="col">description</th>
+                <th scope="col">price</th>
+                <th scope="col">initial quantity</th>
+                <th scope="col">alert_qte</th>
+                <th scope="col">qte in Stock</th>
+
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+            <tr>
+               <th scope="row">{{item.pk}}</th>
+               <td>{{item.date|date:"d/m/Y"}}</td>
+               <td>{{item.item}}</td>
+               <td>{{item.description}}</td>
+               <td>{{item.price}}</td>
+               <td>{{item.initial_quantity}}</td>
+               <td>{{item.alert_qte}}</td>
+               <td>{{item.qte_inStock}}</td>
+        {% empty %}
+            <li>No The found.</li>
+               </tr>    
+        {% endfor %}       
+        </tbody>        
+    </table>     
+    <table class="table">   
     <h3>The </h3>
     <thead>
-    <tr>
-        <th scope="col">#pk</th>
-        <th scope="col">item</th>
-        <th scope="col">description</th>
-        <th scope="col">date</th>
-        <th scope="col">initial quantity</th>
-        <th scope="col">cateory</th>
-        <th scope="col">packaging</th>
-        <th scope="col">weight (g)</th>
-        <th scope="col">ref</th>
-        <th scope="col">qte_inStock</th>
+        <tr>
+            <th scope="col">#pk</th>
+            <th scope="col">date</th>
+            <th scope="col">the</th>
+            <th scope="col">description</th>
+            <th scope="col">price</th>
+            <th scope="col">cateory</th>
+            <th scope="col">packaging</th>
+            <th scope="col">weight (g)</th>
+            <th scope="col">ref</th>
+            <th scope="col">initial quantity</th>
+            <th scope="col">alert_qte</th>
+            <th scope="col">qte in Stock</th>
 
-
-
-    </tr> 
+        </tr> 
     </thead>
     <tbody> 
     {% for the in the_items %}
-    <tr>
-        <th scope="row">{{the.pk}}</th>
-        <td>{{the.item}}</td>
-        <td>{{the.description}}</td>
-        <td>{{the.date}}</td>
-        <td>{{the.initial_quantity}}</td>
-        <td>{{the.category}}</td>
-        <td>{{the.packaging}}</td>
-        <td>{{the.weight}}</td>
-        <td>{{the.ref}}</td>
-        <td>{{the.qte_inStock}}</td>
+         <tr>
+            <th scope="row">{{the.pk}}</th>
+            <td>{{the.date|date:"d/m/Y"}}</td>
+            <td>{{the.item}}</td>
+            <td>{{the.description}}</td>
+            <td>{{the.price}}</td>
+            <td>{{the.category}}</td>
+            <td>{{the.packaging}}</td>
+            <td>{{the.weight}}</td>
+            <td>{{the.ref}}</td>
+            <td>{{the.initial_quantity}}</td>
+            <td>{{the.alert_qte}}</td>
+            <td>{{the.qte_inStock}}</td>
+
     {% empty %}
         <li>No The found.</li>
-    </tr>    
+        </tr>    
     {% endfor %}
     </tbody>
     
-</table>  
-<table>
+    </table>  
+    <table class="table">   
     <h3>Parfum </h3>
-    <ul>
-        {% for parfum in parfum_items %}
-            <li>{{ parfum.item }} - {{ parfum.description }} - Brand: {{ parfum.sub_brand }} - Type: {{ parfum.type }} - Volume: {{ parfum.volum }}</li>
-        {% empty %}
-            <li>No items found.</li>
-        {% endfor %}
-    </ul>
-</table>     
+    <thead>
+        <tr>
+            <th scope="col">#pk</th>
+            <th scope="col">date </th>
+            <th scope="col">parfum</th>
+            <th scope="col">description</th>
+            <th scope="col">price</th>
+            <th scope="col">sub_brand</th>
+            <th scope="col">type</th>
+            <th scope="col">volume</th>
+            <th scope="col">initial quantity</th>
+            <th scope="col">alert_qte</th>
+            <th scope="col">qte in Stock</th>
+        </tr> 
+    </thead>
+    <tbody> 
+    {% for parfum in parfum_items %}
+        <tr>
+            <th scope="row">{{parfum.pk}}</th>
+               <td>{{parfum.date|date:"d/m/Y"}}</td>
+               <td>{{parfum.item}}</td>
+               <td>{{parfum.description}}</td>
+               <td>{{parfum.price}}</td>
+               <td>{{parfum.sub_brand}}</td>
+               <td>{{parfum.type}}</td>
+               <td>{{parfum.volum}}</td>
+               <td>{{parfum.initial_quantity}}</td>
+               <td>{{parfum.alert_qte}}</td>
+               <td>{{parfum.qte_inStock}}</td>
+
+
+    {% empty %}           
+        <li>No The found.</li>
+        </tr>    
+    {% endfor %}
+    </tbody>
+    </table>
 {% endif %}
 {% endblock %}
-

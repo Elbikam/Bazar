@@ -1,14 +1,12 @@
-{% extends "sale/base.html" %}
-{% load static %}
+{% extends 'sale/base.html' %}
 {% block content %}
-<!-- main Sale -->
-<h4>Sale</h4>
+{% load static %}
+{% load crispy_forms_tags %}
+<h1>Sale</h1>
+<h3> Create Sale</h3>
 <hr>
 <div class="col-md-4">
     <form id="sale-order-form" action="" method="post">{% csrf_token %}
-        <h5>Person Information</h5>
-        {{ persone_form.as_p }}
-        <h5>Sale Information</h5>
         {{sale_form.as_p}}
         <table class="table"> 
             <!-- Orders Formset -->
@@ -53,65 +51,90 @@
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+
         $('.formset_row').formset({
             addText: 'Add Order',
             deleteText: 'Remove',
-            prefix: 'order_set',
-        });
-
-        $('form').on('change', 'input[name$=-item_id]', function() {
-            updatePrice(this);
-        });
-
-        $('form').on('change', 'input[name$=-quantity]', calculateTotal);
-
-        calculateTotal(); // Initial calculation
+            prefix: 'inlineorder_set',
+            removed: function(row) {
+            // Recalculate total when a row is removed
+                calculateTotal();
+        }
     });
-    function updatePrice(itemInput) {
-        const row = $(itemInput).closest('.formset_row');
-        const itemId = $(itemInput).val();
-        const priceInput = row.find('input[name$=-price]');
-       
-        
-        $.ajax({
-            url: "{% url 'sale:item-price-api' %}",
-            data: { 'item_id': itemId },
-            success: function(data) {
-                if (data.price) {
-                    priceInput.val(data.price);
-                    calculateTotal();
-                }
+    });
+
+    // Event listener for item change
+    $('form').on('change', 'input[name$=-item]', function() {
+        console.log("Item ID changed:", $(this).val());
+        updatePrice(this);
+    });
+
+    // Event listener for quantity change
+    $('form').on('change', 'input[name$=-quantity]', function() {
+        console.log("Quantity changed");
+        calculateTotal();
+    });
+    $('form').on('change', 'input[name$=-price]', function() {
+        console.log("Price changed");
+        calculateTotal();
+    });
+
+    // Initial total calculation
+    calculateTotal();
+
+function bindFormsetRowEvents(row) {
+    // Bind events to new formset rows
+    $(row).on('change', 'input[name$=-item]', function() {
+        console.log("Item changed in new row:", $(this).val());
+        updatePrice(this);
+    });
+
+    $(row).on('change', 'input[name$=-quantity]', function() {
+        console.log("Quantity changed in new row");
+        calculateTotal();
+    });
+
+}
+
+function updatePrice(itemInput) {
+    const row = $(itemInput).closest('.formset_row');
+    const itemId = $(itemInput).val();
+    const priceInput = row.find('input[name$=-price]');
+
+    console.log("Fetching price for item ID:", itemId);
+
+    $.ajax({
+        url: "{% url 'sale:item-price-api' %}",
+        data: { 'item_id': itemId },
+        success: function(data) {
+            console.log("Price data received:", data);
+            if (data.price) {
+                priceInput.val(data.price);
+                calculateTotal();
+            } else {
+                console.error("Price not found in response.");
             }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching price:", status, error);
+            alert("Could not retrieve item price.");
+        }
+    });
+}
+
+function calculateTotal() {
+    let total = 0;
+    $('form .formset_row').each(function() {
+        const quantity = parseFloat($(this).find('input[name$=-quantity]').val()) || 0;
+        const price = parseFloat($(this).find('input[name$=-price]').val()) || 0;
+
+        const subtotal = quantity * price;
+        const amount = Math.max(subtotal * 1.2, 0);
+        total += amount;
         });
-    }
+   $('#total-amount').text(total.toFixed(2));
+}
 
-    function calculateTotal() {
-        let total = 0;
-        $('form .formset_row').each(function() {
-            const quantity = parseFloat($(this).find('input[name$=-quantity]').val()) || 0;
-            const price = parseFloat($(this).find('input[name$=-price]').val()) || 0;
-
-            const subtotal = quantity * price;
-            const amount = Math.max(subtotal * 1.2, 0);
-            total += amount;
-        });
-        $('#total-amount').text(total.toFixed(2));
-    }
-
-    // $(document).ready(function() {
-    //     $('.formset_row').formset({
-    //         addText: 'Add Order',
-    //         deleteText: 'Remove',
-    //         prefix: 'order_set',
-    //     });
-
-    //     $('form').on('change', 'input[name$=-item_id]', function() {
-    //         updatePrice(this);
-    //     });
-
-    //     $('form').on('change', 'input[name$=-quantity]', calculateTotal);
-
-    //     calculateTotal(); // Initial calculation
-    // });
 </script>
+
 {% endblock %}

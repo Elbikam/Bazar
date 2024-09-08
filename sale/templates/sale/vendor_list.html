@@ -1,0 +1,33 @@
+{% extends 'sale/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<h2>Vendor Status</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>City</th>
+            <th>Phone/WhatsApp</th>
+            <th>Count sales </th>
+            <th>Total_sale (DH)</th>
+            <th>Total amount received (DH)</th>
+            <th>Balance (DH) </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sv in vendors %}
+        <tr>
+            <td>{{ sv.name }}</td>
+            <td>{{ sv.city }}</td>
+            <td>{{ sv.phone_whatsapp }}</td>
+            <td>{{ sv.get_count_sales}}</td>
+            <td>{{ sv.get_total_sales }}</td>
+            <td>{{ sv.get_total_amount_received }}</td>
+            <td>{{ sv.get_balance }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

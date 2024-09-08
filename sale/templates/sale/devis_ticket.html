@@ -1,0 +1,60 @@
+{% extends 'sale/ticket_base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<div class="container" style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+    <hr style="border: 2px solid #000000; margin-bottom: 20px;">
+    <div class="row">
+        <div class="col-md-4">
+            <p><strong>Client :</strong> {{ devis.customer }}</p>
+            <p><strong>Devis ID:</strong> {{ devis.pk }}</p>
+            <p><strong>Date:</strong> {{ devis.date|date:"d/m/Y H:i:s" }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <p><strong>Total of Items:</strong> {{ devis.total_of_items }}</p>
+            <p><strong>Total HT:</strong> {{ devis.get_HT }}</p>
+            <p><strong>Total TVA:</strong> {{ devis.get_TVA }}</p>
+            <p><strong>Total TTC:</strong> {{ devis.get_TTC }}</p>
+        </div>
+    </div>
+    <!-- Orders Section -->
+    <h2 style="border-bottom: 2px solid #333; padding-bottom: 10px; margin-top: 30px;">Orders</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <thead>
+            <tr style="background-color: #f4f4f4; font-weight: bold;">
+                <th style="border: 1px solid #333; padding: 10px;">ID</th>
+                <th style="border: 1px solid #333; padding: 10px;">Description</th>
+                <th style="border: 1px solid #333; padding: 10px; text-align: right;">Quantity</th>
+                <th style="border: 1px solid #333; padding: 10px; text-align: right;">Price</th>
+                <th style="border: 1px solid #333; padding: 10px; text-align: right;">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in devis.inlinedevis_set.all %}
+            <tr>
+                <td style="border: 1px solid #333; padding: 10px;">{{ order.item.pk }}</td>
+                <td style="border: 1px solid #333; padding: 10px;">{{ order.description }}</td>
+                <td style="border: 1px solid #333; padding: 10px; text-align: right;">{{ order.quantity }}</td>
+                <td style="border: 1px solid #333; padding: 10px; text-align: right;">{{ order.price }}</td>
+                <td style="border: 1px solid #333; padding: 10px; text-align: right;">{{ order.get_subtotal }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="border: 1px solid #333; padding: 10px; text-align: center;">No orders found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" style="border: 1px solid #333; padding: 10px; text-align: right;"><strong>Total Amount:</strong></td>
+                <td style="border: 1px solid #333; padding: 10px; text-align: right;">{{ devis.get_TTC }}</td>
+            </tr>
+        </tfoot>
+    </table>
+    <!-- Footer -->
+    <div class="footer-ticket" style="margin-top: 30px;">
+        <p class="title-footer" style="text-align: center; font-size: 16px; font-weight: bold;"></p>
+    </div>
+</div>    
+{% endblock %}
+

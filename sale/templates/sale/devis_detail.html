@@ -1,0 +1,70 @@
+{% extends 'sale/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<h1>Devis</h1>
+<h3> Devis Details</h3>
+<p><strong>Customer :</strong> {{ devis.customer }}</p>
+<p><strong>Devis ID:</strong> {{ devis.pk }}</p>
+<p><strong>Date:</strong> {{ devis.date|date:"d/m/Y H:i:s" }}</p>
+
+<p><strong>Total of Items:</strong> {{ devis.total_of_items }}</p>
+<p><strong>Total HT:</strong> {{ devis.get_HT }}</p>
+<p><strong>Total TVA:</strong> {{ devis.get_TVA }}</p>
+<p><strong>Total TTC:</strong> {{ devis.get_TTC }}</p>
+
+<h2>Orders</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in devis.inlinedevis_set.all %}
+        <tr>
+            <td>{{ order.item.pk }}</td>
+            <td>{{ order.description }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.price }}</td>
+            <td>{{ order.get_subtotal }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No orders found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<!-- Buttons for PDF Download and Print -->
+<div class="pdf-buttons">
+    <!-- Download PDF Button -->
+    <a href="{% url 'sale:generate_devis_pdf' devis_id=devis.pk %}" class="btn btn-primary" download="ticket-{{ devis.pk }}.pdf">Download Ticket as PDF</a>
+    
+    <!-- Print Ticket Button -->
+    <button onclick="printTicket()" class="btn btn-secondary">Print Ticket</button>
+</div>
+
+<!-- Print Styles -->
+<style>
+    @media print {
+        .pdf-buttons {
+            display: none; /* Hide buttons when printing */
+        }
+        
+    }
+</style>
+
+<script>
+    function printTicket() {
+        window.print(); // Opens the print dialog to print the current page
+    }
+</script>
+
+{% endblock %}

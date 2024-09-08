@@ -1,125 +1,55 @@
-from django.db.models.base import Model as Model
+from django.views.generic import View
+from django.shortcuts import render, redirect
+from stock.forms import ItemForm,TheForm,ParfumForm,ItemSearchForm
+from stock.models import Item,The,Parfum
+from django.db import transaction
 from django.urls import reverse
-from django.shortcuts import render, get_object_or_404
-from .models import The, Item, Parfum
-from django.views.generic import ( 
-    CreateView,
-    DetailView,
-    ListView,
-    UpdateView,
-    DeleteView    
-    )
-from .forms import TheForm, ParfumForm,ItemSearchForm
-from sale.models import Sale,Order
-from collections import defaultdict
+from django.views.generic import (DetailView)
+from django.views.generic import TemplateView
 from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404,redirect
+from django.urls import reverse_lazy,reverse
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from abc import ABC, abstractmethod
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView
+from decimal import Decimal, InvalidOperation,getcontext
 
-def dashboard():
-    pass
-class ItemListView(ListView):
+
+#////////////////////////// Item ////////////////////////////////////
+class ItemCreate(View):
+    template_name = 'stock/item_form.html'
+    def get(self, request, *args, **kwargs):
+        item_form = ItemForm()
+        context = {
+            'item_form': item_form
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        item_form = ItemForm(request.POST)
+        if item_form.is_valid():
+            with transaction.atomic():
+                # Create the item instance from the form but don't save it yet
+                item = item_form.save(commit=False)
+                # Save the item
+                item.save()
+                # Redirect to the item detail view
+                return redirect(reverse('stock:item-detail', kwargs={'pk': item.pk}))            
+        # If form is invalid, return the form with errors
+        context = {
+            'item_form': item_form,
+        }
+        return render(request, self.template_name, context)
+    
+class ItemDetailView(DetailView):
     model = Item
-    queryset = Item.objects.all()
-    
-class  ItemDetailView(DetailView):
-    model = Item
+    template_name = 'stock/item_detail.html'
+    context_object_name = 'item'  # This is the name you'll use in the template
 
-    def get_object(self):
-       id_ = self.kwargs.get("id")
-       return get_object_or_404(Item, id=id_)
-    
-
-class ItemDeleteView(DeleteView):
-    model = Item 
-    def get_object(self):
-       id_ = self.kwargs.get("id")
-       return get_object_or_404(Item, id=id_)
-    def get_success_url(self):
-        return reverse('stock:item-list')
-
-
-
-def alert_stock(request):
-    alert = []
-    items = Item.objects.all()
-    for i in items:
-        if i.quantity < i.alert_qte:
-            alert.append(i)
-            
-    return render(request,'stock/alert_stock.html',{'alert':alert})    
-       
-#///////////////////////////////////////////////////////////////////////////////
-class TheCreateView(CreateView):
-    
-    form_class = TheForm
-    queryset = The.objects.all()
-    template_name = 'stock/the_create.html'
-    
-    
-
-    def form_valid(self, form):
-        return super().form_valid(form)
-        
-class  TheListView(ListView):
-    model = The
-    template_name = 'stock/the_list.html'
-    queryset = The.objects.all()
-
-class  TheDetailView(DetailView):
-    model = The
-    template_name = 'stock/the_detail.html'
-    #queryset = The.objects.all()
-    def get_object(self):
-       id_ = self.kwargs.get("id")
-       return get_object_or_404(The, id=id_)
-
-class TheUpdateView(UpdateView):
-    model = The
-    form_class = TheForm
-    template_name = 'stock/the_update_form.html'
-
-    def get_object(self):
-        id_ = self.kwargs.get("id")
-        return get_object_or_404(The, id=id_)
-    
-    def form_valid(self, form):
-        return super().form_valid(form)
-
-#/////////////////////////////////////////////////////////////////////////////////////////////////////
-class ParfumCreateView(CreateView):
-    form_class = ParfumForm
-    model = Parfum
-    queryset = Parfum.objects.all()
-    template_name = 'stock/parfum_create.html'
-
-    def form_valid(self, form):
-        return super().form_valid(form)
-
-class  ParfumDetailView(DetailView):
-    model = Parfum
-    template_name = 'stock/parfum_detail.html'
-    def get_object(self):
-       id_ = self.kwargs.get("id")
-       return get_object_or_404(Parfum, id=id_)
-    
-class  ParfumListView(ListView):
-    model = Parfum
-    template_name = 'stock/parfum_list.html'
-    queryset = Parfum.objects.all()
-
-class ParfumUpdateView(UpdateView):
-    model = Parfum
-    form_class = ParfumForm
-    template_name = 'stock/parfum_update.html'
-    def get_object(self):
-        id_ = self.kwargs.get("id")
-        return get_object_or_404(Parfum, id=id_)
-    
-    def form_valid(self, form):
-        return super().form_valid(form)  
-#////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
+#////////////////////////// Search Item ////////////////////////////////////
 def item_search(request):
     form = ItemSearchForm(request.GET or None)
     items = Item.objects.none()  # Initialize empty QuerySet
@@ -156,4 +86,73 @@ def item_search(request):
         'items': items,
         'the_items': the_items,
         'parfum_items': parfum_items
-    })
+    })    
+#//////////////////////////////// Alert /////////////////////////////////////
+def alert_stock(request):
+    alert = []
+    items = Item.objects.all()
+    for i in items:
+        if i.quantity < i.alert_qte:
+            alert.append(i)
+            
+    return render(request,'stock/item_alert.html',{'alert':alert}) 
+#//////////////////////////// The ////////////////////////////////////////////
+class TheCreate(View):
+    template_name = 'stock/the_form.html'
+    def get(self, request, *args, **kwargs):
+        the_form = TheForm()
+        context = {
+            'the_form': the_form
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        the_form = TheForm(request.POST)
+        if the_form.is_valid():
+            with transaction.atomic():
+                # Create the item instance from the form but don't save it yet
+                the = the_form.save(commit=False)
+                # Save the item
+                the.save()
+                # Redirect to the item detail view  
+                return redirect(reverse('stock:the-detail', kwargs={'pk': the.pk}))            
+        # If form is invalid, return the form with errors
+        context = {
+            'the_form': the_form,
+        }
+        return render(request, self.template_name, context)
+class TheDetailView(DetailView):
+    model = The
+    template_name = 'stock/the_detail.html'
+    context_object_name = 'the'  # This is the name you'll use in the template   
+
+#/////////////////////////// Parfum ////////////////////////////////   
+class ParfumCreate(View):
+    template_name = 'stock/parfum_form.html'
+    def get(self, request, *args, **kwargs):
+        parfum_form = ParfumForm
+        context = {
+            'parfum_form': parfum_form
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        parfum_form = ParfumForm(request.POST)
+        if parfum_form.is_valid():
+            with transaction.atomic():
+                # Create the item instance from the form but don't save it yet
+                parfum = parfum_form.save(commit=False)
+                # Save the item
+                parfum.save()
+                # Redirect to the item detail view
+                return redirect(reverse('stock:parfum-detail', kwargs={'pk': parfum.pk}))            
+        # If form is invalid, return the form with errors
+        context = {
+            'parfum_form': parfum_form,
+        }
+        return render(request, self.template_name, context)
+class ParfumDetailView(DetailView):
+    model = Parfum
+    template_name = 'stock/parfum_detail.html'
+    context_object_name = 'parfum'  # This is the name you'll use in the template   
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

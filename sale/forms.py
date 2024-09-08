@@ -1,55 +1,74 @@
-from django import *
-from django.forms import inlineformset_factory,ModelForm
-from sale.models import (Sale,
-                          Order,Persone,Customer,Revendeur,Payment,Cash,Ticket)
-
-from django.contrib.contenttypes.models import ContentType
 from django import forms
+from sale.models import Sale,InlineOrder,InlineDevis,Payment,Vendor,Sale_Vendor,Cash,Devis
+from django.forms import inlineformset_factory,ModelForm
 
-
+# /////////////////////// sale Form ////////////////////////////////
 class SaleForm(forms.ModelForm):
     class Meta:
-        model = Sale
-        exclude = ['sale_id','customer']  # Exclude sale_id if it's causing issues
+        model = Sale 
+        exclude = ['date']  
 
-    def __init__(self, *args, **kwargs):
-        persone = kwargs.pop('persone', None)
-        super(SaleForm, self).__init__(*args, **kwargs)
-        if persone:
-            self.instance.customer = persone  # Set the customer from persone_form
-
-    
-class PersoneForm(forms.ModelForm):
+class InlineOrderForm(forms.ModelForm):
     class Meta:
-        model = Persone
-        fields = ['customer'] 
- 
-class OrderForm(forms.ModelForm):
-    class Meta:
-        model = Order
-        fields = ['item_id','quantity','price']
+        model = InlineOrder
+        fields = ['item','quantity','price']
         widgets = {
-            'item_id': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
+            'item': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
             'quantity': forms.NumberInput(attrs={'placeholder': 'Enter quantity'}),
-            'price': forms.NumberInput(attrs={'placeholder': 'Edite price'}),
-        }
+            'price': forms.NumberInput(attrs={'placeholder': 'Edite price'}),}
 
-    # price = forms.DecimalField(max_digits=6, decimal_places=2, required=False, widget=forms.HiddenInput())
-   
+OrderFormSet = inlineformset_factory(
+    Sale, InlineOrder, form=InlineOrderForm,
+    extra=1, can_delete=True,
+    error_messages={'item': {'required': 'Please enter a correct ID'}}
+)  
 
-OrderFormSet = inlineformset_factory(Sale,Order,form=OrderForm,
-                extra=1,can_delete=True,can_delete_extra=True,error_messages='plz entre correct item ID')        
+#////////////////////////// Devis Form ///////////////////////////////////    
+class DevisForm(forms.ModelForm):
+    class Meta:
+        model = Devis
+        fields = ['customer']
+       
+
+class InlineDevisForm(forms.ModelForm):
+    class Meta:
+        model = InlineDevis
+        fields = ['item','quantity','price']
+        widgets = {
+            'item': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
+            'quantity': forms.NumberInput(attrs={'placeholder': 'Enter quantity'}),
+            'price': forms.NumberInput(attrs={'placeholder': 'Edite price'}),}
+
+DOrderFormSet = inlineformset_factory(
+    Devis, InlineDevis, form=InlineDevisForm,
+    extra=1, can_delete=True,
+    error_messages={'item': {'required': 'Please enter a correct ID'}})
+
+# //////////////////////////  Payment Form //////////////////////////////          
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
-        fields = ['sale_id'] 
+        fields = ['sale'] 
 class CashForm(forms.ModelForm):
     class Meta:
         model = Cash
         fields = ['amount_received', 'is_pay']
-        exclud= ['sale_id']
+        exclud= ['sale']
 
-class TicketForm(forms.ModelForm):
+
+#///////////////////////////  Vendor Form /////////////////////////////////
+class VendorForm(forms.ModelForm):
     class Meta:
-        model = Ticket
-        fields = ['customer_name', 'issue_description']
+        model = Vendor
+        fields = ['name','city','phone_whatsapp']
+        
+#/////////////////////////// Vendor Sale Form /////////////////////////////
+class VendorSaleForm(forms.ModelForm):
+    class Meta:
+        model = Sale_Vendor
+        fields = ['vendor']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Customize the widget
+        self.fields['vendor'].widget.attrs.update({'vendor': 'custom-select'})    

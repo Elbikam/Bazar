@@ -1,0 +1,72 @@
+{% extends 'sale/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<h1>Sale</h1>
+<h3> Sale Details</h3>
+
+<p><strong>Vendor:</strong> {{ sale_vendor.vendor.name }}</p>
+<p><strong>Sale ID:</strong> {{ sale_vendor.pk }}</p>
+<p><strong>Date:</strong> {{ sale_vendor.date|date:"d/m/Y H:i:s" }}</p>
+
+<p><strong>Total of Items:</strong> {{ sale_vendor.total_of_items }}</p>
+<p><strong>Total HT:</strong> {{ sale_vendor.get_HT }}</p>
+<p><strong>Total TVA:</strong> {{ sale_vendor.get_TVA }}</p>
+<p><strong>Total TTC:</strong> {{ sale_vendor.get_TTC }}</p>
+
+<h2>Orders</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in sale_vendor.inlineorder_set.all %}
+        <tr>
+            <td>{{ order.item.pk }}</td>
+            <td>{{ order.description }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.price }}</td>
+            <td>{{ order.get_subtotal }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No orders found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Status</h2>
+<p><strong>Balance :</strong> {{sale_vendor.vendor.get_balance }}</p>
+
+
+<!-- Buttons for PDF Download and Print -->
+<div class="pdf-buttons">
+    <!-- Download PDF Button -->
+    <a href="{% url 'sale:generate_facture_pdf' sale_id=sale_vendor.pk %}" class="btn btn-primary" download="ticket-{{ sale_vendor.pk }}.pdf">facture pdf</a>
+    <a href="{% url 'sale:generate_bonlivraison_pdf' sale_id=sale_vendor.pk %}" class="btn btn-primary" download="ticket-{{ sale_vendor.pk }}.pdf">Bon Livraison</a>
+</div>
+
+<!-- Print Styles -->
+<style>
+    @media print {
+        .pdf-buttons {
+            display: none; /* Hide buttons when printing */
+        }
+        
+    }
+</style>
+
+<script>
+    function printTicket() {
+        window.print(); // Opens the print dialog to print the current page
+    }
+</script>
+
+{% endblock %}

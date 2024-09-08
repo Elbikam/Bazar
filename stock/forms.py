@@ -1,6 +1,19 @@
 from django import forms
+from stock.models import The, Parfum,Item
+from django.forms import inlineformset_factory,ModelForm
+from django.contrib.contenttypes.models import ContentType
 
-from stock.models import The, Parfum
+# //////////////////// Item form  //////////////////////////
+class ItemForm(forms.ModelForm):
+
+    class Meta:
+        model = Item
+        fields = ['id','item','description','quantity','alert_qte','price']
+
+class ItemSearchForm(forms.Form):
+    query = forms.CharField(label='Search', max_length=100)
+
+# ///////////////////// The form ///////////////////////////////
 
 class TheForm(forms.ModelForm):
     SUBCAT_CHOICES = [
@@ -14,6 +27,7 @@ class TheForm(forms.ModelForm):
      ('KHSHAB', 'KHSHAB'),
     ]
     WEIGHT_CHOICES = [
+    ('100', '100'),    
     ('200', '200'),
     ('500', '500'),
     ('1000', '1000'),
@@ -43,11 +57,9 @@ class TheForm(forms.ModelForm):
     class Meta:
         model = The
         fields = ['id','item','description','quantity','alert_qte','price','category','packaging','weight','ref']
-        exclude = ['update_qte']
-        def save(self,*args, **kwargs):
-            super(TheForm,self).save(*args, **kwargs)
+        
 
-#////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#///////////////////////////////  Perfum //////////////////////////////////////////
 class ParfumForm(forms.ModelForm):
     TYPE_CHOICES = [
     ('MAN', 'MAN'),
@@ -66,13 +78,10 @@ class ParfumForm(forms.ModelForm):
     volum = forms.ChoiceField(choices=VOLUM_CHOICES)
     class Meta:
         model = Parfum
-        fields = ['id','item','description','quantity','price','sub_brand','type','volum']
-        def save(self,*args, **kwargs):
-            super(ParfumForm,self).save(*args, **kwargs)
+        fields = ['id','item','description','quantity','alert_qte','price','sub_brand','type','volum']
+ 
+        
 
-
-
-
+# /////////////////////////// Item Search ////////////////////////////////////
 class ItemSearchForm(forms.Form):
     query = forms.CharField(label='Search', max_length=100)
-

@@ -1,7 +1,12 @@
 {% extends 'stock/base.html' %}
 {% block content %}
-<h2>Parfum deatil</h2>
-<p> {{object}}</p>
-    
+{% load static %}
+{% load crispy_forms_tags %}
+<h1>Stock</h1>
+<h3>Parfum Details</h3>
+<span>succes </span>
+<h1>{{ parfum.item }}</h1>
+<p>{{ parfum.description }}</p>
+<p>{parfum}}</p>
 
 {% endblock %}
