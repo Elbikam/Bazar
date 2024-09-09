@@ -2,7 +2,7 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h2>Vendor Status</h2>
+<h2>Vendors Status</h2>
 
 <table class="table table-striped">
     <thead>
@@ -22,10 +22,10 @@
             <td>{{ sv.name }}</td>
             <td>{{ sv.city }}</td>
             <td>{{ sv.phone_whatsapp }}</td>
-            <td>{{ sv.get_count_sales}}</td>
-            <td>{{ sv.get_total_sales }}</td>
-            <td>{{ sv.get_total_amount_received }}</td>
-            <td>{{ sv.get_balance }}</td>
+            <td>{{ sv.count_sales}}</td>
+            <td>{{ sv.total_sales }}</td>
+            <td>{{ sv.total_amount_received }}</td>
+            <td>{{ sv.balance }}</td>
         </tr>
         {% endfor %}
     </tbody>

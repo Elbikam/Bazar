@@ -47,26 +47,7 @@
 <!-- Buttons for PDF Download and Print -->
 <div class="pdf-buttons">
     <!-- Download PDF Button -->
-    <a href="{% url 'sale:generate_ticket_pdf' sale_id=sale.pk %}" class="btn btn-primary" download="ticket-{{ sale.pk }}.pdf">Download Ticket as PDF</a>
-    
-    <!-- Print Ticket Button -->
-    <button onclick="printTicket()" class="btn btn-secondary">Print Ticket</button>
+    <a href="{% url 'sale:generate_ticket_pdf' sale_id=sale.pk %}" class="btn btn-primary" download="ticket-{{ sale.pk }}.pdf">Ticket</a>
 </div>
-
-<!-- Print Styles -->
-<style>
-    @media print {
-        .pdf-buttons {
-            display: none; /* Hide buttons when printing */
-        }
-        
-    }
-</style>
-
-<script>
-    function printTicket() {
-        window.print(); // Opens the print dialog to print the current page
-    }
-</script>
 
 {% endblock %}

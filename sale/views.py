@@ -17,6 +17,10 @@ from weasyprint import HTML
 from django.templatetags.static import static
 from django.http import HttpResponse
 from django.conf import settings
+# from barcode import Code128,ImageWriter
+
+
+
 #////////////////////////////// Function check is empty form ///////////////////////////////////////
 def is_form_not_empty(form):
     return any(field.value() for field in form if field.name != 'DELETE')
@@ -254,6 +258,12 @@ def SaleVendorDetails(request, pk):
 def SaleVendorList(request):
    vendors = Vendor.objects.all()
    return render(request, 'sale/vendor_list.html', {'vendors': vendors}) 
+#////////////////////////////////// Barcode ////////////////////////////////////
+# def generate_barcode(data):
+#     code = Code128(data, writer=ImageWriter())
+#     return code.save("barcode.png")
+
+
 #//////////////////////////////////// Facture ////////////////////////////////
 def generate_facture_pdf(request, sale_id):
     sale_vendor = get_object_or_404(Sale_Vendor, id=sale_id)
@@ -261,7 +271,16 @@ def generate_facture_pdf(request, sale_id):
         'sale_vendor': sale_vendor,
         'orders': sale_vendor.inlineorder_set.all(),
         'static_url': request.build_absolute_uri(static('')),
+        'company_info': {
+            'name': 'Nina Bazar',
+            'info': 'RC1021 ICE:001680586000002 PATENTE:49659021',
+            'address': 'AV YOUSSEF BEN TACHFINE N138 GUELMIM',
+            'phone': '06 72 38 17 47'
+        },
+        # 'barcode':generate_barcode(sale_vendor.id),
+
     }
+
     html_string = render_to_string('sale/facture.html', context)
     html = HTML(string=html_string, base_url=request.build_absolute_uri())
     pdf = html.write_pdf()
@@ -300,20 +319,20 @@ def generate_sale_ticket(request, sale_id):
         'sale': sale,
         'items': sale.inlineorder_set.all(),  # Retrieve related inline orders
         'total_items': sale.total_of_items,
+        'static_url': request.build_absolute_uri(static('')),
         'HT_total': sale.get_HT,
         'TVA_total': sale.get_TVA,
         'TTC_total': sale.get_TTC,
-        # 'logo_path': 'static/images/logo.png'
-        'static_url': request.build_absolute_uri(static('')),  # Adjust your logo path 
+        
+       
     }
 
     # Render the ticket template with sale details
     html_string = render_to_string('sale/ticket.html', context)
-    html = HTML(string=html_string)
-
-    # Generate and return the PDF
+    html = HTML(string=html_string,base_url=request.build_absolute_uri())
     pdf_file = html.write_pdf()
     response = HttpResponse(pdf_file, content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="ticket_{sale_id}.pdf"'
+    response['Content-Disposition'] = f'inline; filename="SO{sale_id}.pdf"'
     return response
+
 

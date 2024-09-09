@@ -1,59 +1,91 @@
-{% extends 'sale/ticket_base.html' %}
-{% block content %}
-{% load static %}
-{% load crispy_forms_tags %}
+{%load static%}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
 
-<div class="container" style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
-    <hr style="border: 2px solid #000000;">
-    <h1 style="text-align: center; margin-bottom: 20px;">Bon de Livraison</h1>
-    
-    <!-- Delivery Details -->
-    <div class="row">
-        <div class="col-md-6">
-            <p><strong>Facture ID:</strong> {{ sale_vendor.pk }}</p>
-            <p><strong>Vendor:</strong> {{ sale_vendor.vendor.name }}</p>
-            <p><strong>Date:</strong> {{ sale_vendor.date|date:"d/m/Y H:i:s" }}</p>
-            <p><strong>Phone/Whatsapp:</strong> {{ sale_vendor.vendor.phone_whatsapp }}</p>
-        </div>
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .invoice-info {
+            margin-bottom: 20px;
+        }
+
+        .invoice-info p {
+            margin: 0;
+        }
+
+        .total-section {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="width: 220px; height: auto; margin: 0 auto;display: block;margin-top: 20px;">
+    <div class="invoice-info">
+        <p><strong>Vendor:</strong> {{sale_vendor.vendor.name}}</p>
+        <p><strong>Sales Order:</strong> {{sale_vendor.pk}}</p>
+        <p><strong>Document Date:</strong> {{sale_vendor.date|date:"d/m/Y H:i:s"}}</p>
     </div>
 
-    <!-- Items Section -->
-    <h2 style="border-bottom: 2px solid #333; padding-bottom: 5px; margin-top: 20px;">Items</h2>
-    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+    <table>
         <thead>
-            <tr style="background-color: #f4f4f4; font-weight: bold;">
-                <th style="border: 1px solid #333; padding: 8px; text-align: center;">Item ID</th>
-                <th style="border: 1px solid #333; padding: 8px; text-align: left;">Details</th>
-                <th style="border: 1px solid #333; padding: 8px; text-align: center;">Quantity</th>
+            <tr>
+                <th>Item No.</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Sub-Total</th>
             </tr>
         </thead>
         <tbody>
             {% for order in sale_vendor.inlineorder_set.all %}
-                {% if order.item.the %}
-                <tr>
-                    <td style="border: 1px solid #333; padding: 8px; text-align: center;">{{ order.item.id }}</td>
-                    <td style="border: 1px solid #333; padding: 8px; text-align: left;">{{ order.item.the.detail }}</td>
-                    <td style="border: 1px solid #333; padding: 8px; text-align: center;">{{ order.quantity }}</td>
-                </tr>
-                {% endif %}
-                {% if order.item.parfum %}
-                <tr>
-                    <td style="border: 1px solid #333; padding: 8px; text-align: center;">{{ order.item.id }}</td>
-                    <td style="border: 1px solid #333; padding: 8px; text-align: left;">{{ order.item.parfum.detail }}</td>
-                    <td style="border: 1px solid #333; padding: 8px; text-align: center;">{{ order.quantity }}</td>
-                </tr>
-                {% endif %}
-            {% empty %}
             <tr>
-                <td colspan="3" style="border: 1px solid #333; padding: 8px; text-align: center;">No items found.</td>
+                <td>{{order.item.pk}}</td>
+                <td>{{order.description}}</td>
+                <td>{{order.quantity}}</td>
+                <td>{{order.price}}</td>
+                <td>{{order.get_subtotal}}</td>
             </tr>
             {% endfor %}
-        </tbody>
+            </tbody>
     </table>
+    <body>
+        <footer style="position: absolute; bottom: 0; left: 0; right: 0; text-align: center; padding: 10px;">
+            <p class="title-footer" style="font-size: 14px; color: #555555; margin: 0; margin-bottom: 10px;">
+                RC1021 ICE:001680586000002 PATENTE:49659021 Address: AV YOUSSEF BEN TACHFINE N138 GUELMIM. TEL: 06 72 38 17 47
+            </p>
+        </footer>
+    </body>
 
-    <!-- Additional Notes Section -->
-    <h2 style="border-bottom: 2px solid #333; padding-bottom: 5px; margin-top: 20px;">Notes</h2>
-    <p>{{ delivery_note.additional_notes }}</p>
-</div>
-
-{% endblock %}
+</body>
+</html>

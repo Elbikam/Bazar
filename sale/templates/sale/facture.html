@@ -1,90 +1,98 @@
-{% extends 'sale/ticket_base.html' %}
-{% block content %}
-{% load static %}
-{% load crispy_forms_tags %}
-
-<style>
-    @media print {
-        @page {
-            size: A4;
-            margin: 20mm;
-        }
+{%load static%}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <style>
         body {
-            margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
-        .container {
-            width: 100%;
-            max-width: 100%;
-            padding: 10mm;
-        }
-        hr {
-            border: 1px solid #000;
-        }
-        .footer-ticket {
-            position: absolute;
-            bottom: 10mm;
-            width: 100%;
-            text-align: center;
-        }
-    }
-</style>
 
-<div class="container" style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
-    <hr style="border: 2px solid #000000; margin-bottom: 20px;">
-    
-    <!-- Invoice Header -->
-    <div class="row">
-        <div class="col-md-6">
-            <p><strong>Vendor:</strong> {{ sale_vendor.vendor.name }}</p>
-            <p><strong>Facture ID:</strong> {{ sale_vendor.pk }}</p>
-            <p><strong>Date:</strong> {{ sale_vendor.date|date:"d/m/Y H:i:s" }}</p>
-        </div>
-        <div class="col-md-6 text-end">
-            <p><strong>Total of Items:</strong> {{ sale_vendor.total_of_items }}</p>
-            <p><strong>Total HT:</strong> {{ sale_vendor.get_HT }}</p>
-            <p><strong>Total TVA:</strong> {{ sale_vendor.get_TVA }}</p>
-            <p><strong>Total TTC:</strong> {{ sale_vendor.get_TTC }}</p>
-        </div>
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .invoice-info {
+            margin-bottom: 20px;
+        }
+
+        .invoice-info p {
+            margin: 0;
+        }
+
+        .total-section {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="width: 220px; height: auto; margin: 0 auto;display: block;margin-top: 20px;">
+    <div class="invoice-info">
+        <p><strong>Vendor:</strong> {{sale_vendor.vendor.name}}</p>
+        <p><strong>Sales Order:</strong> {{sale_vendor.pk}}</p>
+        <p><strong>Document Date:</strong> {{sale_vendor.date|date:"d/m/Y H:i:s"}}</p>
     </div>
 
-    <!-- Orders Section -->
-    <h2 style="border-bottom: 2px solid #333; padding-bottom: 5px; margin-top: 20px;">Orders</h2>
-    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+    <table>
         <thead>
-            <tr style="background-color: #f4f4f4; font-weight: bold;">
-                <th style="border: 1px solid #333; padding: 8px; text-align: center;">ID</th>
-                <th style="border: 1px solid #333; padding: 8px;">Description</th>
-                <th style="border: 1px solid #333; padding: 8px; text-align: right;">Quantity</th>
-                <th style="border: 1px solid #333; padding: 8px; text-align: right;">Price</th>
-                <th style="border: 1px solid #333; padding: 8px; text-align: right;">Subtotal</th>
+            <tr>
+                <th>Item No.</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Sub-Total</th>
             </tr>
         </thead>
         <tbody>
             {% for order in sale_vendor.inlineorder_set.all %}
             <tr>
-                <td style="border: 1px solid #333; padding: 8px; text-align: center;">{{ order.item.pk }}</td>
-                <td style="border: 1px solid #333; padding: 8px;">{{ order.description }}</td>
-                <td style="border: 1px solid #333; padding: 8px; text-align: right;">{{ order.quantity }}</td>
-                <td style="border: 1px solid #333; padding: 8px; text-align: right;">{{ order.price }}</td>
-                <td style="border: 1px solid #333; padding: 8px; text-align: right;">{{ order.get_subtotal }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" style="border: 1px solid #333; padding: 8px; text-align: center;">No orders found.</td>
+                <td>{{order.item.pk}}</td>
+                <td>{{order.description}}</td>
+                <td>{{order.quantity}}</td>
+                <td>{{order.price}}</td>
+                <td>{{order.get_subtotal}}</td>
             </tr>
             {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="4" style="border: 1px solid #333; padding: 8px; text-align: right;"><strong>Total Amount:</strong></td>
-                <td style="border: 1px solid #333; padding: 8px; text-align: right;">{{ sale_vendor.get_TTC }}</td>
-            </tr>
-        </tfoot>
+            </tbody>
     </table>
 
-    <!-- Status Section -->
-    <h2 style="border-bottom: 2px solid #333; padding-bottom: 5px; margin-top: 20px;">Status</h2>
-    <p><strong>Balance:</strong> {{ sale_vendor.vendor.get_balance }}</p>
-</div>
-{% endblock %}
+    <div class="total-section">
+        <p><strong>Total HT:</strong> {{sale_vendor.get_HT}}</p>
+        <p><strong>TVA:</strong> {{sale_vendor.get_TVA}}</p>
+        <p><strong>TTC:</strong> {{sale_vendor.get_TTC}}</p>
+        <p><strong>Total qte:</strong> {{sale_vendor.total_of_items}}</p>
+    </div>
+    <body>
+        <footer style="position: absolute; bottom: 0; left: 0; right: 0; text-align: center; padding: 10px;">
+            <p class="title-footer" style="font-size: 14px; color: #555555; margin: 0; margin-bottom: 10px;">
+                RC1021 ICE:001680586000002 PATENTE:49659021 Address: AV YOUSSEF BEN TACHFINE N138 GUELMIM. TEL: 06 72 38 17 47
+            </p>
+        </footer>
+    </body>
+
+</body>
+</html>

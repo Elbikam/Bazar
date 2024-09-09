@@ -1,34 +1,57 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <style>
-        /* Add your ticket CSS styles here */
+        body {
+            font-family: monospace; /* Use monospace font for consistent character width */
+            font-size: 8px; /* Adjust font size as needed */
+            margin: 2px; /* Minimize margins */
+            line-height: 1.2; /* Reduce line spacing for more content */
+            width: 57mm; /* Set paper width explicitly (optional) */
+        }
+
+        table, th, td {
+            border: 0; /* Remove table borders for a cleaner look */
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1px; /* Minimal padding */
+            text-align: left; /* Align text to the left */
+        }
+
+        .center {
+            text-align: center; /* Center alignment for specific elements */
+        }
+
+        .logo {
+            width: 100%; /* Scale logo to fit available width */
+        }
     </style>
 </head>
 <body>
-    <div>
-        <p >{{ company_info.logo_path }}</p>
-        <h1 style="text-align: center;">{{ company_info.name }}</h1>
+    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+    <div class="center">
+        <p>{{ company_info.name }}</p>
         <p>{{ company_info.address }}</p>
         <p>{{ company_info.phone }}</p>
     </div>
-    <h2>Sale ID: {{ sale.id }}</h2>
-    <p>Date: {{ sale.date|date:"d/m/Y H:i:s" }}</p>
+    <h3 class="center">Sale ID: {{ sale.id }}</h3>
+    <p>Date: {{ sale.date|date:"d/m/Y H:i" }}</p>
     <table>
         <thead>
             <tr>
-                <th>Description</th>
-                <th>Quantity</th>
+                <th>Desc.</th>
+                <th>Qty</th>
                 <th>Price</th>
-                <th>Subtotal</th>
+                <th>Sub</th>
             </tr>
         </thead>
         <tbody>
             {% for item in items %}
             <tr>
-                <td>{{ item.description }}</td>
+                <td>{{ item.description|truncatechars:12 }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.price }}</td>
                 <td>{{ item.get_subtotal }}</td>
@@ -36,14 +59,13 @@
             {% endfor %}
         </tbody>
     </table>
-    <h4 style="text-align:center;">Total HT: {{ HT_total }}</h4>
-    <h4 style="text-align: center;">TVA: {{ TVA_total }}</h4>
-    <h4 style="text-align: center;">Total TTC: {{ TTC_total }}</h4>
-    <h3 style="text-align: left;">Payment</h3>
-    <p style="text-align: left;"><strong>amount received :</strong> {{ sale.cash.amount_received}}</p>
-    <p style="text-align: left;"><strong>change:</strong> {{ sale.cash.get_change}}</p>
-</div>
-    
+    <h4 class="center">HT: {{ HT_total }}</h4>
+    <h4 class="center">TVA: {{ TVA_total }}</h4>
+    <h4 class="center">TTC: {{ TTC_total }}</h4>
+    <h4 class="center">{{ sale.total_of_items }} items</h4>
+    <h3>Payment</h3>
+    <p>Received: {{ sale.cash.amount_received }}</p>
+    <p>Change: {{ sale.cash.get_change }}</p>
 </body>
 </html>
 

@@ -36,7 +36,8 @@ class Sale(Commun):
     def total_of_items(self):
         items = self.inlineorder_set.all()
         return items.count()
-    
+    def __str__(self):
+         return f"SO{self.id}"
 #////////////////// Devis //////////////////////////////// 
 class Devis(Commun):
     customer = models.CharField(max_length=30)
@@ -59,30 +60,34 @@ class Vendor(models.Model):
         max_length=13,
         validators=[RegexValidator(regex=r'^\+?1?\d{9,13}$', message="Phone number must be entered in the format: '+212**********'. Up to 13 digits allowed.")]
     )
-
     @property
-    def get_total_amount_received(self):
+    def total_amount_received(self):
         total_received = decimal.Decimal(0.00)
         for sale in self.sale_vendor_set.all():
             if hasattr(sale, 'cash'):
                 total_received += sale.cash.amount_received
         return total_received
-
+    
     @property
-    def get_total_sales(self):
+    def total_sales(self):
         total_sales = decimal.Decimal(0.00)
         for sale in self.sale_vendor_set.all():
             total_sales += sale.get_TTC
         return total_sales
 
     @property
-    def get_count_sales(self):
+    def count_sales(self):
         return self.sale_vendor_set.count()
 
     @property
-    def get_balance(self):
-        return self.get_total_amount_received - self.get_total_sales
-
+    def balance(self):
+        return self.total_amount_received - self.total_sales
+    @property
+    def report(self):
+        l=[]
+        for c in self.sale_vendor_set.all():
+            l.append(c.cash.amount_received)
+        return l    
     def __str__(self):
         return f"{self.name}"
 #/////////////////////  Sale  for specific customer ///////////////

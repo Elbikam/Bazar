@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from .views import (SaleCreateView,get_item_price,SaleDetailView,generate_ticket_pdf,
                     DevisCreateView,DevisDetailView,generate_devis_pdf,VendorCreate,SaleVendorList,
-                    SaleVendorCreateView,SaleVendorDetails,generate_facture_pdf,generate_bonLivraison_pdf,generate_sale_ticket
+                    SaleVendorCreateView,SaleVendorDetails,generate_facture_pdf,generate_bonLivraison_pdf,generate_sale_ticket,
 
                 
                     )
