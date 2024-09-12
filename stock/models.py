@@ -37,6 +37,8 @@ class Item(Product):
             self.initial_quantity = self.quantity
         super().save(*args, **kwargs) 
 
+    def __str__(self):
+        return f"{self.id} {self.item}"
 
 class The(Item):
     SUBCAT_CHOICES = [

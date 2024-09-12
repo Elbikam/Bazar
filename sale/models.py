@@ -38,6 +38,8 @@ class Sale(Commun):
         return items.count()
     def __str__(self):
          return f"SO{self.id}"
+
+
 #////////////////// Devis //////////////////////////////// 
 class Devis(Commun):
     customer = models.CharField(max_length=30)
@@ -103,6 +105,7 @@ class InlineOrder(models.Model):
     description = models.CharField(max_length=30)
     quantity = models.IntegerField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
+    refunded = models.BooleanField(default=False)
     @property
     def get_subtotal(self):
         if self.price is None or self.quantity is None:

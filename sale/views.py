@@ -1,3 +1,5 @@
+from django.db.models.base import Model as Model
+from django.db.models.query import QuerySet
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404,redirect
 from django.urls import reverse_lazy,reverse
@@ -7,7 +9,7 @@ from weasyprint import HTML
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from decimal import Decimal, InvalidOperation,getcontext
-from sale.forms import SaleForm,VendorForm,VendorSaleForm,OrderFormSet,CashForm,DOrderFormSet,DevisForm,InlineDevis
+from sale.forms import *
 from sale.models import *
 from stock.models import *
 from django.shortcuts import render, redirect
@@ -17,9 +19,8 @@ from weasyprint import HTML
 from django.templatetags.static import static
 from django.http import HttpResponse
 from django.conf import settings
-# from barcode import Code128,ImageWriter
-
-
+from django.views.generic import (UpdateView)
+from django.http import HttpResponseRedirect
 
 #////////////////////////////// Function check is empty form ///////////////////////////////////////
 def is_form_not_empty(form):
@@ -49,38 +50,46 @@ class SaleCreateView(View):
         cash_form = CashForm(request.POST)
 
         if sale_form.is_valid() and orders.is_valid() and cash_form.is_valid():
-            with transaction.atomic():
-                # Save the Sale
-                sale = sale_form.save(commit=False)
-                sale.save()
+            try:
+                with transaction.atomic():
+                    # Save the Sale
+                    sale = sale_form.save(commit=False)
+                    sale.save()
 
-                # Save Orders              
-                for order_form in orders:
-                    if is_form_not_empty(order_form): 
-                       order = order_form.save(commit=False)
-                       order.sale = sale
-                       item = order.item_id
-                       item = Item.objects.get(id=item)
-                       item.qte_inStock -= order.quantity
-                       item.save()
-                       order.save()
-                   
+                    # Save Orders              
+                    for order_form in orders:
+                        if is_form_not_empty(order_form): 
+                            order = order_form.save(commit=False)
+                            try:
+                                item = Item.objects.get(id=order.item_id)
+                            except Item.DoesNotExist:
+                                sale_form.add_error(None, 'Item does not exist')
+                                raise
 
-                # Save Payment
-                payment = cash_form.save(commit=False)
-                payment.sale = sale
-                payment.save()
-            
-            return redirect('sale:sale-detail', pk=sale.pk)  # Redirect to the sale detail view
+                            item.qte_inStock -= order.quantity
+                            item.save()
+                            order.sale = sale
+                            order.save()
 
-            
-        # If form is not valid, re-render the form with errors
+                    # Save Payment
+                    payment = cash_form.save(commit=False)
+                    payment.sale = sale
+                    payment.save()
+
+                return redirect('sale:sale-detail', pk=sale.pk)  # Redirect to the sale detail view
+
+            except Exception as e:
+                # Log the exception for debugging if necessary
+                print(f"Error saving sale: {e}")
+                
+        # If form is not valid or an exception occurs, re-render the form with errors
         context = {
             'sale_form': sale_form,
             'orders': orders,
             'cash_form': cash_form,
         }
         return render(request, self.template_name, context)
+
                 
 def get_item_price(request):
     item_id = request.GET.get('item_id')
@@ -335,4 +344,42 @@ def generate_sale_ticket(request, sale_id):
     response['Content-Disposition'] = f'inline; filename="SO{sale_id}.pdf"'
     return response
 
+# ////////////////////////////////////// Sale Return ////////////////////////////////
+class SaleReturnUpdateView(UpdateView):
+    model = Sale
+    form_class = SaleForm
+    template_name = 'sale/saleReturn.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        if self.request.POST:
+            context['orders'] = OrderFormSet(self.request.POST, instance=self.object)
+            context['cash_form'] = CashForm(self.request.POST, instance=self.object.cash)
+        else:
+            context['orders'] = OrderFormSet(instance=self.object)
+            context['cash_form'] = CashForm(instance=self.object.cash)
 
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        orders = context['orders']
+        cash_form = context['cash_form']
+
+        if form.is_valid() and orders.is_valid() and cash_form.is_valid():
+            with transaction.atomic():
+                # Update Orders for return case
+                for order_form in orders:
+                   if is_form_not_empty(order_form):
+                        order = order_form.save(commit=False)
+                        if order.refunded:
+                           # Restore the item's quantity back to stock
+                           item = Item.objects.get(id=order.item.id)
+                           item.qte_inStock += order.quantity  # Increase stock as items are returned
+                           item.save()
+                           order.delete()
+                
+            return redirect('sale:sale-detail', pk=self.object.pk)
+        
+        return self.render_to_response(self.get_context_data(form=form))

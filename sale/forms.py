@@ -1,6 +1,7 @@
 from django import forms
 from sale.models import Sale,InlineOrder,InlineDevis,Payment,Vendor,Sale_Vendor,Cash,Devis
 from django.forms import inlineformset_factory,ModelForm
+from stock.models import Item
 
 # /////////////////////// sale Form ////////////////////////////////
 class SaleForm(forms.ModelForm):
@@ -11,7 +12,7 @@ class SaleForm(forms.ModelForm):
 class InlineOrderForm(forms.ModelForm):
     class Meta:
         model = InlineOrder
-        fields = ['item','quantity','price']
+        fields = ['item','quantity','price','refunded']
         widgets = {
             'item': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
             'quantity': forms.NumberInput(attrs={'placeholder': 'Enter quantity'}),
