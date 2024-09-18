@@ -33,12 +33,12 @@
 <body>
     <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
     <div class="center">
-        <p>{{ company_info.name }}</p>
+        <p style="font-size: 10px;">{{ company_info.name }}</p>
         <p>{{ company_info.address }}</p>
         <p>{{ company_info.phone }}</p>
     </div>
     <h3 class="center">Sale ID: {{ sale.id }}</h3>
-    <p>Date: {{ sale.date|date:"d/m/Y H:i" }}</p>
+    <p>Date:{{sale.date|date:"d/m/Y H:i:s"}}</p>
     <table>
         <thead>
             <tr>
@@ -64,8 +64,8 @@
     <h4 class="center">TTC: {{ TTC_total }}</h4>
     <h4 class="center">{{ sale.total_of_items }} items</h4>
     <h3>Payment</h3>
-    <p>Received: {{ sale.cash.amount_received }}</p>
-    <p>Change: {{ sale.cash.get_change }}</p>
+    <p>Received: {{ sale.payment.amount_received }}</p>
+    <p>Change: {{ sale.payment.get_change }}</p>
 </body>
 </html>
 

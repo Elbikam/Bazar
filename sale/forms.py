@@ -1,25 +1,25 @@
 from django import forms
-from sale.models import Sale,InlineOrder,InlineDevis,Payment,Vendor,Sale_Vendor,Cash,Devis
+from sale.models import Payment,Vendor,Devis,Sale,Order_Line,Devis_Line,SaleToVendor
 from django.forms import inlineformset_factory,ModelForm
 from stock.models import Item
-
+from django.utils import timezone
 # /////////////////////// sale Form ////////////////////////////////
 class SaleForm(forms.ModelForm):
     class Meta:
-        model = Sale 
+        model = Sale
         exclude = ['date']  
 
-class InlineOrderForm(forms.ModelForm):
+class OrderLineForm(forms.ModelForm):
     class Meta:
-        model = InlineOrder
-        fields = ['item','quantity','price','refunded']
+        model = Order_Line
+        fields = ['item','quantity','price']
         widgets = {
             'item': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
             'quantity': forms.NumberInput(attrs={'placeholder': 'Enter quantity'}),
             'price': forms.NumberInput(attrs={'placeholder': 'Edite price'}),}
 
 OrderFormSet = inlineformset_factory(
-    Sale, InlineOrder, form=InlineOrderForm,
+    Sale, Order_Line, form=OrderLineForm,
     extra=1, can_delete=True,
     error_messages={'item': {'required': 'Please enter a correct ID'}}
 )  
@@ -31,9 +31,9 @@ class DevisForm(forms.ModelForm):
         fields = ['customer']
        
 
-class InlineDevisForm(forms.ModelForm):
+class DevisLineForm(forms.ModelForm):
     class Meta:
-        model = InlineDevis
+        model = Devis_Line
         fields = ['item','quantity','price']
         widgets = {
             'item': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
@@ -41,7 +41,7 @@ class InlineDevisForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={'placeholder': 'Edite price'}),}
 
 DOrderFormSet = inlineformset_factory(
-    Devis, InlineDevis, form=InlineDevisForm,
+    Devis, Devis_Line, form=DevisLineForm,
     extra=1, can_delete=True,
     error_messages={'item': {'required': 'Please enter a correct ID'}})
 
@@ -49,13 +49,8 @@ DOrderFormSet = inlineformset_factory(
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
-        fields = ['sale'] 
-class CashForm(forms.ModelForm):
-    class Meta:
-        model = Cash
         fields = ['amount_received', 'is_pay']
-        exclud= ['sale']
-
+      
 
 #///////////////////////////  Vendor Form /////////////////////////////////
 class VendorForm(forms.ModelForm):
@@ -64,12 +59,20 @@ class VendorForm(forms.ModelForm):
         fields = ['name','city','phone_whatsapp']
         
 #/////////////////////////// Vendor Sale Form /////////////////////////////
-class VendorSaleForm(forms.ModelForm):
+class SaleToVendorForm(forms.ModelForm):
     class Meta:
-        model = Sale_Vendor
+        model = SaleToVendor
         fields = ['vendor']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Customize the widget
         self.fields['vendor'].widget.attrs.update({'vendor': 'custom-select'})    
+
+
+
+
+
+
+
+

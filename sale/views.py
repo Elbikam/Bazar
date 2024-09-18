@@ -31,25 +31,25 @@ def is_formset_not_empty(formset):
 
 #/////////////////////////// Sale ///////////////////////////////////////////
 class SaleCreateView(View):
-    template_name = 'sale/sale_form.html'  
+    template_name = 'sale/order_form.html'  
 
     def get(self, request, *args, **kwargs):       
         sale_form = SaleForm()
         orders = OrderFormSet()
-        cash_form = CashForm()
+        payment_form = PaymentForm()
         context = {
             'sale_form': sale_form,
             'orders': orders,
-            'cash_form': cash_form,
+            'payment_form': payment_form,
         }
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
         sale_form = SaleForm(request.POST)
         orders = OrderFormSet(request.POST)
-        cash_form = CashForm(request.POST)
+        payment_form = PaymentForm(request.POST)
 
-        if sale_form.is_valid() and orders.is_valid() and cash_form.is_valid():
+        if sale_form.is_valid() and orders.is_valid() and payment_form.is_valid():
             try:
                 with transaction.atomic():
                     # Save the Sale
@@ -63,16 +63,16 @@ class SaleCreateView(View):
                             try:
                                 item = Item.objects.get(id=order.item_id)
                             except Item.DoesNotExist:
-                                sale_form.add_error(None, 'Item does not exist')
+                                order_form.add_error(None, 'Item does not exist')
                                 raise
 
                             item.qte_inStock -= order.quantity
                             item.save()
-                            order.sale = sale
+                            order.sale= sale
                             order.save()
 
                     # Save Payment
-                    payment = cash_form.save(commit=False)
+                    payment = payment_form.save(commit=False)
                     payment.sale = sale
                     payment.save()
 
@@ -86,7 +86,7 @@ class SaleCreateView(View):
         context = {
             'sale_form': sale_form,
             'orders': orders,
-            'cash_form': cash_form,
+            'payment_form': payment_form,
         }
         return render(request, self.template_name, context)
 
@@ -103,29 +103,38 @@ def get_item_price(request):
 
 def SaleDetailView(request, pk):
     sale = get_object_or_404(Sale, pk=pk)
-    return render(request, 'sale/sale_detail.html', {'sale': sale})
+    return render(request, 'sale/order_detail.html', {'sale': sale})
 
 # ////////////////// Ticket PDF ////////////////////////////////
-def generate_ticket_pdf(request, sale_id):
+def generate_sale_ticket(request, sale_id):
     sale = get_object_or_404(Sale, id=sale_id)
     
-    # Adding static URL to the context
+    # Gather all the necessary data for the ticket
     context = {
+        'company_info': {
+            'name': 'Nina Bazar',
+            'info': 'RC1021 ICE:001680586000002 PATENTE:49659021',
+            'address': 'AV YOUSSEF BEN TACHFINE N138 GUELMIM',
+            'phone': '06 72 38 17 47'
+        },
         'sale': sale,
-        'orders': sale.inlineorder_set.all(),
+        'items': sale.order_line_set.all(),  # Retrieve related inline orders
+        'total_items': sale.total_of_items,
         'static_url': request.build_absolute_uri(static('')),
+        'HT_total': sale.get_HT,
+        'TVA_total': sale.get_TVA,
+        'TTC_total': sale.get_TTC,
+        
+       
     }
-    
-    # Render the template with the context
+
+    # Render the ticket template with sale details
     html_string = render_to_string('sale/ticket.html', context)
-    html = HTML(string=html_string, base_url=request.build_absolute_uri())
-    pdf = html.write_pdf()
-
-    # Return the PDF as an attachment
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="SO{sale_id}.pdf"'
+    html = HTML(string=html_string,base_url=request.build_absolute_uri())
+    pdf_file = html.write_pdf()
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="SO{sale_id}.pdf"'
     return response
-
 #/////////////////////////////// Devis /////////////////////////////////
 class DevisCreateView(View):
     template_name = 'sale/devis_form.html'  
@@ -173,7 +182,7 @@ def generate_devis_pdf(request, devis_id):
     devis = get_object_or_404(Devis, id=devis_id)
     context = {
         'devis': devis,
-        'orders': devis.inlinedevis_set.all(),
+        'orders': devis.devis_line_set.all(),
         'static_url': request.build_absolute_uri(static('')),
     }
     html_string = render_to_string('sale/devis_ticket.html', context)
@@ -216,69 +225,66 @@ class SaleVendorCreateView(View):
     template_name = 'sale/vendor_sale_form.html' # this template specific  for vendor kind of customer 
 
     def get(self, request, *args, **kwargs):
-        sale_vendor_form = VendorSaleForm()
+        sale_to_vendor_form = SaleToVendorForm()
         orders = OrderFormSet()
-        cash_form = CashForm()
+        payment_form = PaymentForm()
         context = {
-            'sale_vendor_form': sale_vendor_form,
+            'sale_to_vendor_form': sale_to_vendor_form,
             'orders': orders,
-            'cash_form': cash_form,
+            'payment_form': payment_form,
         }
         return render(request, self.template_name, context)
 
 
     def post(self, request, *args, **kwargs):
-        sale_vendor_form = VendorSaleForm(request.POST)
+        sale_to_vendor_form = SaleToVendorForm(request.POST)
         orders = OrderFormSet(request.POST)
-        cash_form = CashForm(request.POST)
+        payment_form = PaymentForm(request.POST)
 
-        if sale_vendor_form.is_valid() and orders.is_valid() and cash_form.is_valid():
+        if sale_to_vendor_form.is_valid() and orders.is_valid() and payment_form.is_valid():
                 with transaction.atomic():                    
                     # Process sale_vendor, orders, and payments                    
-                    sale_vendor = sale_vendor_form.save(commit=False)
-                    sale_vendor.save()
+                    saletovendor = sale_to_vendor_form.save(commit=False)
+                    saletovendor.save()
 
                     for order_form in orders:
                         if is_form_not_empty(order_form):
                             order = order_form.save(commit=False)
-                            order.sale = sale_vendor
+                            order.order = saletovendor
                             item = Item.objects.get(id=order.item_id)
                             item.qte_inStock -= order.quantity
                             item.save()
+                            order.sale = saletovendor
                             order.save()
 
-                    payment = cash_form.save(commit=False)
-                    payment.sale = sale_vendor
+                    payment = payment_form.save(commit=False)
+                    payment.sale = saletovendor
                     payment.save()
 
-                return redirect('sale:sale-vendor-detail', pk=sale_vendor.pk)
+                return redirect('sale:sale-vendor-detail', pk=saletovendor.pk)
 
         context = {
-            'sale_vendor_form': sale_vendor_form,
+            'sale_to_vendor_form': sale_to_vendor_form,
             'orders': orders,
-            'cash_form': cash_form,
+            'payment_form': payment_form,
         }
         return render(request, self.template_name, context)
     
-def SaleVendorDetails(request, pk):
-    sale_vendor = get_object_or_404(Sale_Vendor, pk=pk)
-    return render(request, 'sale/vendor_sale_detail.html', {'sale_vendor': sale_vendor}) 
+def SaleToVendorDetails(request, pk):
+    sale_to_vendor = get_object_or_404(SaleToVendor, pk=pk)
+    return render(request, 'sale/vendor_order_detail.html', {'sale_to_vendor': sale_to_vendor}) 
 
 def SaleVendorList(request):
    vendors = Vendor.objects.all()
    return render(request, 'sale/vendor_list.html', {'vendors': vendors}) 
-#////////////////////////////////// Barcode ////////////////////////////////////
-# def generate_barcode(data):
-#     code = Code128(data, writer=ImageWriter())
-#     return code.save("barcode.png")
 
 
 #//////////////////////////////////// Facture ////////////////////////////////
 def generate_facture_pdf(request, sale_id):
-    sale_vendor = get_object_or_404(Sale_Vendor, id=sale_id)
+    sale_to_vendor = get_object_or_404(SaleToVendor, id=sale_id)
     context = {
-        'sale_vendor': sale_vendor,
-        'orders': sale_vendor.inlineorder_set.all(),
+        'sale_to_vendor': sale_to_vendor,
+        'orders': sale_to_vendor.order_line_set.all(),
         'static_url': request.build_absolute_uri(static('')),
         'company_info': {
             'name': 'Nina Bazar',
@@ -300,10 +306,10 @@ def generate_facture_pdf(request, sale_id):
     return response
 #/////////////////////////////////// Bon Livraison ////////////////////////////////
 def generate_bonLivraison_pdf(request, sale_id):
-    sale_vendor = get_object_or_404(Sale_Vendor, id=sale_id)
+    sale_to_vendor = get_object_or_404(SaleToVendor, id=sale_id)
     context = {
-        'sale_vendor': sale_vendor,
-        'orders': sale_vendor.inlineorder_set.all(),
+        'sale_to_vendor': sale_to_vendor,
+        'orders': sale_to_vendor.order_line_set.all(),
         'static_url': request.build_absolute_uri(static('')),
     }
     html_string = render_to_string('sale/bonLivraison.html', context)
@@ -313,73 +319,56 @@ def generate_bonLivraison_pdf(request, sale_id):
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="BL{sale_id}.pdf"'
     return response
-#/////////////////////////////////////// Generate PDF //////////////////////////////
-def generate_sale_ticket(request, sale_id):
-    sale = get_object_or_404(Sale, id=sale_id)
-    
-    # Gather all the necessary data for the ticket
-    context = {
-        'company_info': {
-            'name': 'Nina Bazar',
-            'info': 'RC1021 ICE:001680586000002 PATENTE:49659021',
-            'address': 'AV YOUSSEF BEN TACHFINE N138 GUELMIM',
-            'phone': '06 72 38 17 47'
-        },
-        'sale': sale,
-        'items': sale.inlineorder_set.all(),  # Retrieve related inline orders
-        'total_items': sale.total_of_items,
-        'static_url': request.build_absolute_uri(static('')),
-        'HT_total': sale.get_HT,
-        'TVA_total': sale.get_TVA,
-        'TTC_total': sale.get_TTC,
-        
-       
-    }
-
-    # Render the ticket template with sale details
-    html_string = render_to_string('sale/ticket.html', context)
-    html = HTML(string=html_string,base_url=request.build_absolute_uri())
-    pdf_file = html.write_pdf()
-    response = HttpResponse(pdf_file, content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="SO{sale_id}.pdf"'
-    return response
 
 # ////////////////////////////////////// Sale Return ////////////////////////////////
-class SaleReturnUpdateView(UpdateView):
+class OrderReturnUpdateView(UpdateView):
     model = Sale
     form_class = SaleForm
-    template_name = 'sale/saleReturn.html'
+    template_name = 'sale/sale_return.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
         if self.request.POST:
             context['orders'] = OrderFormSet(self.request.POST, instance=self.object)
-            context['cash_form'] = CashForm(self.request.POST, instance=self.object.cash)
+            context['payment_form'] = PaymentForm(self.request.POST, instance=self.object.cash)
         else:
             context['orders'] = OrderFormSet(instance=self.object)
-            context['cash_form'] = CashForm(instance=self.object.cash)
+            context['payment_form'] = PaymentForm(instance=self.object.cash)
 
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         orders = context['orders']
-        cash_form = context['cash_form']
+        payment_form = context['payment_form']
 
-        if form.is_valid() and orders.is_valid() and cash_form.is_valid():
+        if form.is_valid() and orders.is_valid() and payment_form.is_valid():
             with transaction.atomic():
-                # Update Orders for return case
-                for order_form in orders:
+                refund_amount = 0
+                for order_form in orders.deleted_forms:
                    if is_form_not_empty(order_form):
                         order = order_form.save(commit=False)
-                        if order.refunded:
-                           # Restore the item's quantity back to stock
-                           item = Item.objects.get(id=order.item.id)
-                           item.qte_inStock += order.quantity  # Increase stock as items are returned
-                           item.save()
-                           order.delete()
-                
-            return redirect('sale:sale-detail', pk=self.object.pk)
+                        refund_amount += order.get_subtotal
+                        item = Item.objects.get(id=order.item.id)
+                        item.qte_inStock += order.quantity  # Increase stock as items are returned
+                        item.save()
+                        order.delete()
+          
+            return redirect('sale:sale-return-detail', pk=self.object.pk)
         
         return self.render_to_response(self.get_context_data(form=form))
+def SaleReturnDetail(request, pk):
+    sale = get_object_or_404(Sale, pk=pk)
+    return render(request, 'sale/return_detail.html', {'sale': sale})
+
+
+
+
+
+
+
+
+
+
+

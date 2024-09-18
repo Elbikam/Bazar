@@ -2,16 +2,15 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h1>Devis</h1>
-<h3> Devis Details</h3>
-<p><strong>Customer :</strong> {{ devis.customer }}</p>
-<p><strong>Devis ID:</strong> {{ devis.pk }}</p>
-<p><strong>Date:</strong> {{ devis.date|date:"d/m/Y H:i:s" }}</p>
+<h1>Sale</h1>
+<h3> Return Details</h3>
+<p><strong>Sale ID:</strong> {{ sale.pk }}</p>
+<p><strong>Date:</strong> {{ sale.date|date:"d/m/Y H:i:s" }}</p>
 
-<p><strong>Total of Items:</strong> {{ devis.total_of_items }}</p>
-<p><strong>Total HT:</strong> {{ devis.get_HT }}</p>
-<p><strong>Total TVA:</strong> {{ devis.get_TVA }}</p>
-<p><strong>Total TTC:</strong> {{ devis.get_TTC }}</p>
+<p><strong>Total of Items:</strong> {{ sale.total_of_items }}</p>
+<p><strong>Total HT:</strong> {{ sale.get_HT }}</p>
+<p><strong>Total TVA:</strong> {{ sale.get_TVA }}</p>
+<p><strong>Total TTC:</strong> {{ sale.get_TTC }}</p>
 
 <h2>Orders</h2>
 <table class="table table-striped">
@@ -25,7 +24,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for order in devis.devis_line_set.all %}
+        {% for order in sale.inlineorder_set.all %}
         <tr>
             <td>{{ order.item.pk }}</td>
             <td>{{ order.description }}</td>
@@ -40,8 +39,15 @@
         {% endfor %}
     </tbody>
 </table>
+
+<h2>Payments</h2>
+<p><strong>Amount received :</strong> {{ sale.cash.amount_received }}</p>
+<p><strong>Refunded:</strong> {{ sale.cash.get_change }}</p>
+
+<!-- Buttons for PDF Download and Print -->
 <div class="pdf-buttons">
     <!-- Download PDF Button -->
-    <a href="{% url 'sale:generate_devis_pdf' devis_id=devis.pk %}" class="btn btn-primary" download="ticket-{{ devis.pk }}.pdf">Ticket PDF</a>
+    <a href="{% url 'sale:generate_ticket_pdf' sale_id=sale.pk %}" class="btn btn-primary" download="ticket-{{ sale.pk }}.pdf">Ticket</a>
 </div>
+
 {% endblock %}

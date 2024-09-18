@@ -3,11 +3,11 @@
 {% load static %}
 {% load crispy_forms_tags %}
 <h1>Sale</h1>
-<h3> Create Sale</h3>
+<h3> Create Sale to Vendor</h3>
 <hr>
 <div class="col-md-4">
     <form id="sale-order-form" action="" method="post">{% csrf_token %}
-        {{sale_vendor_form | crispy}}
+        {{ sale_to_vendor_form| crispy}}
         <table class="table"> 
             <!-- Orders Formset -->
             <h5>Orders</h5>
@@ -39,7 +39,7 @@
         </table>
         <!-- Payment Form -->
         <h5>Payment Information</h5>
-        {{ cash_form.as_p }}
+        {{ payment_form.as_p }}
         <div class="total-amount">
             <strong>Total Amount: <span id="total-amount">0.00</span></strong>
         </div>
@@ -55,7 +55,7 @@
         $('.formset_row').formset({
             addText: 'Add Order',
             deleteText: 'Remove',
-            prefix: 'inlineorder_set',
+            prefix: 'order_line_set',
             removed: function(row) {
             // Recalculate total when a row is removed
                 calculateTotal();

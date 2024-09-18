@@ -2,7 +2,8 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h3> Create Sale Return</h3>
+<h1>Sale</h1>
+<h3> Create Order</h3>
 <hr>
 <div class="col-md-4">
     <form id="sale-order-form" action="" method="post">{% csrf_token %}
@@ -38,7 +39,7 @@
         </table>
         <!-- Payment Form -->
         <h5>Payment Information</h5>
-        {{ cash_form.as_p }}
+        {{ payment_form.as_p }}
         <div class="total-amount">
             <strong>Total Amount: <span id="total-amount">0.00</span></strong>
         </div>
@@ -46,15 +47,19 @@
     </form>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script><input type="checkbox" name="inlineorder_set-0-refunded" id="id_inlineorder_set-0-refunded" style="display: none;">
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function() {   
+        $('#table').find("Refunded").hide();
+
+        // $('label[for="id_inlineorder_set-0-refunded"]').hide();
+        // $('#id_inlineorder_set-0-refunded').hide();
 
         $('.formset_row').formset({
             addText: 'Add Order',
             deleteText: 'Remove',
-            prefix: 'inlineorder_set',
+            prefix: 'order_line_set',
             removed: function(row) {
             // Recalculate total when a row is removed
                 calculateTotal();
@@ -63,10 +68,6 @@
     });
 
     // Event listener for item change
-    $('form').on('change', 'input[name$=-refunded]', function() {
-        console.log("Refunde changed");
-        calculateTotal();
-    });
     $('form').on('change', 'input[name$=-item]', function() {
         console.log("Item ID changed:", $(this).val());
         updatePrice(this);
@@ -81,7 +82,6 @@
         console.log("Price changed");
         calculateTotal();
     });
-    
 
     // Initial total calculation
     calculateTotal();
@@ -91,7 +91,6 @@ function bindFormsetRowEvents(row) {
         console.log("Item changed in new row:", $(this).val());
         updatePrice(this);
     });
-    
 
     $(row).on('change', 'input[name$=-quantity]', function() {
         console.log("Quantity changed in new row");
@@ -101,8 +100,7 @@ function bindFormsetRowEvents(row) {
     $(row).on('change', 'input[name$=-price]', function() {
         console.log("Price changed in new row");
         calculateTotal();
-    });    
-    
+    });
 }
 
 
@@ -135,22 +133,15 @@ function updatePrice(itemInput) {
 function calculateTotal() {
     let total = 0;
     $('form .formset_row').each(function() {
-        // Check if the order is refunded
-        const refunded = $(this).find('input[name$=-refunded]').is(':checked');
-        
-        // Only calculate if not refunded
-        if (!refunded) {
-            const quantity = parseFloat($(this).find('input[name$=-quantity]').val()) || 0;
-            const price = parseFloat($(this).find('input[name$=-price]').val()) || 0;
+        const quantity = parseFloat($(this).find('input[name$=-quantity]').val()) || 0;
+        const price = parseFloat($(this).find('input[name$=-price]').val()) || 0;
 
-            const subtotal = quantity * price;
-            const amount = subtotal * 1.2; // Adjusting for VAT or other factors
-            total += amount;
-        }
-    });
-    $('#total-amount').text(total.toFixed(2));
+        const subtotal = quantity * price;
+        const amount = Math.max(subtotal * 1.2, 0);
+        total += amount;
+        });
+   $('#total-amount').text(total.toFixed(2));
 }
-
 
 </script>
 
