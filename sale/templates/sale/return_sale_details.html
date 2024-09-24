@@ -1,0 +1,43 @@
+{% extends 'sale/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<h1>Return Sale</h1>
+<h3> Return Details</h3>
+<p><strong>Return ID:</strong> {{ return_sale.pk }}</p>
+<p><strong>Sale ID :</strong> {{ return_sale.sale }}</p>
+<p><strong>Date:</strong> {{ return_sale.date|date:"d/m/Y H:i:s" }}</p>
+<p><strong>Total of Items:</strong> {{ return_sale.total_of_items }}</p>
+<p><strong>Total HT:</strong> {{ return_sale.get_HT }}</p>
+<p><strong>Total TVA:</strong> {{ return_sale.get_TVA }}</p>
+<p><strong>Total TTC:</strong> {{ return_sale.get_TTC }}</p>
+
+<h2>Orders</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in return_sale.return_line_set.all %}
+        <tr>
+            <td>{{ order.item.pk }}</td>
+            <td>{{ order.description }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.price }}</td>
+            <td>{{ order.get_subtotal }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No orders found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'sale:order-create' %}"target="_blank" style="color: blue;">Create New Sale</a>
+{% endblock %}

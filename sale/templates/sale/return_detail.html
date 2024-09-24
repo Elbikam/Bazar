@@ -24,7 +24,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for order in sale.inlineorder_set.all %}
+        {% for order in sale.order_line_set.all %}
         <tr>
             <td>{{ order.item.pk }}</td>
             <td>{{ order.description }}</td>
@@ -41,8 +41,8 @@
 </table>
 
 <h2>Payments</h2>
-<p><strong>Amount received :</strong> {{ sale.cash.amount_received }}</p>
-<p><strong>Refunded:</strong> {{ sale.cash.get_change }}</p>
+<p><strong>Amount received :</strong> {{ sale.payment.amount_received}}</p>
+<p><strong>Refunded:</strong> {{ sale.payment.get_change }}</p>
 
 <!-- Buttons for PDF Download and Print -->
 <div class="pdf-buttons">

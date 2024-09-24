@@ -1,5 +1,5 @@
 from django import forms
-from sale.models import Payment,Vendor,Devis,Sale,Order_Line,Devis_Line,SaleToVendor
+from sale.models import Payment,Vendor,Devis,Sale,Order_Line,Devis_Line,SaleToVendor,ReturnSale,Return_Line
 from django.forms import inlineformset_factory,ModelForm
 from stock.models import Item
 from django.utils import timezone
@@ -7,12 +7,12 @@ from django.utils import timezone
 class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
-        exclude = ['date']  
+        exclude = ['date','is_returned']  
 
 class OrderLineForm(forms.ModelForm):
     class Meta:
         model = Order_Line
-        fields = ['item','quantity','price']
+        fields = ['item','description','quantity','price']
         widgets = {
             'item': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
             'quantity': forms.NumberInput(attrs={'placeholder': 'Enter quantity'}),
@@ -34,7 +34,7 @@ class DevisForm(forms.ModelForm):
 class DevisLineForm(forms.ModelForm):
     class Meta:
         model = Devis_Line
-        fields = ['item','quantity','price']
+        fields = ['item','description','quantity','price']
         widgets = {
             'item': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
             'quantity': forms.NumberInput(attrs={'placeholder': 'Enter quantity'}),
@@ -58,6 +58,7 @@ class VendorForm(forms.ModelForm):
         model = Vendor
         fields = ['name','city','phone_whatsapp']
         
+        
 #/////////////////////////// Vendor Sale Form /////////////////////////////
 class SaleToVendorForm(forms.ModelForm):
     class Meta:
@@ -69,10 +70,31 @@ class SaleToVendorForm(forms.ModelForm):
         # Customize the widget
         self.fields['vendor'].widget.attrs.update({'vendor': 'custom-select'})    
 
+#//////////////////////////// Monhtly Payment Form ///////////////////////
 
+class MonthlyPaymentForm(forms.ModelForm):
+    vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), label="Select Vendor")
+    class Meta:
+        model = Payment
+        fields = ['vendor', 'amount_received']
 
+#//////////////////////////////////////////// Return Sale //////////////////////////////////////////////////
+class ReturnSaleForm(forms.ModelForm):
+    class Meta:
+        model = ReturnSale
+        fields = ['so'] 
 
+class ReturnSaleLineForm(forms.ModelForm):
+    class Meta:
+        model = Return_Line
+        fields = ['item','description','quantity','price']
+        widgets = {
+            'item': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
+            'quantity': forms.NumberInput(attrs={'placeholder': 'Enter quantity'}),
+            'price': forms.NumberInput(attrs={'placeholder': 'Edite price'}),}
 
-
-
-
+ReturnFormSet = inlineformset_factory(
+    ReturnSale, Return_Line, form=ReturnSaleLineForm,
+    extra=1, can_delete=True,
+    error_messages={'item': {'required': 'Please enter a correct ID'}}
+)  

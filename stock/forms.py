@@ -8,7 +8,7 @@ class ItemForm(forms.ModelForm):
 
     class Meta:
         model = Item
-        fields = ['id','item','description','quantity','alert_qte','price']
+        fields = ['id','item','description','qte_by_carton','quantity','alert_qte','price']
 
 class ItemSearchForm(forms.Form):
     query = forms.CharField(label='Search', max_length=100)
@@ -56,7 +56,7 @@ class TheForm(forms.ModelForm):
     
     class Meta:
         model = The
-        fields = ['id','item','description','quantity','alert_qte','price','category','packaging','weight','ref']
+        fields = ['id','item','description','qte_by_carton','quantity','alert_qte','price','category','packaging','weight','ref']
         
 
 #///////////////////////////////  Perfum //////////////////////////////////////////
@@ -78,7 +78,7 @@ class ParfumForm(forms.ModelForm):
     volum = forms.ChoiceField(choices=VOLUM_CHOICES)
     class Meta:
         model = Parfum
-        fields = ['id','item','description','quantity','alert_qte','price','sub_brand','type','volum']
+        fields = ['id','item','description','qte_by_carton','quantity','alert_qte','price','sub_brand','type','volum']
  
         
 

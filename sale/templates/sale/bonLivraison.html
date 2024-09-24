@@ -57,26 +57,25 @@
         <p><strong>Sale ID:</strong> {{sale_to_vendor.pk}}</p>
         <p><strong>Document Date:</strong> {{sale_to_vendor.date|date:"d/m/Y H:i:s"}}</p>
     </div>
-
     <table>
         <thead>
             <tr>
                 <th>Item No.</th>
                 <th>Description</th>
+                <th>Unit/carton</th>
                 <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Sub-Total</th>
+                <th>Quantity by Carthon</th>
             </tr>
         </thead>
         <tbody>
             {% for order in orders %}
-            <tr>
-                <td>{{order.item.pk}}</td>
-                <td>{{order.description}}</td>
-                <td>{{order.quantity}}</td>
-                <td>{{order.price}}</td>
-                <td>{{order.get_subtotal}}</td>
-            </tr>
+                <tr>
+                    <td>{{order.item.pk}}</td>
+                    <td>{{order.description}}</td>
+                    <td>{{order.item.unit}}</td>
+                    <td>{{order.quantity}}</td>
+                    <td>{{order.quantity_by_crtn}}</td>
+                </tr>
             {% endfor %}
             </tbody>
     </table>

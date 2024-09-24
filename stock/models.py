@@ -15,20 +15,35 @@ class Item(Product):
     id = models.BigIntegerField(primary_key=True)
     item = models.CharField(max_length=30)
     description = models.CharField(max_length=100)
-    quantity = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()  # Total quantity in stock
     initial_quantity = models.PositiveIntegerField(editable=False)
-    alert_qte = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=5, decimal_places=2, default=0.00) 
-    
+    alert_qte = models.PositiveIntegerField()  # Minimum alert quantity
+    price = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
+    qte_by_carton = models.PositiveIntegerField(default=1)  # Quantity per carton
+
     @property
     def qte_inStock(self):
         return self.quantity
+
     @qte_inStock.setter
     def qte_inStock(self, value):
         self.quantity = value  # This updates the current quantity
     
+    @property
+    def quantity_by_carton(self):
+        """Calculates how many cartons are in stock based on total quantity and carton size."""
+        if self.qte_by_carton > 0:
+            return self.quantity // self.qte_by_carton  # Integer division
+        return 0
+    @property
+    def unit(self):
+        """Calcule how many unit in caton"""
+        u=str(self.qte_by_carton)+'Unit/carton'
+        return u
+
     def detail(self):
-        return f"{self.item} {self.description}"
+        return (f"{self.item} {self.description} "
+                )
 
     def save(self, *args, **kwargs):
         if self.quantity < 0:            
@@ -39,6 +54,7 @@ class Item(Product):
 
     def __str__(self):
         return f"{self.id} {self.item}"
+
 
 class The(Item):
     SUBCAT_CHOICES = [

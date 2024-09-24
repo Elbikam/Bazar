@@ -24,6 +24,7 @@
                 <th scope="col">price</th>
                 <th scope="col">initial quantity</th>
                 <th scope="col">alert_qte</th>
+                <th scope="col">qte by carton</th>
                 <th scope="col">qte in Stock</th>
 
             </tr>
@@ -38,6 +39,7 @@
                <td>{{item.price}}</td>
                <td>{{item.initial_quantity}}</td>
                <td>{{item.alert_qte}}</td>
+               <td>{{item.quantity_by_carton}}</td>
                <td>{{item.qte_inStock}}</td>
         {% empty %}
             <li>No The found.</li>
@@ -50,7 +52,6 @@
     <thead>
         <tr>
             <th scope="col">#pk</th>
-            <th scope="col">date</th>
             <th scope="col">the</th>
             <th scope="col">description</th>
             <th scope="col">price</th>
@@ -60,6 +61,8 @@
             <th scope="col">ref</th>
             <th scope="col">initial quantity</th>
             <th scope="col">alert_qte</th>
+            <th scope="col">Unite/carton</th>
+            <th scope="col">qte by carton</th>
             <th scope="col">qte in Stock</th>
 
         </tr> 
@@ -68,7 +71,6 @@
     {% for the in the_items %}
          <tr>
             <th scope="row">{{the.pk}}</th>
-            <td>{{the.date|date:"d/m/Y"}}</td>
             <td>{{the.item}}</td>
             <td>{{the.description}}</td>
             <td>{{the.price}}</td>
@@ -78,6 +80,8 @@
             <td>{{the.ref}}</td>
             <td>{{the.initial_quantity}}</td>
             <td>{{the.alert_qte}}</td>
+            <td>{{the.unit}}</td>
+            <td>{{the.quantity_by_carton}}</td>
             <td>{{the.qte_inStock}}</td>
 
     {% empty %}
@@ -101,6 +105,7 @@
             <th scope="col">volume</th>
             <th scope="col">initial quantity</th>
             <th scope="col">alert_qte</th>
+            <th scope="col">qte by carton</th>
             <th scope="col">qte in Stock</th>
         </tr> 
     </thead>
@@ -117,9 +122,8 @@
                <td>{{parfum.volum}}</td>
                <td>{{parfum.initial_quantity}}</td>
                <td>{{parfum.alert_qte}}</td>
+               <td>{{parfum.quantity_by_carton}}</td>
                <td>{{parfum.qte_inStock}}</td>
-
-
     {% empty %}           
         <li>No The found.</li>
         </tr>    

@@ -2,11 +2,11 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h3> Create Sale Return</h3>
+<h3>Create return Sale</h3>
 <hr>
 <div class="col-md-4">
     <form id="sale-order-form" action="" method="post">{% csrf_token %}
-        {{sale_form.as_p}}
+        {{return_sale_form.as_p}}
         <table class="table"> 
             <!-- Orders Formset -->
             <h5>Orders</h5>
@@ -36,9 +36,6 @@
                 </tr>
             {% endfor %}
         </table>
-        <!-- Payment Form -->
-        <h5>Payment Information</h5>
-        {{ cash_form.as_p }}
         <div class="total-amount">
             <strong>Total Amount: <span id="total-amount">0.00</span></strong>
         </div>
@@ -46,20 +43,20 @@
     </form>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script><input type="checkbox" name="inlineorder_set-0-refunded" id="id_inlineorder_set-0-refunded" style="display: none;">
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function() {   
+
         $('.formset_row').formset({
             addText: 'Add Order',
             deleteText: 'Remove',
-            prefix: 'inlineorder_set',
+            prefix: 'return_line_set',
             removed: function(row) {
             // Recalculate total when a row is removed
                 calculateTotal();
-                console.log("removed run");
-            }
-        });
+        }
+    });
     });
 
     // Event listener for item change
@@ -77,7 +74,6 @@
         console.log("Price changed");
         calculateTotal();
     });
-    
 
     // Initial total calculation
     calculateTotal();
@@ -87,7 +83,6 @@ function bindFormsetRowEvents(row) {
         console.log("Item changed in new row:", $(this).val());
         updatePrice(this);
     });
-    
 
     $(row).on('change', 'input[name$=-quantity]', function() {
         console.log("Quantity changed in new row");
@@ -97,8 +92,7 @@ function bindFormsetRowEvents(row) {
     $(row).on('change', 'input[name$=-price]', function() {
         console.log("Price changed in new row");
         calculateTotal();
-    });    
-    
+    });
 }
 
 
@@ -106,27 +100,30 @@ function updatePrice(itemInput) {
     const row = $(itemInput).closest('.formset_row');
     const itemId = $(itemInput).val();
     const priceInput = row.find('input[name$=-price]');
+    const descriptionInput = row.find('input[name$=-description]');  // Target description input
 
-    console.log("Fetching price for item ID:", itemId);
+    console.log("Fetching price and description for item ID:", itemId);
 
     $.ajax({
         url: "{% url 'sale:item-price-api' %}",
         data: { 'item_id': itemId },
         success: function(data) {
-            console.log("Price data received:", data);
-            if (data.price) {
+            console.log("Data received:", data);
+            if (data.price && data.description) {
                 priceInput.val(data.price);
+                descriptionInput.val(data.description);  // Set the description field
                 calculateTotal();
             } else {
-                console.error("Price not found in response.");
+                console.error("Data not found in response.");
             }
         },
         error: function(xhr, status, error) {
-            console.error("Error fetching price:", status, error);
-            alert("Could not retrieve item price.");
+            console.error("Error fetching item details:", status, error);
+            alert("Could not retrieve item details.");
         }
     });
 }
+
 
 function calculateTotal() {
     let total = 0;
@@ -140,7 +137,6 @@ function calculateTotal() {
         });
    $('#total-amount').text(total.toFixed(2));
 }
-
 
 </script>
 

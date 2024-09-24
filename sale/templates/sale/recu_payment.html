@@ -37,35 +37,29 @@
         <p>{{ company_info.address }}</p>
         <p>{{ company_info.phone }}</p>
     </div>
-    <h3 class="center">Sale ID: {{ sale }}</h3>
-    <p>Date:{{sale.date|date:"d/m/Y H:i:s"}}</p>
+    <h3 class="center">Vendor: {{ vendor.name }}</h3>
+    <p>Date: {{date|date:"d/m/Y H:i:s"}}</p>
+    <p>Sales date: {{ last_month }}/{{ last_month_year }}</p>
+    <h3>Sales</h3>
     <table>
         <thead>
             <tr>
-                <th>Desc.</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Sub</th>
+                <th>ID</th>
+                <th>total</th>
             </tr>
         </thead>
         <tbody>
-            {% for item in items %}
+            {% for sale in paid_sales %}
             <tr>
-                <td>{{ item.description|truncatechars:12 }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ item.price }}</td>
-                <td>{{ item.get_subtotal }}</td>
+                <td>{{ sale }}</td>
+                <td>{{ sale.get_TTC }}</td>
+
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <h4 class="center">HT: {{ HT_total }}</h4>
-    <h4 class="center">TVA: {{ TVA_total }}</h4>
-    <h4 class="center">TTC: {{ TTC_total }}</h4>
-    <h4 class="center">{{ sale.total_of_items }} items</h4>
     <h3>Payment</h3>
-    <p>Received: {{ sale.payment.amount_received }}</p>
-    <p>Change: {{ sale.payment.get_change }}</p>
+    <p>Total Amount Paid:{{ total_amount_paid}}</p>
+    <p>Balance: {{ vendor.balance }}</p> 
 </body>
 </html>
-

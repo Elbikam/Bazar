@@ -21,6 +21,9 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.views.generic import (UpdateView)
 from django.http import HttpResponseRedirect
+from django.utils import timezone
+from datetime import datetime
+from django.core.exceptions import ValidationError
 
 #////////////////////////////// Function check is empty form ///////////////////////////////////////
 def is_form_not_empty(form):
@@ -96,7 +99,8 @@ def get_item_price(request):
     try:
         item = Item.objects.get(id=int(item_id))
         price = item.price
-        return JsonResponse({'price': price}) 
+        description = item.description
+        return JsonResponse({'price': price,'description':description}) 
     except Item.DoesNotExist:
         return JsonResponse({'price': None})
     
@@ -220,9 +224,8 @@ class VendorCreate(View):
 def safe_decimal_conversion(value):
         return Decimal(value or '0.00')
 
-
-class SaleVendorCreateView(View):
-    template_name = 'sale/vendor_sale_form.html' # this template specific  for vendor kind of customer 
+class SaleToVendorCreateView(View):
+    template_name = 'sale/vendor_sale_form.html'  # template specific for vendor kind of customer
 
     def get(self, request, *args, **kwargs):
         sale_to_vendor_form = SaleToVendorForm()
@@ -235,44 +238,56 @@ class SaleVendorCreateView(View):
         }
         return render(request, self.template_name, context)
 
-
     def post(self, request, *args, **kwargs):
         sale_to_vendor_form = SaleToVendorForm(request.POST)
         orders = OrderFormSet(request.POST)
         payment_form = PaymentForm(request.POST)
 
-        if sale_to_vendor_form.is_valid() and orders.is_valid() and payment_form.is_valid():
-                with transaction.atomic():                    
-                    # Process sale_vendor, orders, and payments                    
-                    saletovendor = sale_to_vendor_form.save(commit=False)
-                    saletovendor.save()
+        if not (sale_to_vendor_form.is_valid() and orders.is_valid() and payment_form.is_valid()):
+            # If any form is invalid, re-render the page with form errors
+            context = {
+                'sale_to_vendor_form': sale_to_vendor_form,
+                'orders': orders,
+                'payment_form': payment_form,
+            }
+            return render(request, self.template_name, context)
 
-                    for order_form in orders:
-                        if is_form_not_empty(order_form):
-                            order = order_form.save(commit=False)
-                            order.order = saletovendor
-                            item = Item.objects.get(id=order.item_id)
-                            item.qte_inStock -= order.quantity
-                            item.save()
-                            order.sale = saletovendor
-                            order.save()
+        # Wrap the following code in an atomic transaction to avoid partial saves
+        with transaction.atomic():
+            # Save the sale for the vendor
+            saletovendor = sale_to_vendor_form.save(commit=False)
+            saletovendor.save()
 
-                    payment = payment_form.save(commit=False)
-                    payment.sale = saletovendor
-                    payment.save()
+            # Process each order and update the item's stock
+            for order_form in orders:
+                if is_form_not_empty(order_form):
+                    order = order_form.save(commit=False)
+                    item = Item.objects.get(id=order.item_id)
+                    if item.qte_inStock >= order.quantity:
+                        item.qte_inStock -= order.quantity
+                        item.save()
+                        order.sale = saletovendor
+                        order.save()
+                    else:
+                        raise ValidationError(f"Not enough stock for {item.name}.")
 
-                return redirect('sale:sale-vendor-detail', pk=saletovendor.pk)
+            #update vendor balance
+            vendor = saletovendor.vendor
+            vendor.balance -= saletovendor.get_TTC
+            vendor.save()
+            # Save the payment associated with the sale
+            payment = payment_form.save(commit=False)
+            payment.sale = saletovendor
+            payment.save()
 
-        context = {
-            'sale_to_vendor_form': sale_to_vendor_form,
-            'orders': orders,
-            'payment_form': payment_form,
-        }
-        return render(request, self.template_name, context)
-    
+        return redirect('sale:sale-vendor-detail', pk=saletovendor.pk)
+
+
 def SaleToVendorDetails(request, pk):
     sale_to_vendor = get_object_or_404(SaleToVendor, pk=pk)
-    return render(request, 'sale/vendor_order_detail.html', {'sale_to_vendor': sale_to_vendor}) 
+    return render(request, 'sale/vendor_order_detail.html', {'sale_to_vendor': sale_to_vendor})
+
+
 
 def SaleVendorList(request):
    vendors = Vendor.objects.all()
@@ -308,6 +323,7 @@ def generate_facture_pdf(request, sale_id):
 def generate_bonLivraison_pdf(request, sale_id):
     sale_to_vendor = get_object_or_404(SaleToVendor, id=sale_id)
     context = {
+        
         'sale_to_vendor': sale_to_vendor,
         'orders': sale_to_vendor.order_line_set.all(),
         'static_url': request.build_absolute_uri(static('')),
@@ -320,55 +336,170 @@ def generate_bonLivraison_pdf(request, sale_id):
     response['Content-Disposition'] = f'attachment; filename="BL{sale_id}.pdf"'
     return response
 
-# ////////////////////////////////////// Sale Return ////////////////////////////////
-class OrderReturnUpdateView(UpdateView):
-    model = Sale
-    form_class = SaleForm
-    template_name = 'sale/sale_return.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        if self.request.POST:
-            context['orders'] = OrderFormSet(self.request.POST, instance=self.object)
-            context['payment_form'] = PaymentForm(self.request.POST, instance=self.object.cash)
-        else:
-            context['orders'] = OrderFormSet(instance=self.object)
-            context['payment_form'] = PaymentForm(instance=self.object.cash)
+#////////////////////////////// Monthly Payment /////////////////////////////
 
-        return context
+class MonthlyPaymentView(View):
+    template_name = 'sale/monthly_payment_form.html'
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        orders = context['orders']
-        payment_form = context['payment_form']
+    def get(self, request, *args, **kwargs):
+        monthly_payment_form = MonthlyPaymentForm()
+        context = {
+            'monthly_payment_form': monthly_payment_form,
+        }
+        return render(request, self.template_name, context)
 
-        if form.is_valid() and orders.is_valid() and payment_form.is_valid():
+    def post(self, request, *args, **kwargs):
+        monthly_payment_form = MonthlyPaymentForm(request.POST)
+
+        if monthly_payment_form.is_valid():
             with transaction.atomic():
-                refund_amount = 0
-                for order_form in orders.deleted_forms:
-                   if is_form_not_empty(order_form):
-                        order = order_form.save(commit=False)
-                        refund_amount += order.get_subtotal
-                        item = Item.objects.get(id=order.item.id)
-                        item.qte_inStock += order.quantity  # Increase stock as items are returned
-                        item.save()
-                        order.delete()
-          
-            return redirect('sale:sale-return-detail', pk=self.object.pk)
-        
-        return self.render_to_response(self.get_context_data(form=form))
-def SaleReturnDetail(request, pk):
-    sale = get_object_or_404(Sale, pk=pk)
-    return render(request, 'sale/return_detail.html', {'sale': sale})
+                monthly_payment = monthly_payment_form.save(commit=False)
+
+                vendor = monthly_payment_form.cleaned_data['vendor']
+                amount_received = monthly_payment.amount_received
+                vendor.balance += amount_received
+
+                # Get the previous month and year
+                now = timezone.now()
+                last_month = now.month - 1 if now.month > 1 else 12
+                last_month_year = now.year if now.month > 1 else now.year - 1
+
+                # Fetch all unpaid sales for the previous month for the vendor
+                unpaid_sales = SaleToVendor.objects.filter( vendor=vendor,date__month=last_month,date__year=last_month_year,payment__is_pay=False)
+
+                # Calculate total amount to be paid for those sales
+                total_due = sum(sale.get_TTC for sale in unpaid_sales)
+
+                # Mark sales as paid and update vendor's balance
+                for sale in unpaid_sales:
+                    payment = Payment.objects.get(sale=sale)
+                    payment.amount_received += sale.get_TTC
+                    payment.is_pay = True
+                    payment.save()
+                    # Update vendor's balance
+                    vendor.balance -= sale.get_TTC
+                    vendor.save()
+                # Vendor want to push some money
+                vendor.save()
+
+            # Redirect to a summary page showing vendor's updated balance
+            return redirect('sale:vendor-payment-summary', pk=vendor.pk)
+        else:
+            context = {
+            'monthly_payment_form': monthly_payment_form,
+            }
+            return render(request, self.template_name, context)
 
 
+def VendorPaymentSummaryView(request, pk):
+
+    vendor = get_object_or_404(Vendor, pk=pk)
+    # monthly_amount_received
+     
+    now = timezone.now()
+    last_month = now.month - 1 if now.month > 1 else 12
+    last_month_year = now.year if now.month > 1 else now.year - 1
+    # Fetch all unpaid sales for the previous month for the vendor
+    paid_sales = SaleToVendor.objects.filter( vendor=vendor,date__month=last_month,date__year=last_month_year,payment__is_pay=True)
+    # total_amount_received = payment.amount_received for payment in vendor.saletovendor_set.all()
+    total_amount_paid = sum(sale.get_TTC for sale in paid_sales)
+    context = {
+        'vendor': vendor,
+        'paid_sales': paid_sales,
+        'total_amount_paid':total_amount_paid,
+        'last_month': last_month,
+        'last_month_year': last_month_year,
+    }
+    return render(request, 'sale/vendor_payment_summary.html', context)
+                    
+
+def generate_recu(request, vendor_id):
+    vendor = get_object_or_404(Vendor, id=vendor_id)
+    now = timezone.now()
+    date = now
+    last_month = now.month - 1 if now.month > 1 else 12
+    last_month_year = now.year if now.month > 1 else now.year - 1
+    paid_sales = SaleToVendor.objects.filter( vendor=vendor,date__month=last_month,date__year=last_month_year,payment__is_pay=True)
+    total_amount_paid = sum(sale.get_TTC for sale in paid_sales)
+    context = {
+        'company_info': {
+            'name': 'Nina Bazar',
+            'info': 'RC1021 ICE:001680586000002 PATENTE:49659021',
+            'address': 'AV YOUSSEF BEN TACHFINE N138 GUELMIM',
+            'phone': '06 72 38 17 47'
+        },
+        'vendor': vendor,
+        'paid_sales': paid_sales,
+        'total_amount_paid':total_amount_paid,
+        'last_month': last_month,
+        'last_month_year': last_month_year,
+        'date':date,
+    }
+    # Render the reciep template with sale details
+    html_string = render_to_string('sale/recu_payment.html', context)
+    html = HTML(string=html_string,base_url=request.build_absolute_uri())
+    pdf_file = html.write_pdf()
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="R{vendor.pk}.pdf"'
+    return response                   
+
+#///////////////// return Sale /////////////////////////////////
+class ReturnSaleCreateView(View):
+    template_name = 'sale/return_sale_form.html'  
+
+    def get(self, request, *args, **kwargs):       
+        return_sale_form = ReturnSaleForm()
+        orders = ReturnFormSet()
+        context = {
+            'return_sale_form': return_sale_form,
+            'orders': orders,
+           
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        return_sale_form = ReturnSaleForm(request.POST)
+        orders = ReturnFormSet(request.POST)
+        if return_sale_form.is_valid() and orders.is_valid():
+            try:
+                with transaction.atomic():
+                    # Save the Sale
+                    return_sale = return_sale_form.save(commit=False)
+                    sale = Sale.objects.get(id=return_sale.so)
+                    return_sale.sale = sale
+                    return_sale.save()
+                    
+                    # Save Orders              
+                    for order_form in orders:
+                        if is_form_not_empty(order_form): 
+                            order = order_form.save(commit=False)
+                            try:
+                                item = Item.objects.get(id=order.item_id)
+                            except Item.DoesNotExist:
+                                order_form.add_error(None, 'Item does not exist')
+                                raise
+
+                            item.qte_inStock += order.quantity
+                            item.save()
+                            order._sale= return_sale
+                            order.save()
 
 
+                return redirect('sale:return-detail', pk=return_sale.pk)  # Redirect to the sale detail view
+
+            except Exception as e:
+                # Log the exception for debugging if necessary
+                print(f"Error saving sale: {e}")
+                
+        # If form is not valid or an exception occurs, re-render the form with errors
+        context = {
+            'return_sale_form': return_sale_form,
+            'orders': orders,
+        }
+        return render(request, self.template_name, context)
+    
 
 
-
-
-
-
-
+def ReturnSaleDetails(request,pk):
+    return_sale = get_object_or_404(ReturnSale, pk=pk)
+    return render(request, 'sale/return_sale_details.html', {'return_sale': return_sale})
