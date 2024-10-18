@@ -1,0 +1,22 @@
+{% extends 'sale/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<h1>Payment Details</h1>
+<p><strong>Payment ID:</strong> {{ payment.pk }}</p>
+<p><strong>Date:</strong> {{ payment.date|date:"d/m/Y H:i:s" }}</p>
+<p><strong>Dealer name :</strong>{{ dealer.name}}</p>
+<p><strong>Amount Paid:</strong> {{ payment.amount }}</p>
+<p><strong>Balance:</strong>{{dealer.get_balance }}</p>
+
+
+
+
+
+<!-- Buttons for PDF Download and Print -->
+<div class="pdf-buttons">
+    <!-- Download PDF Button -->
+    <a href="{% url 'sale:generate_recu' payment_id=payment.pk %}" class="btn btn-primary" download="ticket-{{ payment.pk }}.pdf">ticket</a>
+</div>
+
+{% endblock %}

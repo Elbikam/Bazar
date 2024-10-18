@@ -2,14 +2,13 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-
 <h3>Create Payment</h3>
 <div class="container mt-4"></div>
     <div class="row justify-content-center">
         <div class="col-md-6"> <!-- Adjust the width using Bootstrap's grid system -->
-            <form method="POST" action="{% url 'sale:monthly-payment' %}">
+            <form method="POST" action="{% url 'sale:monthly-payment-create' %}">
                 {% csrf_token %}
-                {{ monthly_payment_form|crispy }}
+                {{ form|crispy }}
                 <button type="submit">Submit Payment</button>
             </form>
         </div>

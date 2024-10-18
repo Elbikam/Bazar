@@ -53,9 +53,9 @@
     <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="width: 220px; height: auto; margin: 0 auto;display: block;margin-top: 20px;">
     <h2 style="font-size: 20;text-align: center;">Facture</h2>
     <div class="invoice-info">
-        <p><strong>Vendor:</strong> {{sale_to_vendor.vendor.name}}</p>
-        <p><strong>Sale ID:</strong> {{sale_to_vendor.pk}}</p>
-        <p><strong>Document Date:</strong> {{sale_to_vendor.date|date:"d/m/Y H:i:s"}}</p>
+        <p><strong>Dealer:</strong> {{sale_to_dealer.dealer.name}}</p>
+        <p><strong>Sale ID:</strong> {{sale_to_dealer.pk}}</p>
+        <p><strong>Document Date:</strong> {{sale_to_dealer.date|date:"d/m/Y H:i:s"}}</p>
     </div>
 
     <table>
@@ -69,7 +69,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for order in sale_to_vendor.order_line_set.all %}
+            {% for order in orders %}
             <tr>
                 <td>{{order.item.pk}}</td>
                 <td>{{order.description}}</td>
@@ -82,10 +82,10 @@
     </table>
 
     <div class="total-section">
-        <p><strong>Total HT:</strong> {{sale_to_vendor.get_HT}}</p>
-        <p><strong>TVA:</strong> {{sale_to_vendor.get_TVA}}</p>
-        <p><strong>TTC:</strong> {{sale_to_vendor.get_TTC}}</p>
-        <p><strong>Total qte:</strong> {{sale_to_vendor.total_of_items}}</p>
+        <p><strong>Total HT:</strong> {{sale_to_dealer.get_HT}}</p>
+        <p><strong>TVA:</strong> {{sale_to_dealer.get_TVA}}</p>
+        <p><strong>TTC:</strong> {{sale_to_dealer.get_TTC}}</p>
+        <p><strong>Total qte:</strong> {{sale_to_dealer.total_of_items}}</p>
     </div>
     <body>
         <footer style="position: absolute; bottom: 0; left: 0; right: 0; text-align: center; padding: 10px;">

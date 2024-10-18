@@ -2,12 +2,11 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h1>Sale</h1>
-<h3> Create Order</h3>
+<h3>Create Refund</h3>
 <hr>
 <div class="col-md-4">
     <form id="sale-order-form" action="" method="post">{% csrf_token %}
-        {{sale_form.as_p}}
+        {{refund_form.as_p}}
         <table class="table"> 
             <!-- Orders Formset -->
             <h5>Orders</h5>
@@ -37,9 +36,6 @@
                 </tr>
             {% endfor %}
         </table>
-        <!-- Payment Form -->
-        <h5>Payment Information</h5>
-        {{ payment_form.as_p }}
         <div class="total-amount">
             <strong>Total Amount: <span id="total-amount">0.00</span></strong>
         </div>
@@ -47,14 +43,15 @@
     </form>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script><input type="checkbox" name="inlineorder_set-0-refunded" id="id_inlineorder_set-0-refunded" style="display: none;">
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript">
     $(document).ready(function() {   
+
         $('.formset_row').formset({
             addText: 'Add Order',
             deleteText: 'Remove',
-            prefix: 'order_line_set',
+            prefix: 'return_line_set',
             removed: function(row) {
             // Recalculate total when a row is removed
                 calculateTotal();

@@ -63,9 +63,15 @@
     <h4 class="center">TVA: {{ TVA_total }}</h4>
     <h4 class="center">TTC: {{ TTC_total }}</h4>
     <h4 class="center">{{ sale.total_of_items }} items</h4>
-    <h3>Payment</h3>
-    <p>Received: {{ sale.payment.amount_received }}</p>
-    <p>Change: {{ sale.payment.get_change }}</p>
-</body>
+    <h2>Payments</h2>
+        {% if sale_payments %}
+            {% for sale_payment in sale_payments %}
+                <p><strong>Amount received:</strong> {{ sale_payment.payment.cashpayment.cash_received }}</p>
+                <p><strong>Change:</strong> {{ sale_payment.payment.cashpayment.get_change }}</p> <!-- This assumes the Payment instance is accessible -->
+            {% endfor %}
+        {% else %}
+            <p>No payments have been received yet.</p>
+        {% endif %}
+        </body>
 </html>
 

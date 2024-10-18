@@ -1,0 +1,9 @@
+{% extends 'sale/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<h2>Error</h2>
+<p>{{ error_message }}</p>
+<a href="{% url 'sale:sale-list' %}">Back to Sales</a>
+
+{% endblock %}

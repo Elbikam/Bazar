@@ -3,11 +3,13 @@
 {% load static %}
 {% load crispy_forms_tags %}
 <h1>Sale</h1>
-<h3> Create Sale to Vendor</h3>
+<h3> Create Sale to Dealer </h3>
 <hr>
 <div class="col-md-4">
     <form id="sale-order-form" action="" method="post">{% csrf_token %}
-        {{ sale_to_vendor_form| crispy}}
+        <div class="form-group">
+            {{ sale_to_dealer_form|crispy }}  
+        </div>
         <table class="table"> 
             <!-- Orders Formset -->
             <h5>Orders</h5>
@@ -37,21 +39,16 @@
                 </tr>
             {% endfor %}
         </table>
-        <!-- Payment Form -->
-        <h5>Payment Information</h5>
-        {{ payment_form.as_p }}
         <div class="total-amount">
             <strong>Total Amount: <span id="total-amount">0.00</span></strong>
         </div>
         <input type="submit" value="Submit"/> 
     </form>
 </div>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
-
+    $(document).ready(function() {   
         $('.formset_row').formset({
             addText: 'Add Order',
             deleteText: 'Remove',
@@ -81,9 +78,8 @@
 
     // Initial total calculation
     calculateTotal();
-
+    
 function bindFormsetRowEvents(row) {
-    // Bind events to new formset rows
     $(row).on('change', 'input[name$=-item]', function() {
         console.log("Item changed in new row:", $(this).val());
         updatePrice(this);
@@ -94,7 +90,12 @@ function bindFormsetRowEvents(row) {
         calculateTotal();
     });
 
+    $(row).on('change', 'input[name$=-price]', function() {
+        console.log("Price changed in new row");
+        calculateTotal();
+    });
 }
+
 
 function updatePrice(itemInput) {
     const row = $(itemInput).closest('.formset_row');

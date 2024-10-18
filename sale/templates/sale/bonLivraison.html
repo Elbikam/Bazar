@@ -53,9 +53,9 @@
     <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="width: 220px; height: auto; margin: 0 auto;display: block;margin-top: 20px;">
     <h2 style="font-size: 20;text-align: center;">Bon de Livraison</h2>
     <div class="invoice-info">
-        <p><strong>Vendor:</strong> {{sale_to_vendor.vendor.name}}</p>
-        <p><strong>Sale ID:</strong> {{sale_to_vendor.pk}}</p>
-        <p><strong>Document Date:</strong> {{sale_to_vendor.date|date:"d/m/Y H:i:s"}}</p>
+        <p><strong>Dealer:</strong> {{sale_to_dealer.dealer.name}}</p>
+        <p><strong>Sale ID:</strong> {{sale_to_dealer.pk}}</p>
+        <p><strong>Document Date:</strong> {{sale_to_dealer.date|date:"d/m/Y H:i:s"}}</p>
     </div>
     <table>
         <thead>
@@ -72,7 +72,7 @@
                 <tr>
                     <td>{{order.item.pk}}</td>
                     <td>{{order.description}}</td>
-                    <td>{{order.item.unit}}</td>
+                    <td>{{order.item.unit_by_carton}}</td>
                     <td>{{order.quantity}}</td>
                     <td>{{order.quantity_by_crtn}}</td>
                 </tr>

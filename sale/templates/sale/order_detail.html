@@ -39,15 +39,22 @@
         {% endfor %}
     </tbody>
 </table>
-
 <h2>Payments</h2>
-<p><strong>Amount received :</strong> {{ sale.payment.amount_received }}</p>
-<p><strong>Change:</strong> {{ sale.payment.get_change }}</p>
+{% if sale_payments %}
+    {% for sale_payment in sale_payments %}
+        <p><strong>Amount received:</strong> {{ sale_payment.payment.cashpayment.cash_received }}</p>
+        <p><strong>Change:</strong> {{ sale_payment.payment.cashpayment.get_change }}</p> <!-- This assumes the Payment instance is accessible -->
+    {% endfor %}
+{% else %}
+    <p>No payments have been received yet.</p>
+{% endif %}
+
 
 <!-- Buttons for PDF Download and Print -->
 <div class="pdf-buttons">
     <!-- Download PDF Button -->
-    <a href="{% url 'sale:generate_ticket_pdf' sale_id=sale.pk %}" class="btn btn-primary" download="ticket-{{ sale.pk }}.pdf">Ticket</a>
+    <a href="{% url 'sale:generate_ticket_pdf' sale_id=sale.pk %}" class="btn btn-primary" download="ticket-{{ sale.pk }}.pdf">Ticket PDF</a>
 </div>
 
 {% endblock %}
+

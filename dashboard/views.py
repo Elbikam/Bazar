@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
-from sale.models import Sale,Order_Line
+from sale.models import *
 from django.db.models import Sum
 
 class DashboardView(TemplateView):

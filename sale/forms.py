@@ -1,5 +1,5 @@
 from django import forms
-from sale.models import Payment,Vendor,Devis,Sale,Order_Line,Devis_Line,SaleToVendor,ReturnSale,Return_Line
+from sale.models import *
 from django.forms import inlineformset_factory,ModelForm
 from stock.models import Item
 from django.utils import timezone
@@ -7,7 +7,8 @@ from django.utils import timezone
 class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
-        exclude = ['date','is_returned']  
+        fields = [] 
+        exclude = ['date']  
 
 class OrderLineForm(forms.ModelForm):
     class Meta:
@@ -24,7 +25,7 @@ OrderFormSet = inlineformset_factory(
     error_messages={'item': {'required': 'Please enter a correct ID'}}
 )  
 
-#////////////////////////// Devis Form ///////////////////////////////////    
+# #////////////////////////// Devis Form ///////////////////////////////////    
 class DevisForm(forms.ModelForm):
     class Meta:
         model = Devis
@@ -45,56 +46,74 @@ DOrderFormSet = inlineformset_factory(
     extra=1, can_delete=True,
     error_messages={'item': {'required': 'Please enter a correct ID'}})
 
-# //////////////////////////  Payment Form //////////////////////////////          
-class PaymentForm(forms.ModelForm):
+# # //////////////////////////  Payment Form ////////////////////////////// 
+class CashPaymentForm(forms.ModelForm):
     class Meta:
-        model = Payment
-        fields = ['amount_received', 'is_pay']
-      
+        model = CashPayment
+        fields = ['cash_received']
 
-#///////////////////////////  Vendor Form /////////////////////////////////
-class VendorForm(forms.ModelForm):
+
+# #///////////////////////////  Dealer Form /////////////////////////////////
+class DealerForm(forms.ModelForm):
     class Meta:
-        model = Vendor
-        fields = ['name','city','phone_whatsapp']
+        model = Dealer
+        fields = ['name','phone_whatsapp','balance_limit']
         
         
-#/////////////////////////// Vendor Sale Form /////////////////////////////
-class SaleToVendorForm(forms.ModelForm):
+# #/////////////////////////// Dealer Sale Form /////////////////////////////
+class SaleToDealerForm(forms.ModelForm):
     class Meta:
-        model = SaleToVendor
-        fields = ['vendor']
+        model = SaleToDealer
+        fields = ['dealer']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Customize the widget
-        self.fields['vendor'].widget.attrs.update({'vendor': 'custom-select'})    
+        self.fields['dealer'].widget.attrs.update({'dealer': 'custom-select'})    
 
-#//////////////////////////// Monhtly Payment Form ///////////////////////
+# #//////////////////////////// Monhtly Payment Form ///////////////////////
 
 class MonthlyPaymentForm(forms.ModelForm):
-    vendor = forms.ModelChoiceField(queryset=Vendor.objects.all(), label="Select Vendor")
     class Meta:
-        model = Payment
-        fields = ['vendor', 'amount_received']
+        model = MonthlyPayment
+        fields = ['dealer', 'amount']  # You can include other fields if necessary
+        widgets = {
+            'dealer': forms.Select(attrs={'class': 'form-control'}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
+        }
 
-#//////////////////////////////////////////// Return Sale //////////////////////////////////////////////////
-class ReturnSaleForm(forms.ModelForm):
-    class Meta:
-        model = ReturnSale
-        fields = ['so'] 
+    def clean_amount(self):
+        amount = self.cleaned_data.get('amount')
+        if amount <= 0:
+            raise forms.ValidationError("The amount must be greater than zero.")
+        return amount
 
-class ReturnSaleLineForm(forms.ModelForm):
+# #//////////////////////////////////////////// Refund Sale //////////////////////////////////////////////////
+class RefundForm(forms.ModelForm):
     class Meta:
-        model = Return_Line
+        model = Refund
+        fields = ['so','reason'] 
+      
+class RefundFromDealerForm(forms.ModelForm):
+    class Meta:
+        model = RefundFromDealer
+        fields = ['so','dealer','reason']
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['dealer'].widget.attrs.update({'dealer': 'custom-select'})   
+
+class RefundLineForm(forms.ModelForm):
+    class Meta:
+        model = Refund_Line
         fields = ['item','description','quantity','price']
         widgets = {
             'item': forms.TextInput(attrs={'placeholder': 'Enter item ID'}),
             'quantity': forms.NumberInput(attrs={'placeholder': 'Enter quantity'}),
             'price': forms.NumberInput(attrs={'placeholder': 'Edite price'}),}
 
-ReturnFormSet = inlineformset_factory(
-    ReturnSale, Return_Line, form=ReturnSaleLineForm,
+RefundFormSet = inlineformset_factory(
+    Refund, Refund_Line, form=RefundLineForm,
     extra=1, can_delete=True,
     error_messages={'item': {'required': 'Please enter a correct ID'}}
 )  

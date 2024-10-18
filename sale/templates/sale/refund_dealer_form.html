@@ -2,16 +2,15 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h3>Create return Sale</h3>
-<hr>
+<h3>Create Refund </h3>
 <div class="col-md-4">
     <form id="sale-order-form" action="" method="post">{% csrf_token %}
-        {{return_sale_form.as_p}}
+        {{refund_form.as_p}}
         <table class="table"> 
-            <!-- Orders Formset -->
-            <h5>Orders</h5>
-            {{ orders.management_form }}
-            {% for form in orders.forms %}
+        
+            <h5>Refunds</h5>
+            {{ refunds.management_form }}
+            {% for form in refunds.forms %}
                 {% if forloop.first %}
                 <thead>
                     <tr>

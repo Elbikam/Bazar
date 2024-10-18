@@ -37,29 +37,12 @@
         <p>{{ company_info.address }}</p>
         <p>{{ company_info.phone }}</p>
     </div>
-    <h3 class="center">Vendor: {{ vendor.name }}</h3>
+    <h3 class="center">Recu Payment</h3>
+    <h3 class="center">{{ dealer.name }}</h3>
     <p>Date: {{date|date:"d/m/Y H:i:s"}}</p>
-    <p>Sales date: {{ last_month }}/{{ last_month_year }}</p>
-    <h3>Sales</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for sale in paid_sales %}
-            <tr>
-                <td>{{ sale }}</td>
-                <td>{{ sale.get_TTC }}</td>
+    <p>Payment ID: {{payment.pk}}</p>
 
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <h3>Payment</h3>
-    <p>Total Amount Paid:{{ total_amount_paid}}</p>
-    <p>Balance: {{ vendor.balance }}</p> 
+    <p><strong>Amount Paid:</strong> {{ amount }}</p>
+    <p><strong>Balance:</strong>{{dealer.get_balance }}</p>
 </body>
 </html>

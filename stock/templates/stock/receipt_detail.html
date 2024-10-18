@@ -1,0 +1,37 @@
+{% extends 'stock/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<h1>Stock </h1>
+<h3> Receipt  Details</h3>
+<p><strong>Receipt ID :</strong> {{ receipt.pk }}</p>
+<p><strong>Bon de livraison :</strong> {{ receipt.bon_de_livrason }}</p>
+<p><strong>QTE/CARTON :</strong> {{ receipt.qte_by_carton}}</p>
+<p><strong>QTE TOTAL :</strong> {{ receipt.qte_total }}</p>
+<p><strong>Date:</strong> {{ receipt.date }}</p>
+<h2>Items</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Unit/Carton</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in receipt.receipt_items %}
+        <tr>
+            <td>{{ item.item.pk }}</td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.unit_by_carton }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No orders found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

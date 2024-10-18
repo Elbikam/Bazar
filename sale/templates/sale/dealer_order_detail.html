@@ -5,14 +5,14 @@
 <h1>Sale</h1>
 <h3> Sale Details</h3>
 
-<p><strong>Vendor:</strong> {{ sale_to_vendor.vendor.name }}</p>
-<p><strong>Sale ID:</strong> {{sale_to_vendor.pk }}</p>
-<p><strong>Date:</strong> {{ sale_to_vendor.date|date:"d/m/Y H:i:s" }}</p>
+<p><strong>Dealer:</strong> {{ sale_to_dealer.dealer.name }}</p>
+<p><strong>Sale ID:</strong> {{sale_to_dealer.pk }}</p>
+<p><strong>Date:</strong> {{ sale_to_dealer.date|date:"d/m/Y H:i:s" }}</p>
 
-<p><strong>Total of Items:</strong> {{ sale_to_vendor.total_of_items }}</p>
-<p><strong>Total HT:</strong> {{ sale_to_vendor.get_HT }}</p>
-<p><strong>Total TVA:</strong> {{ sale_to_vendor.get_TVA }}</p>
-<p><strong>Total TTC:</strong> {{ sale_to_vendor.get_TTC }}</p>
+<p><strong>Total of Items:</strong> {{ sale_to_dealer.total_of_items }}</p>
+<p><strong>Total HT:</strong> {{ sale_to_dealer.get_HT }}</p>
+<p><strong>Total TVA:</strong> {{ sale_to_dealer.get_TVA }}</p>
+<p><strong>Total TTC:</strong> {{ sale_to_dealer.get_TTC }}</p>
 
 <h2>Orders</h2>
 <table class="table table-striped">
@@ -26,7 +26,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for order in sale_to_vendor.order_line_set.all %}
+        {% for order in sale_to_dealer.order_line_set.all %}
         <tr>
             <td>{{ order.item.pk }}</td>
             <td>{{ order.description }}</td>
@@ -43,14 +43,14 @@
 </table>
 
 <h2>Status</h2>
-<p><strong>Balance :</strong> {{sale_to_vendor.vendor.get_balance }}</p>
+<p><strong>Balance :</strong> {{sale_to_dealer.dealer.get_balance }}</p>
 
 
 <!-- Buttons for PDF Download and Print -->
 <div class="pdf-buttons">
     <!-- Download PDF Button -->
-    <a href="{% url 'sale:generate_facture_pdf' sale_id=sale_to_vendor.pk %}" class="btn btn-primary" download="ticket-{{ sale_to_vendor.pk }}.pdf">facture pdf</a>
-    <a href="{% url 'sale:generate_bonlivraison_pdf' sale_id=sale_to_vendor.pk %}" class="btn btn-primary" download="ticket-{{ sale_to_vendor.pk }}.pdf">Bon Livraison</a>
+    <a href="{% url 'sale:generate_facture_pdf' sale_id=sale_to_dealer.pk %}" class="btn btn-primary" download="ticket-{{ sale_to_dealer.pk }}.pdf">facture pdf</a>
+    <a href="{% url 'sale:generate_bonlivraison_pdf' sale_id=sale_to_dealer.pk %}" class="btn btn-primary" download="ticket-{{ sale_to_dealer.pk }}.pdf">Bon Livraison</a>
 </div>
 
 <!-- Print Styles -->

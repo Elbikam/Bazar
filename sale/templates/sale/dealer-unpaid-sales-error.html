@@ -1,0 +1,10 @@
+{% extends 'sale/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<div class="alert alert-danger">
+    <h4>Error</h4>
+    <p>This vendor has unpaid sales. Please settle them before creating a new sale.</p>
+    <a href="{% url 'sale:vendor-list' %}">Back to Vendors</a> <!-- Adjust as needed -->
+</div>
+{% endblock %}

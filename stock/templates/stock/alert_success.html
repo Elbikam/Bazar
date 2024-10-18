@@ -1,0 +1,6 @@
+{% extends 'stock/base.html' %}
+{% block content %}
+<h1>Success!</h1>
+<p>Your stock alert has been created successfully.</p>
+<a href="{% url 'stock:item_list' %}">Back to Item List</a>
+{% endblock %}

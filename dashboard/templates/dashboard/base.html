@@ -33,11 +33,10 @@
                   Stock
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'stock:item-create' %}" target="_blank">Item</a></li>
-                  <li><a class="dropdown-item" href="{% url 'stock:item-search' %} "target="_blank">Search item</a></li>
-                  <li><a class="dropdown-item" href="{% url 'stock:the-create' %}" target="_blank">The</a></li>
-                  <li><a class="dropdown-item" href="{% url 'stock:parfum-create' %}" target="_blank">Parfum</a></li>
-                  <li><a class="dropdown-item" href="{% url 'stock:alert' %}" target="_blank">Alert </a></li>
+                  <li><a class="dropdown-item" href="{% url 'stock:create_receipt' %}" target="_blank">Receipt</a></li>
+                  <li><a class="dropdown-item" href="{% url 'stock:create_item' %}" target="_blank">Item</a></li>
+                  <li><a class="dropdown-item" href="{% url 'stock:item_list' %} "target="_blank">List items</a></li>
+                  <li><a class="dropdown-item" href="{% url 'stock:create_alert' %}" target="_blank">Alert </a></li>
                 </ul>
               </li>
               <li class="nav-item dropdown">
@@ -45,20 +44,21 @@
                   Sale
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'sale:order-create' %}"target="_blank">Sale</a></li>
-                  <li><a class="dropdown-item" href="{% url 'sale:devis-create'%}"target="_blank">Devis</a></li>
-                  <li><a class="dropdown-item" href="{% url 'sale:return-create'%}"target="_blank">Retuen Sale</a></li>
+                  <li><a class="dropdown-item" href="{% url 'sale:order-create' %}"target="_blank"> Order</a></li>
+                  <li><a class="dropdown-item" href="{% url 'sale:devis-create'%}"target="_blank"> Devis</a></li>
+                  <li><a class="dropdown-item" href="{% url 'sale:refund-create'%}"target="_blank">Refund</a></li>
                 </ul>
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Vendor
+                  Dealer
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'sale:vendor-create'%}" target="_blank">New Vendor</a></li>
-                  <li><a class="dropdown-item" href="{% url 'sale:vendor-list'%}" target="_blank">Vendors list</a></li>
-                  <li><a class="dropdown-item" href="{% url 'sale:vendor-sale'%}" target="_blank">Vendor sale </a></li>
-                  <li><a class="dropdown-item" href="{% url 'sale:monthly-payment'%}" target="_blank">Vendor Monthly Payment</a></li>
+                  <li><a class="dropdown-item" href="{% url 'sale:dealer-create'%}" target="_blank">New Dealer</a></li>
+                  <li><a class="dropdown-item" href="{% url 'sale:dealer-list'%}" target="_blank">list</a></li>
+                  <li><a class="dropdown-item" href="{% url 'sale:dealer-sale'%}" target="_blank">Sale </a></li>
+                  <li><a class="dropdown-item" href="{% url 'sale:monthly-payment-create'%}" target="_blank">Monthly Payment</a></li>
+                  <li><a class="dropdown-item" href="{% url 'sale:refund-dealer-create'%}" target="_blank">Refund</a></li>
                 </ul>
               </li>
             </ul>

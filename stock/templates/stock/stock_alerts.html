@@ -1,0 +1,16 @@
+{% extends 'stock/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+<h1>Stock Alerts</h1>
+{% if alerts %}
+    <ul>
+        {% for alert in alerts %}
+            <li>{{ alert.item.name }}: Threshold {{ alert.threshold }} - Current Stock: {{ alert.quantity }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No alerts at the moment.</p>
+{% endif %}
+{% endblock %}

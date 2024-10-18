@@ -1,135 +1,115 @@
 from django.db import models
-import decimal
-from django.urls import reverse
 from decimal import Decimal
+from django.core.exceptions import ValidationError
+from django.db.models import Sum
+class Item(models.Model):
+    CAT_CHOICES = [
+        ('THE VERT', 'THE VERT'),
+        ('BAZAR', 'BAZAR'),
+        ('PARFUM', 'PARFUM')
+    ]
 
-class Product(models.Model):
-    def detail(self):
-        pass
-
-    class Meta: 
-        abstract = True
-     
-class Item(Product):
-    date = models.DateField(auto_now=True)
     id = models.BigIntegerField(primary_key=True)
-    item = models.CharField(max_length=30)
-    description = models.CharField(max_length=100)
-    quantity = models.PositiveIntegerField()  # Total quantity in stock
-    initial_quantity = models.PositiveIntegerField(editable=False)
-    alert_qte = models.PositiveIntegerField()  # Minimum alert quantity
-    price = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
-    qte_by_carton = models.PositiveIntegerField(default=1)  # Quantity per carton
+    name = models.CharField(max_length=30)
+    category = models.CharField(max_length=10, choices=CAT_CHOICES)
+    description = models.CharField(max_length=100, blank=True)
+    price = models.DecimalField(max_digits=10,decimal_places=2)
+
+    def __str__(self):
+        return self.name
+
+
+class Stock(models.Model):
+    item = models.OneToOneField(Item, on_delete=models.DO_NOTHING, related_name='stock')
+    current_quantity = models.PositiveIntegerField(default=0)
+    unit_by_carton = models.PositiveIntegerField(default=1)
 
     @property
-    def qte_inStock(self):
-        return self.quantity
-
-    @qte_inStock.setter
-    def qte_inStock(self, value):
-        self.quantity = value  # This updates the current quantity
+    def get_cuurent_qte(self):
+        return self.current_quantity
+    
+    @get_cuurent_qte.setter
+    def get_current_qte(self,value):
+        self.current_quantity = value
     
     @property
-    def quantity_by_carton(self):
-        """Calculates how many cartons are in stock based on total quantity and carton size."""
-        if self.qte_by_carton > 0:
-            return self.quantity // self.qte_by_carton  # Integer division
-        return 0
+    def qte_by_carton(self):
+        return self.unit_by_carton
+    @qte_by_carton.setter
+    def qte_by_carton(self,value):
+        self.unit_by_carton = value
+
     @property
-    def unit(self):
-        """Calcule how many unit in caton"""
-        u=str(self.qte_by_carton)+'Unit/carton'
-        return u
+    def quantity_by_crtn(self):
+        """Calculates how many cartons."""
+        if self.current_quantity > 0:
+            cartons = self.current_quantity // self.unit_by_carton
+            units = self.current_quantity % self.unit_by_carton
+            return f"{cartons} cartons | {units} Unit"
+    def check_stock_alert(self):
+        alerts = StockAlert.objects.filter(item=self)
+        for alert in alerts:
+            if self.current_quantity <= alert.threshold:
+                # Logic to send alert, e.g., email, notification
+                print(f"Alert! Stock for {self.item.name} is below threshold.")
 
-    def detail(self):
-        return (f"{self.item} {self.description} "
-                )
+    def __str__(self):
+        return f"Stock for {self.item.name}: {self.current_quantity} units"
 
+
+class Receipt(models.Model):
+    date = models.DateField(auto_now_add=True)  # Only set on creation
+    bon_de_livrason = models.CharField(max_length=50)
+    qte_total = models.PositiveIntegerField()
+    qte_by_carton = models.PositiveIntegerField()
+
+    def receipt_items(self):
+        return self.items.all()
+
+    def __str__(self):
+        return f"Receipt:{self.pk}"
+
+
+class ReceiptItem(models.Model):
+    receipt = models.ForeignKey(Receipt, related_name='items', on_delete=models.DO_NOTHING, null=True, verbose_name="Receipt")
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    quantity = models.PositiveIntegerField()
+    unit_by_carton = models.CharField(max_length=50, blank=True, null=True)
     def save(self, *args, **kwargs):
-        if self.quantity < 0:            
-            raise ValueError("Quantity cannot be negative.") 
-        if self._state.adding and not self.initial_quantity:
-            self.initial_quantity = self.quantity
-        super().save(*args, **kwargs) 
+        """
+        Overrides the save method to ensure the Stock entry for the item exists.
+        If it does not exist, create it. Then, update the Stock quantity.
+        """
+        # Check if the Stock for the item exists; if not, create it
+        stock, created = Stock.objects.get_or_create(item=self.item)
+        
+        # Save the ReceiptItem
+        super().save(*args, **kwargs)
+        stock.get_current_qte += self.quantity
+        stock.qte_by_carton = self.unit_by_carton
+        stock.save()
+  
+
+
+    def delete(self, *args, **kwargs):
+        """
+        Overrides the delete method to update the related Stock
+        quantity when a ReceiptItem is deleted.
+        """
+        super().delete(*args, **kwargs)
+        # Update the stock after deleting the ReceiptItem
+        self.item.stock.update_total_quantity()
 
     def __str__(self):
-        return f"{self.id} {self.item}"
+        return f"{self.item.name}: {self.quantity} units"
 
 
-class The(Item):
-    SUBCAT_CHOICES = [
-    ('CHAARA', 'CHAARA'),
-    ('MKARKAB', 'MKARKAB'),
-    ]
-    PACKAGE_CHOICES = [
-    ('CARTON', 'CARTON'),
-    ('ZANBIL', 'ZANBIL'),
-    ('CADEAU', 'CADEAU'),
-     ('KHSHAB', 'KHSHAB'),
-    ]
-    WEIGHT_CHOICES = [
-    ('100', '100'),    
-    ('200', '200'),
-    ('500', '500'),
-    ('1000', '1000'),
-    ('2000', '2000'),
-    ('3000', '3000'),
-    ]
-    REFERANCE_CHOICES = [
-    ('9366', '9366'),
-    ('9371', '9371'),
-    ('9375', '9375'),
-    ('4011', '4011'),
-    ('41022', '41022'),
-    ('3505B', '3505B'),
-    ('41022', '41022'),
-    ]
-    category = models.CharField(max_length=15, choices=SUBCAT_CHOICES)
-    packaging = models.CharField(max_length=15, choices=PACKAGE_CHOICES)
-    weight = models.CharField(max_length=15, choices=WEIGHT_CHOICES)
-    ref = models.CharField(max_length=15, choices=REFERANCE_CHOICES)
-         
-    def detail(self):
-        return f"{self.item} -cat:{self.category}-packaging:{self.packaging} -weight(g):{self.weight}-ref:{self.ref}"
 
-
+class StockAlert(models.Model):
+    item = models.ForeignKey(Stock, on_delete=models.DO_NOTHING, verbose_name="Item")  # Now tracking individual items
+    threshold = models.PositiveIntegerField()  # Minimum stock level before alert
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"The : {self.item} - Category: {self.category}, package: {self.packaging}, weight :{self.weight}, ref :{self.ref} "
-    def get_absolute_url(self):
-       return reverse("stock:the-detail", kwargs={"id":self.id})
-
-class Parfum(Item):
-    TYPE_CHOICES = [
-    ('MAN', 'MAN'),
-    ('WOMEN', 'WOMEN'),
-    ('ALL', 'ALL'),
-    ]
-    VOLUM_CHOICES = [
-    ('30 ml', '30 ml'),    
-    ('50 ml', '50 ml'),
-    ('100 ml', '100 ml'),
-    ('500 ml', '500 ml'),
-    ('1000 ml', '1000 ml'),
-    ]
-    sub_brand = models.CharField(max_length=20)
-    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
-    volum = models.CharField(max_length=10, choices=VOLUM_CHOICES)
-
-
-    def detail(self):
-        return f"parfum:{self.item}-sub_brand:{self.sub_brand}-type:{self.type}-volum:{self.volum}"
-    
-    def __str__(self):
-        return f"Parfum : {self.item} - Category: {self.sub_brand}, type: {self.type}, volum: {self.volum} "
-    def get_absolute_url(self):
-       return reverse("stock:parfum-detail", kwargs={"id":self.id})
-
-
-     
-
-
-
-
-
-    
+        return f"Alert for {self.item.name}: Threshold {self.threshold}"
