@@ -5,7 +5,7 @@ from .views import (ItemCreateView,  ReceiptCreateView,
                    ItemListView,
                    stock_alert_view,StockAlertCreateView,
                    AlertSuccessView,filter_items,
-                    fetch_items,ReceiptListView,ReceiptDetailView
+                    fetch_items,ReceiptListView,ReceiptDetailView, search_item_in_stock
                    
                    )
 
@@ -25,6 +25,8 @@ urlpatterns = [
     path('fetch-items/', fetch_items, name='fetch_items'),
     path('receipts/', ReceiptListView.as_view(), name='receipt_list'),  # Receipt list view
     path('receipts/<int:pk>/', ReceiptDetailView.as_view(), name='receipt-detail'),  # Receipt detail view
-    
+    # Search
+    path('search/', search_item_in_stock, name='search_item_in_stock'),
+]
 
-    ]
+    

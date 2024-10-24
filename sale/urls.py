@@ -5,7 +5,8 @@ from .views import (SaleCreateView,get_item_price, SaleDetailView,
                     SaleToDealerCreateView,SaleDetailView,generate_facture_pdf,generate_bonLivraison_pdf,
                     generate_sale_ticket,SaleToDealerDetails,
                     MonthlyPaymentCreateView,MonthlyPaymentDetails,generate_recu,RefundCreateView,RefundDetails,
-                    BalanceLimitErrorView,DealerBlockedErrorView,RefundDealerCreateView,RefundDealerDetails
+                    BalanceLimitErrorView,DealerBlockedErrorView,RefundDealerCreateView,RefundDealerDetails,
+                    generate_refund
                     
                 
                     )
@@ -46,6 +47,6 @@ urlpatterns = [
     path('refund/details/<int:pk>', views.RefundDetails, name='refund-detail'),
     path('refund/dealer', RefundDealerCreateView.as_view(), name='refund-dealer-create'),
     path('refund/payment/<int:pk>', views.RefundDealerDetails, name='refund-dealer-payment'),
-   
+    path('refund/generate/<int:refund_id>/pdf/', views.generate_refund, name='generate_refund'),
     
 ]

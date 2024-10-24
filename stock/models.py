@@ -2,6 +2,8 @@ from django.db import models
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
+from django.utils import timezone
+
 class Item(models.Model):
     CAT_CHOICES = [
         ('THE VERT', 'THE VERT'),
@@ -25,10 +27,10 @@ class Stock(models.Model):
     unit_by_carton = models.PositiveIntegerField(default=1)
 
     @property
-    def get_cuurent_qte(self):
+    def get_current_qte(self):
         return self.current_quantity
     
-    @get_cuurent_qte.setter
+    @get_current_qte.setter
     def get_current_qte(self,value):
         self.current_quantity = value
     
@@ -46,6 +48,8 @@ class Stock(models.Model):
             cartons = self.current_quantity // self.unit_by_carton
             units = self.current_quantity % self.unit_by_carton
             return f"{cartons} cartons | {units} Unit"
+        return "0 cartons | 0 units"
+    
     def check_stock_alert(self):
         alerts = StockAlert.objects.filter(item=self)
         for alert in alerts:
@@ -107,9 +111,22 @@ class ReceiptItem(models.Model):
 
 
 class StockAlert(models.Model):
-    item = models.ForeignKey(Stock, on_delete=models.DO_NOTHING, verbose_name="Item")  # Now tracking individual items
+    item = models.OneToOneField(Stock, on_delete=models.DO_NOTHING,null=True, blank=True)
     threshold = models.PositiveIntegerField()  # Minimum stock level before alert
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Alert for {self.item.name}: Threshold {self.threshold}"
+        return f"Alert for {self.item}: Threshold {self.threshold}"
+
+
+
+
+
+class Notification(models.Model):
+    title = models.CharField(max_length=100)
+    message = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+    read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title

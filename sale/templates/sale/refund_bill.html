@@ -37,12 +37,12 @@
         <p>{{ company_info.address }}</p>
         <p>{{ company_info.phone }}</p>
     </div>
-    <h3 class="center">Payment</h3>
+    <h3 class="center">Refund</h3>
     <h3 class="center">{{ dealer.name }}</h3>
     <p>Date: {{date|date:"d/m/Y H:i:s"}}</p>
-    <p>Payment ID: {{payment.pk}}</p>
+    <p>Refund ID: {{refund.pk}}</p>
 
-    <p><strong>Amount Paid:</strong> {{ amount }}</p>
+    <p><strong>Amount refunded:</strong> {{ amount }}</p>
     <p><strong>Balance:</strong>{{dealer.get_balance }}</p>
 </body>
 </html>

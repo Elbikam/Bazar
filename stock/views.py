@@ -5,14 +5,15 @@ from django.views.generic import ListView
 from decimal import Decimal, InvalidOperation,getcontext
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from .models import Item, Receipt,ReceiptItem,StockAlert
-from .forms import ItemForm, ReceiptItemForm,ItemSearchForm,StockAlertForm,ReceiptItemFormSet,ReceiptForm
+from .models import Item, Receipt,ReceiptItem,StockAlert,Stock
+from .forms import ItemForm, ReceiptItemForm,ItemSearchForm,StockAlertForm,ReceiptItemFormSet,ReceiptForm,StockSearchForm
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib import messages  # For displaying messages
 from django.db import transaction
 from django.forms import inlineformset_factory
 from django.views.generic import DetailView
+from django.contrib.auth.decorators import login_required
 #////////////////////////////// Function check is empty form ///////////////////////////////////////
 def is_form_not_empty(form):
     return any(field.value() for field in form if field.name != 'DELETE')
@@ -172,3 +173,22 @@ class ReceiptListView(ListView):
         # Optional: Add any filtering or ordering logic here
         return super().get_queryset().order_by('-date')  # Order by date descending
     
+
+
+
+def search_item_in_stock(request):
+    """View to handle searching items in stock."""
+    form = StockSearchForm()
+    results = Stock.objects.all()  # Start with all Stock items
+
+    if request.method == 'GET':
+        query = request.GET.get('query')
+        category = request.GET.get('category')
+
+        if query:
+            results = results.filter(item__name__icontains=query) | results.filter(item__description__icontains=query)
+
+        if category:
+            results = results.filter(item__category=category)
+
+    return render(request, 'stock/stock_search.html', {'form': form, 'results': results})

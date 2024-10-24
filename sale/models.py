@@ -40,9 +40,13 @@ class Sale(Commun):
 
 # Refund Model
 class Refund(Commun):
+    CAT_CHOICES = [
+        ('ERROR','ERROR'),
+        ('DEFECTIVE','DEFECTIVE')
+    ]
     so = models.CharField(max_length=30)
     sale = models.OneToOneField(Sale, on_delete=models.PROTECT, null=True, blank=True)  # One-to-one relationship with Sale
-    reason = models.TextField()
+    reason = models.CharField(max_length=10,choices=CAT_CHOICES)
     @property
     def get_HT(self):
         """Calculate the total price without tax for all return lines."""

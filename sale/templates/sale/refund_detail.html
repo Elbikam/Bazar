@@ -42,7 +42,10 @@
 
 <h2>Refund Payments</h2>
 <p><strong>Amount refunded :</strong> {{refund.get_TTC}}</p>
-
+<div class="pdf-buttons">
+    <!-- Download PDF Button -->
+    <a href="{% url 'sale:generate_refund' refund_id=refund.pk %}" class="btn btn-primary" download="ticket-{{ refund.pk }}.pdf">Ticket PDF</a>
+</div>
 
 
 {% endblock %}

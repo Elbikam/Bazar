@@ -1,18 +1,15 @@
 from django.db.models.base import Model as Model
 from django.db.models.query import QuerySet
-
 from django.shortcuts import render, get_object_or_404,redirect
 from django.urls import reverse_lazy,reverse
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
-from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView
 from decimal import Decimal, InvalidOperation,getcontext
 from sale.forms import *
 from sale.models import *
 from stock.models import *
-from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.db import transaction
 from weasyprint import HTML
@@ -25,11 +22,8 @@ from django.utils import timezone
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from datetime import timedelta
-from django.utils import timezone
 from django.http import JsonResponse
 from django.views.generic import TemplateView
-
-
 #////////////////////////////// Function check is empty form ///////////////////////////////////////
 def is_form_not_empty(form):
     return any(field.value() for field in form if field.name != 'DELETE')
@@ -273,63 +267,68 @@ class SaleToDealerCreateView(View):
         if sale_to_dealer_form.is_valid() and orders.is_valid():
             try:
                 with transaction.atomic():
-                    # Save the Sale
                     sale = sale_to_dealer_form.save(commit=False)
-                    sale.save()
-                    dealer = sale.dealer
 
-                    # Check if dealer is active and balance is within limit
+                    # Calculate the total amount of the sale from the orders
+                    total_sale_amount = 0
+                    for order_form in orders:
+                        if is_form_not_empty(order_form):
+                            order = order_form.save(commit=False)
+                            total_sale_amount += order.quantity * order.item.item.price  # Adjust based on your pricing logic
+
+                    dealer = sale.dealer
+                    total_sale = round(total_sale_amount * Decimal(1.20), 2)
+                    # Check if dealer is active and if balance will exceed the limit
                     if dealer.is_active:
-                        if dealer.balance <= dealer.balance_limit:
-                            # Process Orders              
+                        if dealer.balance + total_sale <= dealer.balance_limit:
+                            # Save the sale since balance is within the limit
+                            sale.save()
+
+                            # Process Orders
                             for order_form in orders:
-                                if is_form_not_empty(order_form): 
+                                if is_form_not_empty(order_form):
                                     order = order_form.save(commit=False)
 
-                                    # Check if the item exists in stock
+                                    # Fetch stock with row lock
                                     try:
                                         item = Stock.objects.get(item_id=order.item.item)
                                     except Stock.DoesNotExist:
                                         order_form.add_error(None, 'Item does not exist in stock')
                                         raise ValidationError('Item does not exist in stock')
 
-                                    # Check if sufficient stock is available
+                                    # Check stock availability
                                     if item.get_current_qte < order.quantity:
                                         order_form.add_error(None, f'Insufficient stock for {order.item.item_name}')
                                         raise ValidationError(f'Insufficient stock for {order.item.item_name}')
 
-                                    # Update stock quantity
+                                    # Update stock and save order
                                     item.get_current_qte -= order.quantity
                                     item.save()
-
                                     order.sale = sale
                                     order.save()
 
-                            #update dealer balance 
-                            dealer.balance += sale.get_TTC    
-                            dealer.save()    
-                            # Success, redirect to sale detail page
+                            # Update dealer balance after processing all orders
+                            dealer.balance += sale.get_TTC 
+                            dealer.save()
+
                             return redirect('sale:sale-dealer-detail', pk=sale.pk)
                         else:
-                            # Redirect if balance exceeds the limit
-                            return redirect('sale:balance-limit-error')  # Customize this view
+                            return redirect('sale:balance-limit-error')  # Balance limit exceeded
                     else:
-                        # Redirect if dealer is not active
-                        return redirect('sale:dealer-blocked-error')  # Customize this view
+                        return redirect('sale:dealer-blocked-error')  # Dealer inactive
                         
             except ValidationError as e:
-                # Handle specific validation errors
-                print(f"Validation error: {e}")
+                sale_to_dealer_form.add_error(None, str(e))
             except Exception as e:
-                # Handle general exceptions
-                print(f"Error saving sale: {e}")
+                sale_to_dealer_form.add_error(None, f"Error saving sale: {e}")
 
-        # Re-render the form with errors if any validation fails
+        # Re-render form with errors
         context = {
             'sale_to_dealer_form': sale_to_dealer_form,
             'orders': orders,
         }
         return render(request, self.template_name, context)
+
 
 
 
@@ -507,7 +506,7 @@ def generate_recu(request, payment_id):
     html = HTML(string=html_string,base_url=request.build_absolute_uri())
     pdf_file = html.write_pdf()
     response = HttpResponse(pdf_file, content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="R{payment.pk}.pdf"'
+    response['Content-Disposition'] = f'inline; filename="P{payment.pk}.pdf"'
     return response                   
 
 # #///////////////// return Sale /////////////////////////////////
@@ -695,5 +694,29 @@ def RefundDealerDetails(request,pk):
     }
     return render(request, 'sale/refund_detail.html',context)            
 
+#////////////////////// generate refund from dealer //////////////
+def generate_refund(request, refund_id):
+    refund = get_object_or_404(RefundFromDealer, id=refund_id)
+    dealer = refund.dealer
+    amount = refund.get_TTC
+    date = refund.date
 
-
+    context = {
+        'company_info': {
+            'name': 'Nina Bazar',
+            'info': 'RC1021 ICE:001680586000002 PATENTE:49659021',
+            'address': 'AV YOUSSEF BEN TACHFINE N138 GUELMIM',
+            'phone': '06 72 38 17 47'
+        },
+        'dealer': dealer,
+        'date':date,
+        'amount':amount,
+        'refund':refund,
+    }
+    # Render the reciep template with sale details
+    html_string = render_to_string('sale/refund_bill.html', context)
+    html = HTML(string=html_string,base_url=request.build_absolute_uri())
+    pdf_file = html.write_pdf()
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="R{refund.pk}.pdf"'
+    return response     

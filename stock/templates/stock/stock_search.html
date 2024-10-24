@@ -1,0 +1,39 @@
+{% extends 'stock/base.html' %}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<h1>Search Stock</h1>
+<form method="get" class="form-inline mb-3">
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+<h2>Search Results</h2>
+{% if results %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Unit</th>
+                <th>Qte Carton</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in results %}
+                <tr>
+                    <td>{{ stock.item.id }}</td>
+                    <td>{{ stock.item.name }}</td>
+                    <td>{{ stock.item.description }}</td>
+                    <td>{{ stock.qte_by_carton }}</td>
+                    <td>{{ stock.quantity_by_crtn}}</td>
+                    <td>{{ stock.current_quantity}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="alert alert-warning">No results found.</div>
+{% endif %}
+{% endblock %}

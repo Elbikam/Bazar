@@ -72,3 +72,6 @@ class StockAlertForm(forms.ModelForm):
         # Optionally, customize widget or help_text
         self.fields['threshold'].help_text = 'Set the minimum stock level for alerts.'
 
+class StockSearchForm(forms.Form):
+    query = forms.CharField(label='Search for an Item', max_length=100, required=False)
+    category = forms.ChoiceField(label='Category', choices=[('', 'All')] + Item.CAT_CHOICES, required=False)
