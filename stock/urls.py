@@ -16,7 +16,6 @@ urlpatterns = [
     #Item 
     path('item/create/', ItemCreateView.as_view(), name='create_item'),
     path('receipt/create/', ReceiptCreateView.as_view(), name='create_receipt'),
-    # path('receipt-item/create/', ReceiptCreateView.as_view(), name='create_receipt_item'),
     path('items/', ItemListView.as_view(), name='item_list'),
     path('stock-alerts/', stock_alert_view, name='stock_alerts'),
     path('alerts/create/', StockAlertCreateView.as_view(), name='create_alert'),
@@ -26,7 +25,7 @@ urlpatterns = [
     path('receipts/', ReceiptListView.as_view(), name='receipt_list'),  # Receipt list view
     path('receipts/<int:pk>/', ReceiptDetailView.as_view(), name='receipt-detail'),  # Receipt detail view
     # Search
-    path('search/', search_item_in_stock, name='search_item_in_stock'),
+    path('search/', search_item_in_stock, name='search_item'),
 ]
 
     

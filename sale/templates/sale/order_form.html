@@ -6,6 +6,13 @@
 <h3> Create Order</h3>
 <hr>
 <div class="col-md-4">
+    {% if messages %}
+    <ul class="messages" style="color: red;">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <form id="sale-order-form" action="" method="post">{% csrf_token %}
         {{sale_form.as_p}}
         <table class="table"> 
@@ -47,10 +54,11 @@
     </form>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script><input type="checkbox" name="inlineorder_set-0-refunded" id="id_inlineorder_set-0-refunded" style="display: none;">
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript">
     $(document).ready(function() {   
+
         $('.formset_row').formset({
             addText: 'Add Order',
             deleteText: 'Remove',
@@ -144,3 +152,5 @@ function calculateTotal() {
 </script>
 
 {% endblock %}
+
+

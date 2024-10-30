@@ -6,7 +6,7 @@ from .views import (SaleCreateView,get_item_price, SaleDetailView,
                     generate_sale_ticket,SaleToDealerDetails,
                     MonthlyPaymentCreateView,MonthlyPaymentDetails,generate_recu,RefundCreateView,RefundDetails,
                     BalanceLimitErrorView,DealerBlockedErrorView,RefundDealerCreateView,RefundDealerDetails,
-                    generate_refund
+                    generate_refund,generate_sale_ticket_to_dealer
                     
                 
                     )
@@ -33,6 +33,7 @@ urlpatterns = [
     path('dealer/bonLivraison/<int:sale_id>/pdf/', views.generate_bonLivraison_pdf, name='generate_bonlivraison_pdf'),
     path('balance-limit-error/', BalanceLimitErrorView.as_view(), name='balance-limit-error'),
     path('dealer-blocked-error/', DealerBlockedErrorView.as_view(), name='dealer-blocked-error'),
+    path('dealer/ticket/<int:sale_id>/pdf/', views.generate_sale_ticket_to_dealer, name='generate_ticket_dealer_pdf'),
 
 
     

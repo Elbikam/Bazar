@@ -31,7 +31,7 @@ class ItemListView(ListView):
 class ReceiptForm(forms.ModelForm):
     class Meta:
         model = Receipt
-        fields = ['bon_de_livrason','qte_total','qte_by_carton'] 
+        fields = ['bon_de_livraison','qte_total','qte_by_carton'] 
     
     
 

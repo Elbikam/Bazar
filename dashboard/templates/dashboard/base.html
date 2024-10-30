@@ -38,7 +38,7 @@
                             <li><a class="dropdown-item" href="{% url 'stock:create_item' %}" target="_blank">Item</a></li>
                             <li><a class="dropdown-item" href="{% url 'stock:item_list' %}" target="_blank">List Items</a></li>
                             <li><a class="dropdown-item" href="{% url 'stock:create_alert' %}" target="_blank">Alert</a></li>
-                            <li><a class="dropdown-item" href="{% url 'stock:search_item_in_stock' %}" target="_blank">Search</a></li>
+                            <li><a class="dropdown-item" href="{% url 'stock:search_item' %}" target="_blank">Search</a></li>
                         </ul>
                     </li>
 
@@ -68,28 +68,6 @@
                         </ul>
                     </li>
                 </ul>
-
-                <!-- Notifications dropdown -->
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Alert Stock
-                            <span class="badge bg-danger" id="notification-count">
-                                {{ notifications_count }}
-                            </span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            {% for notification in notifications %}
-                                <li>
-                                    <a class="dropdown-item" href="#">{{ notification.title }}</a>
-                                    <p class="dropdown-item-text">{{ notification.message }}</p>
-                                </li>
-                            {% empty %}
-                                <li><a class="dropdown-item" href="#">No new notifications</a></li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                </ul>
             </div>
         </div>
     </nav>
@@ -98,6 +76,17 @@
         {% block content %}
         {% endblock %}
     </main>
+
+    <!-- Notification section -->
+    <!-- In your base template or any other template -->
+    <ul>
+        {% for alert in stock_alerts %}
+            <li style="color: red;">{{alert}}</li>
+        {% empty %}
+            <li>No stock alerts at the moment.</li>
+        {% endfor %}
+    </ul>
+
 
     <!-- Optional JavaScript -->
     <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>

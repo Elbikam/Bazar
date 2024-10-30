@@ -24,6 +24,8 @@ from django.core.exceptions import ValidationError
 from datetime import timedelta
 from django.http import JsonResponse
 from django.views.generic import TemplateView
+from django.contrib import messages
+
 #////////////////////////////// Function check is empty form ///////////////////////////////////////
 def is_form_not_empty(form):
     return any(field.value() for field in form if field.name != 'DELETE')
@@ -68,14 +70,13 @@ class SaleCreateView(View):
                             try:
                                 item = Stock.objects.get(item_id=order.item.item)
                             except Stock.DoesNotExist:
-                                order_form.add_error(None, 'Item does not exist in stock')
+                                messages.error(request,f'Item does not exist in stock')
                                 raise ValidationError('Item does not exist in stock')
 
                             # Check if enough stock is available
                             if item.get_current_qte < order.quantity:
-                                order_form.add_error(None, f'Insufficient stock for {order.item.item_name}')
-                                raise ValidationError(f'Insufficient stock for {order.item.item_name}')
-
+                                messages.error(request, f'Insufficient stock for {item.item.name}: {order.item.get_current_qte} Units in Stock')
+                        
                             # Update the stock
                             item.get_current_qte -= order.quantity
                             item.save()
@@ -114,12 +115,13 @@ class SaleCreateView(View):
 def get_item_price(request):
     item_id = request.GET.get('item_id')
     try:
-        item = Stock.objects.get(id=int(item_id))
+        item = Stock.objects.get(pk=item_id)
         price = item.item.price
         description = item.item.description
         return JsonResponse({'price': price,'description':description}) 
     except Stock.DoesNotExist:
         return JsonResponse({'price': None})
+
     
 
 def SaleDetailView(request, pk):
@@ -291,15 +293,14 @@ class SaleToDealerCreateView(View):
 
                                     # Fetch stock with row lock
                                     try:
-                                        item = Stock.objects.get(item_id=order.item.item)
+                                        item = Stock.objects.get(item_id=order.item.pk)
                                     except Stock.DoesNotExist:
-                                        order_form.add_error(None, 'Item does not exist in stock')
+                                        messages.error(request,f'Item does not exist in stock')
                                         raise ValidationError('Item does not exist in stock')
 
                                     # Check stock availability
                                     if item.get_current_qte < order.quantity:
-                                        order_form.add_error(None, f'Insufficient stock for {order.item.item_name}')
-                                        raise ValidationError(f'Insufficient stock for {order.item.item_name}')
+                                        messages.error(request, f'Insufficient stock for {item.item.name}: {order.item.get_current_qte} Units in Stock')
 
                                     # Update stock and save order
                                     item.get_current_qte -= order.quantity
@@ -318,9 +319,10 @@ class SaleToDealerCreateView(View):
                         return redirect('sale:dealer-blocked-error')  # Dealer inactive
                         
             except ValidationError as e:
-                sale_to_dealer_form.add_error(None, str(e))
+                print(f"Validation error: {e}")
+                
             except Exception as e:
-                sale_to_dealer_form.add_error(None, f"Error saving sale: {e}")
+                print(f"Error saving sale: {e}")
 
         # Re-render form with errors
         context = {
@@ -401,6 +403,37 @@ def generate_bonLivraison_pdf(request, sale_id):
     # Return the PDF as an attachment
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="BL{sale_id}.pdf"'
+    return response
+# /////////////////////////////// Ticket for sale dealer //////////////
+def generate_sale_ticket_to_dealer(request, sale_id):
+    sale = get_object_or_404(SaleToDealer, id=sale_id)
+    dealer = sale.dealer
+    # Gather all the necessary data for the ticket
+    context = {
+        'company_info': {
+            'name': 'Nina Bazar',
+            'info': 'RC1021 ICE:001680586000002 PATENTE:49659021',
+            'address': 'AV YOUSSEF BEN TACHFINE N138 GUELMIM',
+            'phone': '06 72 38 17 47'
+        },
+        'sale': sale,
+        'dealer': dealer,
+        'items': sale.order_line_set.all(),  # Retrieve related inline orders
+        'total_items': sale.total_of_items,
+        'static_url': request.build_absolute_uri(static('')),
+        'HT_total': sale.get_HT,
+        'TVA_total': sale.get_TVA,
+        'TTC_total': sale.get_TTC,
+        
+       
+   }
+
+    # Render the ticket template with sale details
+    html_string = render_to_string('sale/ticket_to_dealer.html', context)
+    html = HTML(string=html_string,base_url=request.build_absolute_uri())
+    pdf_file = html.write_pdf()
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="SO{sale.pk}.pdf"'
     return response
 #////////////////////////////// Monthly Payment /////////////////////////////
 class MonthlyPaymentCreateView(View):
@@ -542,8 +575,8 @@ class RefundCreateView(View):
                             try:
                                 item = Stock.objects.get(id=order.item_id)
                             except Stock.DoesNotExist:
-                                order_form.add_error(None, 'Item does not exist')
-                                raise
+                                messages.error(request,f'Item does not exist in stock')
+                                raise ValidationError('Item does not exist in stock')
 
                             item.get_current_qte += order.quantity
                             item.save()
@@ -614,8 +647,8 @@ class RefundDealerCreateView(View):
                             try:
                                 item = Stock.objects.get(id=order.item_id)
                             except Stock.DoesNotExist:
-                                refund_form.add_error(None, 'Item does not exist')
-                                raise
+                                messages.error(request,f'Item does not exist in stock')
+                                raise ValidationError('Item does not exist in stock')
 
                             item.get_current_qte += order.quantity
                             item.save()
@@ -686,7 +719,7 @@ class RefundDealerCreateView(View):
 
             
 def RefundDealerDetails(request,pk):
-    refund = get_object_or_404(Refund, pk=pk)
+    refund = get_object_or_404(RefundFromDealer, pk=pk)
     sale = refund.sale
     context={
         'refund':refund,

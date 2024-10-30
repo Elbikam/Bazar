@@ -51,6 +51,7 @@
     <!-- Download PDF Button -->
     <a href="{% url 'sale:generate_facture_pdf' sale_id=sale_to_dealer.pk %}" class="btn btn-primary" download="ticket-{{ sale_to_dealer.pk }}.pdf">facture pdf</a>
     <a href="{% url 'sale:generate_bonlivraison_pdf' sale_id=sale_to_dealer.pk %}" class="btn btn-primary" download="ticket-{{ sale_to_dealer.pk }}.pdf">Bon Livraison</a>
+    <a href="{% url 'sale:generate_ticket_dealer_pdf' sale_id=sale_to_dealer.pk %}" class="btn btn-primary" download="ticket-{{ sale_to_dealer.pk }}.pdf">Ticket</a>
 </div>
 
 <!-- Print Styles -->

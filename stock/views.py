@@ -55,7 +55,7 @@ class ItemListView(ListView):
         return context
     
 class ReceiptCreateView(View):
-    template_name = 'stock/receiptitem_form.html'
+    template_name = 'stock/receipt_form.html'
 
     def get(self, request, *args, **kwargs):
         receipt_form = ReceiptForm()
@@ -85,17 +85,17 @@ class ReceiptCreateView(View):
                         receipt_item.receipt = receipt  # link foreign key
                         receipt_item.save()
 
-            messages.success(request, 'Receipt created successfully!')
+          
             return redirect('stock:receipt-detail', pk=receipt.pk)
 
         else:
             messages.error(request, 'There was an error with your form. Please check and try again.')
 
-        context = {
-            'receipt_form': receipt_form,
-            'items': items,
-        }
-        return render(request, self.template_name, context)
+            context = {
+                'receipt_form': receipt_form,
+                'items': items,
+            }
+            return render(request, self.template_name, context)
 
 
 class ReceiptDetailView(DetailView):
@@ -119,11 +119,11 @@ class StockAlertCreateView(View):
         form = StockAlertForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Stock alert created successfully!')
+            # messages.success(request, 'Stock alert created successfully!')
             return redirect('stock:alert_success')  # Redirect to a success page
         else:
-            messages.error(request, 'There were errors in the form. Please correct them.')  # Error message
-        return render(request, self.template_name, {'form': form})
+            # messages.error(request, 'There were errors in the form. Please correct them.')  # Error message
+            return render(request, self.template_name, {'form': form})
     
 class AlertSuccessView(View):
     def get(self, request):

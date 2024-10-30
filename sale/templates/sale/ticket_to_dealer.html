@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: monospace; /* Use monospace font for consistent character width */
+            font-size: 8px; /* Adjust font size as needed */
+            margin: 2px; /* Minimize margins */
+            line-height: 1.2; /* Reduce line spacing for more content */
+            width: 57mm; /* Set paper width explicitly (optional) */
+        }
+
+        table, th, td {
+            border: 0; /* Remove table borders for a cleaner look */
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1px; /* Minimal padding */
+            text-align: left; /* Align text to the left */
+        }
+
+        .center {
+            text-align: center; /* Center alignment for specific elements */
+        }
+
+        .logo {
+            width: 100%; /* Scale logo to fit available width */
+        }
+    </style>
+</head>
+<body>
+    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+    <div class="center">
+        <p style="font-size: 10px;">{{ company_info.name }}</p>
+        <p>{{ company_info.address }}</p>
+        <p>{{ company_info.phone }}</p>
+    </div>
+    <h3 class="center">Revendeur: {{ dealer.name }}</h3>
+    <h3 class="center">Sale ID: {{ sale.pk }}</h3>
+    <p>Date:{{sale.date|date:"d/m/Y H:i:s"}}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Sub</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.item.pk|truncatechars:13 }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.get_subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h4 class="center">HT: {{ HT_total }}</h4>
+    <h4 class="center">TVA: {{ TVA_total }}</h4>
+    <h4 class="center">TTC: {{ TTC_total }}</h4>
+    <h4 class="center">{{ sale.total_of_items }} items</h4>
+    <h2>Payments</h2>
+    <h4 class="center">Balance: {{ dealer.balance }}</h4>
+
+       
+</body>
+</html>
+
+

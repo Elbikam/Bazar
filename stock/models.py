@@ -22,7 +22,7 @@ class Item(models.Model):
 
 
 class Stock(models.Model):
-    item = models.OneToOneField(Item, on_delete=models.DO_NOTHING, related_name='stock')
+    item = models.OneToOneField(Item, on_delete=models.DO_NOTHING, related_name='stock',primary_key=True)
     current_quantity = models.PositiveIntegerField(default=0)
     unit_by_carton = models.PositiveIntegerField(default=1)
 
@@ -63,23 +63,39 @@ class Stock(models.Model):
 
 class Receipt(models.Model):
     date = models.DateField(auto_now_add=True)  # Only set on creation
-    bon_de_livrason = models.CharField(max_length=50)
+    bon_de_livraison = models.CharField(max_length=50)
     qte_total = models.PositiveIntegerField()
     qte_by_carton = models.PositiveIntegerField()
 
-    def receipt_items(self):
-        return self.items.all()
-
+    @property
+    def get_receipt_items(self):
+        return self.items.count()
+    @property
+    def get_qte_carton(self):
+        total_carton = 0
+        items = self.items.all()
+        for item in items:
+            carton = item.quantity//item.unit_by_carton 
+            total_carton += carton
+        return total_carton    
+    @property
+    def get_qte_total(self):
+        qteTotal = 0
+        items = self.items.all()
+        for item in items:
+            qteTotal += item.quantity
+        return qteTotal
+        
     def __str__(self):
         return f"Receipt:{self.pk}"
 
 
 class ReceiptItem(models.Model):
-    receipt = models.ForeignKey(Receipt, related_name='items', on_delete=models.DO_NOTHING, null=True, verbose_name="Receipt")
+    receipt = models.ForeignKey(Receipt,  related_name='items',on_delete=models.DO_NOTHING, null=True, verbose_name="Receipt",blank=True)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, blank=True, null=True)
     quantity = models.PositiveIntegerField()
-    unit_by_carton = models.CharField(max_length=50, blank=True, null=True)
+    unit_by_carton = models.PositiveSmallIntegerField()
     def save(self, *args, **kwargs):
         """
         Overrides the save method to ensure the Stock entry for the item exists.
@@ -94,7 +110,10 @@ class ReceiptItem(models.Model):
         stock.qte_by_carton = self.unit_by_carton
         stock.save()
   
-
+    @property
+    def qte_by_carton(self):
+        carton = self.quantity//self.unit_by_carton
+        return carton
 
     def delete(self, *args, **kwargs):
         """
@@ -111,9 +130,18 @@ class ReceiptItem(models.Model):
 
 
 class StockAlert(models.Model):
-    item = models.OneToOneField(Stock, on_delete=models.DO_NOTHING,null=True, blank=True)
+    item = models.ForeignKey(Stock, on_delete=models.DO_NOTHING,null=True, blank=True)
     threshold = models.PositiveIntegerField()  # Minimum stock level before alert
     created_at = models.DateTimeField(auto_now_add=True)
+   
+    def save(self, *args, **kwargs):
+        # Check if an alert for the same item already exists
+        if StockAlert.objects.filter(item=self.item).exists():
+            # Update the threshold for the existing alert without calling save again
+            StockAlert.objects.filter(item=self.item).update(threshold=self.threshold)
+        else:
+            # Create a new alert if no existing alert is found
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Alert for {self.item}: Threshold {self.threshold}"
@@ -122,11 +150,3 @@ class StockAlert(models.Model):
 
 
 
-class Notification(models.Model):
-    title = models.CharField(max_length=100)
-    message = models.TextField()
-    created_at = models.DateTimeField(default=timezone.now)
-    read = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.title

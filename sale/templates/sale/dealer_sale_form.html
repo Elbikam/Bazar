@@ -6,6 +6,13 @@
 <h3> Create Sale to Dealer </h3>
 <hr>
 <div class="col-md-4">
+    {% if messages %}
+    <ul class="messages" style="color: red;">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <form id="sale-order-form" action="" method="post">{% csrf_token %}
         <div class="form-group">
             {{ sale_to_dealer_form|crispy }}  
