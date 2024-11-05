@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 class Item(models.Model):
     CAT_CHOICES = [
@@ -62,6 +63,7 @@ class Stock(models.Model):
 
 
 class Receipt(models.Model):
+    user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
     date = models.DateField(auto_now_add=True)  # Only set on creation
     bon_de_livraison = models.CharField(max_length=50)
     qte_total = models.PositiveIntegerField()

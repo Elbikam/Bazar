@@ -1,16 +1,44 @@
-# from django.contrib import admin
 
-# # Register your models here.
-# # stock/admin.py
+from django.contrib import admin
+from .models import Item, Stock, Receipt, ReceiptItem, StockAlert
 
-# # stock/admin.py
+class ReceiptItemInline(admin.TabularInline):  # Correctly inheriting from admin.TabularInline
+    model = ReceiptItem
+    extra = 1  # Number of empty forms to show in the inline section
 
+@admin.register(Item)
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'category', 'price')
+    search_fields = ('name', 'category')
+    list_filter = ('category',)
 
-# from .models import Item, The,Parfum
+@admin.register(Stock)
+class StockAdmin(admin.ModelAdmin):
+    list_display = ('item', 'current_quantity', 'unit_by_carton', 'quantity_by_crtn')
+    readonly_fields = ('quantity_by_crtn',)
+    search_fields = ('item__name',)
+    actions = ['check_stock_alert']
 
-# class ItemAdmin(admin.ModelAdmin):
-#     list_display = ('id', 'item', 'description', 'price','initial_quantity','alert_qte','qte_inStock')
-#     search_fields = ('item', 'description')
+    def check_stock_alert(self, request, queryset):
+        for stock in queryset:
+            stock.check_stock_alert()
+        self.message_user(request, "Stock alerts checked for selected items.")
+    check_stock_alert.short_description = "Check stock alerts for selected items"
 
+@admin.register(Receipt)
+class ReceiptAdmin(admin.ModelAdmin):
+    list_display = ('date', 'bon_de_livraison', 'get_qte_total', 'get_qte_carton')
+    search_fields = ('bon_de_livraison',)
+    inlines = [ReceiptItemInline]  # Including the ReceiptItem inline
 
+@admin.register(ReceiptItem)
+class ReceiptItemAdmin(admin.ModelAdmin):
+    list_display = ('receipt', 'item', 'quantity', 'qte_by_carton')
+    search_fields = ('item__name', 'receipt__bon_de_livraison')
+
+@admin.register(StockAlert)
+class StockAlertAdmin(admin.ModelAdmin):
+    list_display = ('item', 'threshold', 'created_at')
+    search_fields = ('item__item__name',)
+    list_filter = ('created_at',)
 

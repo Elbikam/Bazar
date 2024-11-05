@@ -43,8 +43,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'crispy_forms',
-    'crispy_bootstrap5',
+    "crispy_forms",
+    "crispy_bootstrap5",
    
    
  
@@ -58,6 +58,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # "Nina_Bazar.middleware.LoginRequiredMiddleware",
 ]
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # When we get to crispy forms:)
@@ -76,6 +77,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "stock.context_processors.stock_alerts",
+                "sale.context_processors.operations",
             ],
         },
     },
@@ -149,3 +151,16 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 ADMIN_SITE_HEADER = "My administration"
+login_url = 'dashboard:login'
+
+
+
+
+
+
+
+
+
+
+
+

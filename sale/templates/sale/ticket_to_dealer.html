@@ -43,7 +43,7 @@
     <table>
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Description</th>
                 <th>Qty</th>
                 <th>Price</th>
                 <th>Sub</th>
@@ -52,7 +52,7 @@
         <tbody>
             {% for item in items %}
             <tr>
-                <td>{{ item.item.pk|truncatechars:13 }}</td>
+                <td>{{ item.description}}</td>
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.price }}</td>
                 <td>{{ item.get_subtotal }}</td>

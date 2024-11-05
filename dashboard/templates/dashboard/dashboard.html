@@ -1,40 +1,73 @@
 {% extends "dashboard/base.html" %}
-{% load static %}
-{% block head %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/dashboard.css' %}">
-{% endblock %}
+{% block title %}Dashboard{% endblock %}
 {% block content %}
-<div class="dashboard">
-    <div class="metrics">
-        <div class="metric">
-            <h3>Total Sales</h3>
-            <p>{{ total_sales }}</p>
+<div class="container mt-4">
+    <div class="row g-4"> <!-- Added gap for better spacing between columns -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary fw-bold">Total Sales to Distributors </h5>
+                    <p class="card-text display-6 text-dark">{{ total_sales_to_distributor|default:"0.00"|floatformat:2 }}</p>
+                </div>
+            </div>
         </div>
-        <div class="metric">
-            <h3>Total Orders</h3>
-            <p>{{ total_orders }}</p>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary fw-bold">Number of Transactions</h5>
+                    <p class="card-text display-6 text-dark">{{ transaction }}</p>
+                </div>
+            </div>
         </div>
-        <div class="metric">
-            <h3>Total Revenue</h3>
-            <p>{{ total_revenue|floatformat:2 }} MAD</p>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary fw-bold">Total Refunds</h5>
+                    <p class="card-text display-6 text-dark">{{ total_refunds_today|default:"0.00"|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary fw-bold">Total Cash</h5>
+                    <p class="card-text display-6 text-dark">{{ total_cash_payments_today|default:"0.00"|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary fw-bold">Total Monthly Payments</h5>
+                    <p class="card-text display-6 text-dark">{{ total_monthly_payments_today|default:"0.00"|floatformat:2 }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 bg-light">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary fw-bold"> Total Sales to Individuals</h5>
+                    <p class="card-text display-6 text-dark">{{  total_sales_to_individuals|default:"0.00"|floatformat:2 }}</p>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="recent-sales">
-        <h2>Recent Sales</h2>
-        <ul>
-            {% for sale in recent_sales %}
-                <li>{{ sale.sale_id }} - {{ sale.date|date:"d/m/Y H:i" }} - {{ sale.get_TTC }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    <div class="notifications">
-        <h2>Notifications</h2>
-        <ul>
-            {% for notification in notifications %}
-                <li>{{ notification.title }}: {{ notification.message }} ({{ notification.created_at|date:"d/m/Y H:i" }})</li>
+
+    <div class="mt-5">
+        <h2 class="text-secondary fw-bold">Notifications</h2>
+        <ul class="list-unstyled mt-3">
+            {% for alert in stock_alerts %}
+                <li class="text-danger fw-bold">{{ alert }}</li>
+            {% empty %}
+                <li class="text-muted">No stock alerts at the moment.</li>
             {% endfor %}
         </ul>
     </div>
 </div>
 {% endblock %}
+
 

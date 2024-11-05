@@ -4,6 +4,7 @@
 {% load crispy_forms_tags %}
 <h3> Refund Details</h3>
 <p><strong>Refund ID:</strong> {{ refund.pk }}</p>
+<p><strong>Dealer:</strong> {{ dealer }}</p>
 <p><strong> Sale ID:</strong>{{sale.pk}}</p>
 <p><strong>Date:</strong> {{ refund.date|date:"d/m/Y H:i:s" }}</p>
 
@@ -42,7 +43,9 @@
 
 <h2>Refund Payments</h2>
 <p><strong>Amount refunded :</strong> {{refund.get_TTC}}</p>
-
-
+<div class="pdf-buttons">
+    <!-- Download PDF Button -->
+    <a href="{% url 'sale:generate_refund' refund_id=refund.pk %}" class="btn btn-primary" download="ticket-{{ refund.pk }}.pdf">Ticket PDF</a>
+</div>
 
 {% endblock %}

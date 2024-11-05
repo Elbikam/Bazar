@@ -4,9 +4,11 @@ from stock.models import Stock
 from decimal import Decimal
 from django.core.validators import RegexValidator
 from django.db.models import Sum
+from django.contrib.auth.models import User
 
 # Abstract Commun Class
 class Commun(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date = models.DateTimeField(auto_now=True)
 
     @property
@@ -37,7 +39,8 @@ class Sale(Commun):
 
     def __str__(self):
         return f"SO{self.pk}"
-
+class SaleToPersone(Sale):
+    pass
 # Refund Model
 class Refund(Commun):
     CAT_CHOICES = [
@@ -239,6 +242,7 @@ class CashPayment(Payment):
 
 # Monthly Payment Subclass
 class MonthlyPayment(Payment):
+    user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
     dealer = models.ForeignKey(Dealer, on_delete=models.PROTECT)
     
     def save(self, *args, **kwargs):
@@ -269,3 +273,9 @@ class SalePayment(models.Model):
     def __str__(self):
         return f"Payment for {self.sale} - Amount Paid: {self.amount_paid}"
 
+# Refund From Dealer
+class RefundDealerPayment(Payment):
+    pass
+# Refund Normal from a person 
+class RefundNormal(Refund):
+    pass

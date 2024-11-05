@@ -41,6 +41,26 @@
     <h3 class="center">{{ dealer.name }}</h3>
     <p>Date: {{date|date:"d/m/Y H:i:s"}}</p>
     <p>Refund ID: {{refund.pk}}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Sub</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in refund.refund_line_set.all %}
+            <tr>
+                <td>{{ item.description}}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.get_subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
     <p><strong>Amount refunded:</strong> {{ amount }}</p>
     <p><strong>Balance:</strong>{{dealer.get_balance }}</p>

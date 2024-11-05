@@ -14,12 +14,15 @@ from django.db import transaction
 from django.forms import inlineformset_factory
 from django.views.generic import DetailView
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
 #////////////////////////////// Function check is empty form ///////////////////////////////////////
 def is_form_not_empty(form):
     return any(field.value() for field in form if field.name != 'DELETE')
 
 def is_formset_not_empty(formset):
     return any(is_form_not_empty(form) for form in formset)
+
 # //////////////////////////////////////////////////////
 class ItemCreateView(CreateView):
     model = Item
@@ -54,7 +57,8 @@ class ItemListView(ListView):
         context['form'] = ItemSearchForm(self.request.GET)  
         return context
     
-class ReceiptCreateView(View):
+class ReceiptCreateView(LoginRequiredMixin,View):
+    login_url = 'dashboard:login' 
     template_name = 'stock/receipt_form.html'
 
     def get(self, request, *args, **kwargs):
@@ -72,6 +76,7 @@ class ReceiptCreateView(View):
         if receipt_form.is_valid() and items.is_valid():
             with transaction.atomic():
                 receipt = receipt_form.save(commit=False)
+                receipt.user = request.user
                 receipt.save()
 
                 for receipt_item_form in items:

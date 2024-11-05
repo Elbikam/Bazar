@@ -6,7 +6,7 @@ from django.utils import timezone
 # /////////////////////// sale Form ////////////////////////////////
 class SaleForm(forms.ModelForm):
     class Meta:
-        model = Sale
+        model = SaleToPersone
         fields = [] 
         exclude = ['date']  
 
@@ -91,7 +91,7 @@ class MonthlyPaymentForm(forms.ModelForm):
 # #//////////////////////////////////////////// Refund Sale //////////////////////////////////////////////////
 class RefundForm(forms.ModelForm):
     class Meta:
-        model = Refund
+        model = RefundNormal
         fields = ['so','reason'] 
       
 class RefundFromDealerForm(forms.ModelForm):

@@ -25,6 +25,9 @@ from datetime import timedelta
 from django.http import JsonResponse
 from django.views.generic import TemplateView
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
+from django.urls import path
 
 #////////////////////////////// Function check is empty form ///////////////////////////////////////
 def is_form_not_empty(form):
@@ -32,10 +35,12 @@ def is_form_not_empty(form):
 
 def is_formset_not_empty(formset):
     return any(is_form_not_empty(form) for form in formset)
-
 #/////////////////////////// Sale ///////////////////////////////////////////
-class SaleCreateView(View):
+
+class SaleCreateView(LoginRequiredMixin,View):
+    login_url = 'dashboard:login'  
     template_name = 'sale/order_form.html' 
+
 
     def get(self, request, *args, **kwargs):       
         sale_form = SaleForm()
@@ -59,6 +64,7 @@ class SaleCreateView(View):
                 with transaction.atomic():
                     # Save the Sale
                     sale = sale_form.save(commit=False)
+                    sale.user = request.user
                     sale.save()
 
                     # Save Orders              
@@ -68,7 +74,7 @@ class SaleCreateView(View):
 
                             # Check if the item exists and retrieve the stock
                             try:
-                                item = Stock.objects.get(item_id=order.item.item)
+                                item = Stock.objects.get(item=order.item.item)
                             except Stock.DoesNotExist:
                                 messages.error(request,f'Item does not exist in stock')
                                 raise ValidationError('Item does not exist in stock')
@@ -115,7 +121,7 @@ class SaleCreateView(View):
 def get_item_price(request):
     item_id = request.GET.get('item_id')
     try:
-        item = Stock.objects.get(pk=item_id)
+        item = Stock.objects.get(item=item_id)
         price = item.item.price
         description = item.item.description
         return JsonResponse({'price': price,'description':description}) 
@@ -165,7 +171,8 @@ def generate_sale_ticket(request, sale_id):
     response['Content-Disposition'] = f'inline; filename="SO{sale_id}.pdf"'
     return response
 # #/////////////////////////////// Devis /////////////////////////////////
-class DevisCreateView(View):
+class DevisCreateView(LoginRequiredMixin,View):
+    login_url = 'dashboard:login'  
     template_name = 'sale/devis_form.html'  
 
     def get(self, request, *args, **kwargs):      
@@ -184,6 +191,7 @@ class DevisCreateView(View):
             with transaction.atomic():
                 # Save the Sale
                 devis = devis_form.save(commit=False)
+                devis.user = request.user
                 devis.save()
 
                 # Save Orders              
@@ -224,7 +232,8 @@ def generate_devis_pdf(request, devis_id):
     return response
 
 # ////////////////////////////////////// Vendor //////////////////////////////////////
-class DealerCreate(View):
+class DealerCreate(LoginRequiredMixin,View):
+    login_url = 'dashboard:login'  
     template_name = 'sale/dealer_form.html'
 
     def get(self, request, *args, **kwargs):
@@ -250,7 +259,8 @@ def safe_decimal_conversion(value):
         return Decimal(value or '0.00')
 
 
-class SaleToDealerCreateView(View):
+class SaleToDealerCreateView(LoginRequiredMixin,View):
+    login_url = 'dashboard:login'  
     template_name = 'sale/dealer_sale_form.html'
 
     def get(self, request, *args, **kwargs):
@@ -284,6 +294,7 @@ class SaleToDealerCreateView(View):
                     if dealer.is_active:
                         if dealer.balance + total_sale <= dealer.balance_limit:
                             # Save the sale since balance is within the limit
+                            sale.user = request.user
                             sale.save()
 
                             # Process Orders
@@ -293,7 +304,7 @@ class SaleToDealerCreateView(View):
 
                                     # Fetch stock with row lock
                                     try:
-                                        item = Stock.objects.get(item_id=order.item.pk)
+                                        item = Stock.objects.get(item=order.item.pk)
                                     except Stock.DoesNotExist:
                                         messages.error(request,f'Item does not exist in stock')
                                         raise ValidationError('Item does not exist in stock')
@@ -436,7 +447,8 @@ def generate_sale_ticket_to_dealer(request, sale_id):
     response['Content-Disposition'] = f'inline; filename="SO{sale.pk}.pdf"'
     return response
 #////////////////////////////// Monthly Payment /////////////////////////////
-class MonthlyPaymentCreateView(View):
+class MonthlyPaymentCreateView(LoginRequiredMixin,View):
+    login_url = 'dashboard:login'  
     template_name = 'sale/monthly_payment_form.html'
 
     def get(self, request):
@@ -469,6 +481,7 @@ class MonthlyPaymentCreateView(View):
 
             # Create the MonthlyPayment instance first
             monthly_payment = MonthlyPayment(dealer=dealer, amount=amount_paid)
+            monthly_payment.user = request.user
             monthly_payment.save()  # Save it to the database first
 
             # Apply FIFO logic using transaction.atomic for safety
@@ -543,7 +556,8 @@ def generate_recu(request, payment_id):
     return response                   
 
 # #///////////////// return Sale /////////////////////////////////
-class RefundCreateView(View):
+class RefundCreateView(LoginRequiredMixin,View):
+    login_url = 'dashboard:login' 
     template_name = 'sale/refund_form.html'  
 
     def get(self, request, *args, **kwargs):       
@@ -566,6 +580,7 @@ class RefundCreateView(View):
                     refund = refund_form.save(commit=False)
                     sale = Sale.objects.get(id=refund.so) #link to sale as foreign key
                     refund.sale = sale
+                    refund.user = request.user
                     refund.save()
                     
                     # Save Orders              
@@ -573,7 +588,7 @@ class RefundCreateView(View):
                         if is_form_not_empty(order_form): 
                             order = order_form.save(commit=False)
                             try:
-                                item = Stock.objects.get(id=order.item_id)
+                                item = Stock.objects.get(item=order.item_id)
                             except Stock.DoesNotExist:
                                 messages.error(request,f'Item does not exist in stock')
                                 raise ValidationError('Item does not exist in stock')
@@ -616,7 +631,8 @@ def RefundDetails(request,pk):
 
 # ///////////////////// Refund from  dealer ///////////////////
 
-class RefundDealerCreateView(View):
+class RefundDealerCreateView(LoginRequiredMixin,View):
+    login_url = 'dashboard:login' 
     template_name = 'sale/refund_dealer_form.html'  
 
     def get(self, request, *args, **kwargs):       
@@ -638,6 +654,7 @@ class RefundDealerCreateView(View):
                     refund = refund_form.save(commit=False)
                     sale = Sale.objects.get(id=refund.so) #link to sale as foreign key
                     refund.sale = sale
+                    refund.user = request.user
                     refund.save()
                     
                     # Save refunds            
@@ -645,7 +662,7 @@ class RefundDealerCreateView(View):
                         if is_form_not_empty(refund_form): 
                             order = refund_form.save(commit=False)
                             try:
-                                item = Stock.objects.get(id=order.item_id)
+                                item = Stock.objects.get(item=order.item_id)
                             except Stock.DoesNotExist:
                                 messages.error(request,f'Item does not exist in stock')
                                 raise ValidationError('Item does not exist in stock')
@@ -655,7 +672,7 @@ class RefundDealerCreateView(View):
                             order.refund= refund
                             order.save()
                     # Create in RefundPayment
-                    refund_payment =RefundPayment.objects.create(
+                    refund_payment =RefundDealerPayment.objects.create(
                             amount=refund.get_TTC,
                         )
                     dealer = refund.dealer
@@ -721,11 +738,13 @@ class RefundDealerCreateView(View):
 def RefundDealerDetails(request,pk):
     refund = get_object_or_404(RefundFromDealer, pk=pk)
     sale = refund.sale
+    dealer= refund.dealer
     context={
         'refund':refund,
         'sale': sale,
+        'dealer':dealer,
     }
-    return render(request, 'sale/refund_detail.html',context)            
+    return render(request, 'sale/refund_dealer_detail.html',context)            
 
 #////////////////////// generate refund from dealer //////////////
 def generate_refund(request, refund_id):
@@ -753,3 +772,4 @@ def generate_refund(request, refund_id):
     response = HttpResponse(pdf_file, content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="R{refund.pk}.pdf"'
     return response     
+#////////////////////// generate refund from dealer //////////////

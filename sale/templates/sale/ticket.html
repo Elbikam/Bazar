@@ -42,7 +42,7 @@
     <table>
         <thead>
             <tr>
-                <th>Desc.</th>
+                <th>Description</th>
                 <th>Qty</th>
                 <th>Price</th>
                 <th>Sub</th>
@@ -51,7 +51,7 @@
         <tbody>
             {% for item in items %}
             <tr>
-                <td>{{ item.description|truncatechars:12 }}</td>
+                <td>{{ item.description}}</td>
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.price }}</td>
                 <td>{{ item.get_subtotal }}</td>
@@ -73,5 +73,6 @@
             <p>No payments have been received yet.</p>
         {% endif %}
         </body>
+    <h4 class="left">Responsable:{{ sale.user }}</h4>    
 </html>
 

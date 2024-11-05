@@ -1,4 +1,4 @@
-from .models import StockAlert,Stock
+from .models import StockAlert
 
 def stock_alerts(request):
     alerts = []
@@ -8,5 +8,6 @@ def stock_alerts(request):
             alerts.append(item)
 
     return {
+
         'stock_alerts': alerts  # Make stock_alerts available in templates
     }
