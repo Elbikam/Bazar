@@ -14,7 +14,6 @@ class HomeView(TemplateView):
 
 
 def login_user(request):
-    
     form = LoginForm()
     if request.method == "POST":
         form = LoginForm(request.POST)

@@ -40,6 +40,7 @@ def is_formset_not_empty(formset):
 class SaleCreateView(LoginRequiredMixin,View):
     login_url = 'dashboard:login'  
     template_name = 'sale/order_form.html' 
+    # redirect_field_name ='dashboard:login' 
 
 
     def get(self, request, *args, **kwargs):       
