@@ -25,9 +25,9 @@ def login_user(request):
                 login(request, user)
                 return redirect('dashboard:dashboard')  # Include the app namespace
             else:
-                messages.error(request, "Invalid username or password.")
                 return render(request, 'dashboard/login.html', {'form': form})
     return render(request, 'dashboard/login.html', {'form': form})
+
 
 
 def logout_user(request):
