@@ -10,20 +10,12 @@
             <input type="text" name="query" class="form-control" placeholder="Search items..." value="{{ form.query.value|default:'' }}">
             <button class="btn btn-outline-secondary" type="submit">Search</button>
         </div>
-
-        <div class="row mb-3">
-            <div class="col">
-                {{ form.category.label }}<br>
-                {{ form.category }}
-            </div>
-        </div>
     </form>
     <table class="table">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Category</th>
                 <th>Description</th>
                 <th>Price</th>
             </tr>
@@ -33,7 +25,6 @@
             <tr>
                 <td>{{ item.id }}</td>
                 <td>{{ item.name }}</td>
-                <td>{{ item.get_category_display }}</td>
                 <td>{{ item.description }}</td>
                 <td>{{ item.price }}</td>
             {% empty %}
@@ -43,6 +34,6 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="{% url 'stock:create_item' %}" class="btn btn-primary">Add New Item</a>
+    <a href="{% url 'dashboard:dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
 </div>
 {% endblock %}

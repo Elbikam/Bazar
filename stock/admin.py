@@ -6,11 +6,7 @@ class ReceiptItemInline(admin.TabularInline):  # Correctly inheriting from admin
     model = ReceiptItem
     extra = 1  # Number of empty forms to show in the inline section
 
-@admin.register(Item)
-class ItemAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'category', 'price')
-    search_fields = ('name', 'category')
-    list_filter = ('category',)
+
 
 @admin.register(Stock)
 class StockAdmin(admin.ModelAdmin):

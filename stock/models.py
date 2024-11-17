@@ -6,20 +6,37 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 class Item(models.Model):
-    CAT_CHOICES = [
-        ('THE VERT', 'THE VERT'),
-        ('BAZAR', 'BAZAR'),
-        ('PARFUM', 'PARFUM')
-    ]
-
     id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=30)
-    category = models.CharField(max_length=10, choices=CAT_CHOICES)
+    # category = models.CharField(max_length=10, choices=CAT_CHOICES)
     description = models.CharField(max_length=100, blank=True)
     price = models.DecimalField(max_digits=10,decimal_places=2)
 
     def __str__(self):
         return self.name
+class The(Item):
+    REF_CHOICES = [
+        ('9366', '9366'),
+        ('9371', '9371'),
+        ('4011', '4011'),
+        ('41022', '41022'),
+        ('3505B', '3505B'),
+    ]
+    CAT_CHOICES = [
+        ('CHENMEE', 'CHENMEE'),
+        ('GUNPOWDER ', 'GUNPOWDER '),
+    ]
+    WEIGHt_CHOICES = [
+        ('100','100'),
+        ('200','200'),
+        ('500','500'),
+        ('1000','1000'),
+        ('2000','2000'),
+        ('3000', '3000'),
+    ]
+    ref = models.CharField(max_length=15, choices=REF_CHOICES)
+    category = models.CharField(max_length=15, choices=CAT_CHOICES)
+    weight = models .CharField(max_length=10, choices=WEIGHt_CHOICES)
 
 
 class Stock(models.Model):

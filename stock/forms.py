@@ -1,13 +1,14 @@
 from django import forms
-from .models import Item,ReceiptItem,StockAlert,Receipt
+from .models import *
 from django.views.generic import ListView
 from django.forms import modelformset_factory
 from django.forms.models import inlineformset_factory
 from django.core.exceptions import ValidationError
-class ItemForm(forms.ModelForm):
+#////////////////////////////////////////////////////////////////
+class TheForm(forms.ModelForm):
     class Meta:
-        model = Item
-        fields = ['id','name', 'category', 'description','price'] 
+        model = The
+        fields = ['id','name', 'description','price','ref','category','weight'] 
 
 
 class ItemListView(ListView):
@@ -58,7 +59,7 @@ ReceiptItemFormSet = inlineformset_factory(
 
 class ItemSearchForm(forms.Form):
     query = forms.CharField(label='Search', max_length=100, required=False)
-    category = forms.ChoiceField(choices=[('', 'All')] + Item.CAT_CHOICES, required=False)
+    # category = forms.ChoiceField(choices=[('', 'All')] + Item.CAT_CHOICES, required=False)
 
 
 
@@ -74,4 +75,4 @@ class StockAlertForm(forms.ModelForm):
 
 class StockSearchForm(forms.Form):
     query = forms.CharField(label='Search for an Item', max_length=100, required=False)
-    category = forms.ChoiceField(label='Category', choices=[('', 'All')] + Item.CAT_CHOICES, required=False)
+    # category = forms.ChoiceField(label='Category', choices=[('', 'All')] + Item.CAT_CHOICES, required=False)

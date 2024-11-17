@@ -5,8 +5,8 @@ from django.views.generic import ListView
 from decimal import Decimal, InvalidOperation,getcontext
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from .models import Item, Receipt,ReceiptItem,StockAlert,Stock
-from .forms import ItemForm, ReceiptItemForm,ItemSearchForm,StockAlertForm,ReceiptItemFormSet,ReceiptForm,StockSearchForm
+from .models import *
+from .forms import TheForm, ReceiptItemForm,ItemSearchForm,StockAlertForm,ReceiptItemFormSet,ReceiptForm,StockSearchForm
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib import messages  # For displaying messages
@@ -24,10 +24,10 @@ def is_formset_not_empty(formset):
     return any(is_form_not_empty(form) for form in formset)
 
 # //////////////////////////////////////////////////////
-class ItemCreateView(CreateView):
-    model = Item
-    form_class = ItemForm
-    template_name = 'stock/item_form.html'
+class TheCreateView(CreateView):
+    model = The
+    form_class = TheForm
+    template_name = 'stock/the_form.html'
     success_url = reverse_lazy('stock:item_list')  # Update with your item list URL name
 
 class ItemListView(ListView):

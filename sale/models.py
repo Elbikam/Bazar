@@ -78,7 +78,7 @@ class Devis(Commun):
         return self.devis_line_set.count()
 
     def __str__(self):
-        return f"Devis {self.pk}"
+        return f"{self.pk}"
 
 # Abstract LineItem Model
 class LineItem(models.Model):
@@ -206,8 +206,7 @@ class SaleToDealer(Sale):
         """Adjust the total amount of the sale for a refund."""
         self.total_amount -= amount
         self.save()
-    def __str__(self):
-        return f"Sale ID:{self.pk},Dealer:{self.dealer}"
+    
 # RefundFromDealer Model
 class RefundFromDealer(Refund):
     dealer = models.ForeignKey(Dealer, on_delete=models.PROTECT)

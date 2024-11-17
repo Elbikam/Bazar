@@ -53,18 +53,18 @@
     <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="width: 220px; height: auto; margin: 0 auto;display: block;margin-top: 20px;">
     <h2 style="font-size: 20;text-align: center;">Bon de Livraison</h2>
     <div class="invoice-info">
-        <p><strong>Dealer:</strong> {{sale_to_dealer.dealer.name}}</p>
-        <p><strong>Sale ID:</strong> {{sale_to_dealer.pk}}</p>
-        <p><strong>Document Date:</strong> {{sale_to_dealer.date|date:"d/m/Y H:i:s"}}</p>
+        <p><strong>Revendeur:</strong> {{sale_to_dealer.dealer.name}}</p>
+        <p><strong>Vente ID:</strong> {{sale_to_dealer.pk}}</p>
+        <p><strong>Date:</strong> {{sale_to_dealer.date|date:"d/m/Y H:i:s"}}</p>
     </div>
     <table>
         <thead>
             <tr>
-                <th>Item No.</th>
+                <th>ID</th>
                 <th>Description</th>
                 <th>Unit/carton</th>
-                <th>Quantity</th>
-                <th>Quantity by Carthon</th>
+                <th>Qte</th>
+                <th>Qte/Carthon</th>
             </tr>
         </thead>
         <tbody>

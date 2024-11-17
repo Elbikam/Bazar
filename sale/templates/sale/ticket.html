@@ -37,15 +37,15 @@
         <p>{{ company_info.address }}</p>
         <p>{{ company_info.phone }}</p>
     </div>
-    <h3 class="center">Sale ID: {{ sale }}</h3>
+    <h3 class="center">Vente ID: {{ sale }}</h3>
     <p>Date:{{sale.date|date:"d/m/Y H:i:s"}}</p>
     <table>
         <thead>
             <tr>
                 <th>Description</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Sub</th>
+                <th>Qte</th>
+                <th>Prix</th>
+                <th>Total HT</th>
             </tr>
         </thead>
         <tbody>
@@ -62,8 +62,8 @@
     <h4 class="center">HT: {{ HT_total }}</h4>
     <h4 class="center">TVA: {{ TVA_total }}</h4>
     <h4 class="center">TTC: {{ TTC_total }}</h4>
-    <h4 class="center">{{ sale.total_of_items }} items</h4>
-    <h2>Payments</h2>
+    <h4 class="center">{{ sale.total_of_items }} article(s)</h4>
+    <h2>Paiment</h2>
         {% if sale_payments %}
             {% for sale_payment in sale_payments %}
                 <p><strong>Amount received:</strong> {{ sale_payment.payment.cashpayment.cash_received }}</p>

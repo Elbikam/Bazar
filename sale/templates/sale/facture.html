@@ -53,19 +53,19 @@
     <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="width: 220px; height: auto; margin: 0 auto;display: block;margin-top: 20px;">
     <h2 style="font-size: 20;text-align: center;">Facture</h2>
     <div class="invoice-info">
-        <p><strong>Dealer:</strong> {{sale_to_dealer.dealer.name}}</p>
-        <p><strong>Sale ID:</strong> {{sale_to_dealer.pk}}</p>
-        <p><strong>Document Date:</strong> {{sale_to_dealer.date|date:"d/m/Y H:i:s"}}</p>
+        <p><strong>Revendeur:</strong> {{sale_to_dealer.dealer.name}}</p>
+        <p><strong>Vente ID:</strong> {{sale_to_dealer}}</p>
+        <p><strong>Date:</strong> {{sale_to_dealer.date|date:"d/m/Y H:i:s"}}</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>Item No.</th>
+                <th>ID</th>
                 <th>Description</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Sub-Total</th>
+                <th>Qte</th>
+                <th>Prix</th>
+                <th>Total HT</th>
             </tr>
         </thead>
         <tbody>
@@ -85,7 +85,7 @@
         <p><strong>Total HT:</strong> {{sale_to_dealer.get_HT}}</p>
         <p><strong>TVA:</strong> {{sale_to_dealer.get_TVA}}</p>
         <p><strong>TTC:</strong> {{sale_to_dealer.get_TTC}}</p>
-        <p><strong>Total qte:</strong> {{sale_to_dealer.total_of_items}}</p>
+        <p><strong></strong> {{sale_to_dealer.total_of_items}} article(s)</p>
     </div>
     <body>
         <footer style="position: absolute; bottom: 0; left: 0; right: 0; text-align: center; padding: 10px;">

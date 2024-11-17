@@ -1,3 +1,4 @@
+<title>Receipt List</title>
 {% extends 'stock/base.html' %}
 {% block content %}
 <h3>Receipt List</h3>
@@ -5,20 +6,22 @@
 <table class="table">
     <thead>
         <tr>
+            <th>Resonsable </th>
             <th>Date</th>
-            <th>BL</th>
-            <th>Actions</th>
+            <th>Bon de Livraison</th>
+            <th>Qte total </th>
+            <th>Qte/Carton</th>
         </tr>
     </thead>
     <tbody>
         {% for receipt in receipts %}
         <tr>
+            <td>{{ receipt.user }}</td>
             <td>{{ receipt.date }}</td>
-            <td>{{ receipt.bl }}</td>
-            <td>
-                <a href="{% url 'stock:receipt_detail' receipt.id %}">View</a>  <!-- Link to receipt detail view -->
-              
-            </td>
+            <td>{{ receipt.bon_de_livraison }}</td>
+            <td>{{ receipt.get_qte_total }}</td>
+            <td>{{ receipt.get_qte_carton }}</td>
+           
         </tr>
         {% empty %}
         <tr>

@@ -68,15 +68,16 @@
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Stock</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'stock:create_receipt' %}" target="_blank">Receipt</a></li>
-                            <li><a class="dropdown-item" href="{% url 'stock:create_item' %}" target="_blank">Item</a></li>
-                            <li><a class="dropdown-item" href="{% url 'stock:item_list' %}" target="_blank">List Items</a></li>
+                            <li><a class="dropdown-item" href="{% url 'stock:receipt_list' %}" target="_blank">List Receipts</a></li>
+                            <li><a class="dropdown-item" href="{% url 'stock:create_the' %}" target="_blank">Create The</a></li>
+                            <li><a class="dropdown-item" href="{% url 'stock:item_list' %}" target="_blank">list items</a></li>
                             <li><a class="dropdown-item" href="{% url 'stock:create_alert' %}" target="_blank">Alert</a></li>
                             <li><a class="dropdown-item" href="{% url 'stock:search_item' %}" target="_blank">Search</a></li>
                         </ul>
                     </li>
                     <!-- Sale Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Sale</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Vente</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'sale:order-create' %}" target="_blank">Order</a></li>
                             <li><a class="dropdown-item" href="{% url 'sale:devis-create' %}" target="_blank">Devis</a></li>
@@ -85,11 +86,11 @@
                     </li>
                     <!-- Dealer Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dealer</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Revendeur</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'sale:dealer-create' %}" target="_blank">New Dealer</a></li>
+                            <li><a class="dropdown-item" href="{% url 'sale:dealer-create' %}" target="_blank">New Revendeur</a></li>
                             <li><a class="dropdown-item" href="{% url 'sale:dealer-list' %}" target="_blank">List</a></li>
-                            <li><a class="dropdown-item" href="{% url 'sale:dealer-sale' %}" target="_blank">Sale</a></li>
+                            <li><a class="dropdown-item" href="{% url 'sale:dealer-sale' %}" target="_blank">Sale to Revendeur</a></li>
                             <li><a class="dropdown-item" href="{% url 'sale:monthly-payment-create' %}" target="_blank">Monthly Payment</a></li>
                             <li><a class="dropdown-item" href="{% url 'sale:refund-dealer-create' %}" target="_blank">Refund</a></li>
                         </ul>

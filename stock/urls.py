@@ -1,7 +1,7 @@
 from django.urls import path
 
 from django.urls import path
-from .views import (ItemCreateView,  ReceiptCreateView,
+from .views import (TheCreateView,  ReceiptCreateView,
                    ItemListView,
                    stock_alert_view,StockAlertCreateView,
                    AlertSuccessView,filter_items,
@@ -14,7 +14,7 @@ app_name = 'stock'
 
 urlpatterns = [
     #Item 
-    path('item/create/', ItemCreateView.as_view(), name='create_item'),
+    path('the/create/', TheCreateView.as_view(), name='create_the'),
     path('receipt/', ReceiptCreateView.as_view(), name='create_receipt'),
     path('items/', ItemListView.as_view(), name='item_list'),
     path('stock-alerts/', stock_alert_view, name='stock_alerts'),
