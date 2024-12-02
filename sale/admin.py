@@ -3,12 +3,12 @@ from .models import Sale, Refund, Devis, Order_Line, Devis_Line, Refund_Line, De
 
 @admin.register(Sale)
 class SaleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'date', 'get_HT', 'total_of_items')
+    list_display = ('id', 'date', 'get_TTC', 'total_of_items')
     search_fields = ('id',)
 
 @admin.register(Refund)
 class RefundAdmin(admin.ModelAdmin):
-    list_display = ('id', 'so', 'sale', 'reason', 'get_HT', 'total_of_items')
+    list_display = ('id', 'so', 'sale', 'reason', 'get_TTC', 'total_of_items')
     search_fields = ('so',)
 
 @admin.register(Devis)
@@ -19,17 +19,17 @@ class DevisAdmin(admin.ModelAdmin):
 @admin.register(Order_Line)
 class OrderLineAdmin(admin.ModelAdmin):
     list_display = ('id', 'sale', 'item', 'quantity', 'price', 'get_subtotal')
-    search_fields = ('sale__id', 'item__description')
+    search_fields = ('sale__id',)
 
 @admin.register(Devis_Line)
 class DevisLineAdmin(admin.ModelAdmin):
     list_display = ('id', 'devis', 'item', 'quantity', 'price', 'get_subtotal')
-    search_fields = ('devis__id', 'item__description')
+    search_fields = ('devis__id',)
 
 @admin.register(Refund_Line)
 class RefundLineAdmin(admin.ModelAdmin):
     list_display = ('id', 'refund', 'item', 'quantity', 'price', 'get_subtotal')
-    search_fields = ('refund__id', 'item__description')
+    search_fields = ('refund__id',)
 
 @admin.register(Dealer)
 class DealerAdmin(admin.ModelAdmin):
@@ -39,7 +39,7 @@ class DealerAdmin(admin.ModelAdmin):
 @admin.register(SaleToDealer)
 class SaleToDealerAdmin(admin.ModelAdmin):
     list_display = ('id', 'dealer', 'date', 'get_TTC', 'amount_due')
-    search_fields = ('dealer__name',)
+    search_fields = ('id',)
 
 @admin.register(RefundFromDealer)
 class RefundFromDealerAdmin(admin.ModelAdmin):
@@ -49,15 +49,12 @@ class RefundFromDealerAdmin(admin.ModelAdmin):
 @admin.register(CashPayment)
 class CashPaymentAdmin(admin.ModelAdmin):
     list_display = ('id', 'amount', 'cash_received', 'get_change')
-    search_fields = ('id',)
+    search_fields = ('payment__id',)
 
 @admin.register(MonthlyPayment)
 class MonthlyPaymentAdmin(admin.ModelAdmin):
     list_display = ('id', 'dealer', 'amount', 'date')
     search_fields = ('dealer__name',)
 
-@admin.register(SalePayment)
-class SalePaymentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'sale', 'payment', 'amount_paid')
-    search_fields = ('sale__id', 'payment__id')
+
 

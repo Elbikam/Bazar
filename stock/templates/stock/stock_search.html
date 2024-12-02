@@ -1,3 +1,4 @@
+<title>Search item</title>
 {% extends 'stock/base.html' %}
 {% block content %}
 {% load static %}
@@ -21,14 +22,14 @@
             </tr>
         </thead>
         <tbody>
-            {% for stock in results %}
+            {% for result in results %}
                 <tr>
-                    <td>{{ stock.item.id }}</td>
-                    <td>{{ stock.item.name }}</td>
-                    <td>{{ stock.item.description }}</td>
-                    <td>{{ stock.qte_by_carton }}Units</td>
-                    <td>{{ stock.quantity_by_crtn}}</td>
-                    <td>{{ stock.current_quantity}}</td>
+                    <td>{{ result.item.pk }}</td>
+                    <td>{{ result.item.name }}</td>
+                    <td>{{ result.item.description }}</td>
+                    <td>{{ result.unit_by_carton }}Units</td>
+                    <td>{{ result.quantity_by_crtn}}</td>
+                    <td>{{ result.current_quantity}}</td>
                 </tr>
             {% endfor %}
         </tbody>

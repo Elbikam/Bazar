@@ -30,10 +30,10 @@ class TheCreateView(CreateView):
     template_name = 'stock/the_form.html'
     success_url = reverse_lazy('stock:item_list')  # Update with your item list URL name
 
-class ItemListView(ListView):
-    model = Item
-    template_name = 'item_list.html'
-    context_object_name = 'items'
+class TheListView(ListView):
+    model = The
+    template_name = 'stock/the_list.html'
+    context_object_name = 'The'
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -188,12 +188,10 @@ def search_item_in_stock(request):
 
     if request.method == 'GET':
         query = request.GET.get('query')
-        category = request.GET.get('category')
 
         if query:
             results = results.filter(item__name__icontains=query) | results.filter(item__description__icontains=query)
 
-        if category:
-            results = results.filter(item__category=category)
+
 
     return render(request, 'stock/stock_search.html', {'form': form, 'results': results})

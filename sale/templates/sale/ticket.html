@@ -66,8 +66,8 @@
     <h2>Paiment</h2>
         {% if sale_payments %}
             {% for sale_payment in sale_payments %}
-                <p><strong>Amount received:</strong> {{ sale_payment.payment.cashpayment.cash_received }}</p>
-                <p><strong>Change:</strong> {{ sale_payment.payment.cashpayment.get_change }}</p> <!-- This assumes the Payment instance is accessible -->
+                <p><strong>Montent:</strong> {{ sale_payment.payment.cashpayment.cash_received }}</p>
+                <p><strong>Rendu:</strong> {{ sale_payment.payment.cashpayment.get_change }}</p> <!-- This assumes the Payment instance is accessible -->
             {% endfor %}
         {% else %}
             <p>No payments have been received yet.</p>

@@ -1,11 +1,12 @@
+<title>item list</title>
 {% extends 'stock/base.html' %}
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
 <div class="container mt-5">
-    <h2>Items</h2>
+    <h2>The</h2>
     <!-- Search Form -->
-    <form method="GET" action="{% url 'stock:item_list' %}">
+    <form method="GET" action="{% url 'stock:the_list' %}">
         <div class="input-group mb-3">
             <input type="text" name="query" class="form-control" placeholder="Search items..." value="{{ form.query.value|default:'' }}">
             <button class="btn btn-outline-secondary" type="submit">Search</button>
@@ -18,15 +19,21 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
+                <th>Ref</th>
+                <th>Category</th>
+                <th>Weight</th>
             </tr>
         </thead>
         <tbody>
-            {% for item in items %}
+            {% for item in The %}
             <tr>
                 <td>{{ item.id }}</td>
                 <td>{{ item.name }}</td>
                 <td>{{ item.description }}</td>
                 <td>{{ item.price }}</td>
+                <td>{{item.ref}}</td>
+                <td>{{item.category}}</td>
+                <td>{{item.weight}}</td>
             {% empty %}
             <tr>
                 <td colspan="4">No items available.</td>
@@ -34,6 +41,6 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="{% url 'dashboard:dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+    <a href="{% url 'stock:create_the' %}" class="btn btn-primary">Back to form The</a>
 </div>
 {% endblock %}

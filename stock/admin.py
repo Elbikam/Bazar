@@ -1,6 +1,6 @@
 
 from django.contrib import admin
-from .models import Item, Stock, Receipt, ReceiptItem, StockAlert
+from .models import *
 
 class ReceiptItemInline(admin.TabularInline):  # Correctly inheriting from admin.TabularInline
     model = ReceiptItem
@@ -23,8 +23,8 @@ class StockAdmin(admin.ModelAdmin):
 
 @admin.register(Receipt)
 class ReceiptAdmin(admin.ModelAdmin):
-    list_display = ('date', 'bon_de_livraison', 'get_qte_total', 'get_qte_carton')
-    search_fields = ('bon_de_livraison',)
+    list_display = ('id','date', 'bon_de_livraison', 'get_qte_total', 'get_qte_carton')
+    search_fields = ('id',)
     inlines = [ReceiptItemInline]  # Including the ReceiptItem inline
 
 @admin.register(ReceiptItem)
@@ -38,3 +38,8 @@ class StockAlertAdmin(admin.ModelAdmin):
     search_fields = ('item__item__name',)
     list_filter = ('created_at',)
 
+@admin.register(The)
+class TheAdmin(admin.ModelAdmin):
+    list_display = ('id','name','description','price','ref','category','weight')
+    search_fields = ('id',)
+    list_filter = ('ref','weight')

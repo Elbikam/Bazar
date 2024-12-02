@@ -26,17 +26,18 @@ class The(Item):
         ('CHENMEE', 'CHENMEE'),
         ('GUNPOWDER ', 'GUNPOWDER '),
     ]
-    WEIGHt_CHOICES = [
-        ('100','100'),
-        ('200','200'),
-        ('500','500'),
-        ('1000','1000'),
-        ('2000','2000'),
-        ('3000', '3000'),
+    WEIGHT_CHOICES = [
+        (100, '100g'),
+        (200, '200g'),
+        (500, '500g'),
+        (1000, '1kg'),
+        (2000, '2kg'),
+        (3000, '3kg'),
     ]
+  
     ref = models.CharField(max_length=15, choices=REF_CHOICES)
     category = models.CharField(max_length=15, choices=CAT_CHOICES)
-    weight = models .CharField(max_length=10, choices=WEIGHt_CHOICES)
+    weight = models.IntegerField(choices=WEIGHT_CHOICES)
 
 
 class Stock(models.Model):
