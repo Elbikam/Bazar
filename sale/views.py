@@ -97,7 +97,7 @@ class SaleCreateView(LoginRequiredMixin,View):
                     payment.save()
 
                     # Create SalePayment to link sale and payment
-                    SalePayment.objects.create(sale=sale, payment=payment, amount_paid=payment.amount)
+                    SalePayment.objects.create(sale=sale, payment=payment, amount_paid=sale.get_TTC)
 
                 # Redirect to sale detail view on success
                 return redirect('sale:sale-detail', pk=sale.pk)

@@ -28,7 +28,7 @@ class TheCreateView(CreateView):
     model = The
     form_class = TheForm
     template_name = 'stock/the_form.html'
-    success_url = reverse_lazy('stock:item_list')  # Update with your item list URL name
+    success_url = reverse_lazy('stock:the_list')  # Update with your item list URL name
 
 class TheListView(ListView):
     model = The

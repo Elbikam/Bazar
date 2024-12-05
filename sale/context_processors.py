@@ -14,7 +14,10 @@ def operations(request):
     sales_to_individual = SaleToPersone.objects.filter(date__date=today)
     total_sales_to_individuals = sum(sale.get_TTC for sale in sales_to_individual) if sales_to_individual else 0
     orders=sum(sale.order_line_set.count() for sale in sales_today) if sales_today else 0
-    transactions = sales_today.count()
+    transaction_today = Payment.objects.filter(date__date=today)
+    transactions = transaction_today.count()
+    
+
 
     # Get today's refunds, cash payments, and monthly payments
     total_refunds_today = RefundPayment.objects.filter(date__date=today).aggregate(total=Sum('amount'))['total'] or 0
