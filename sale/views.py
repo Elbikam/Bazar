@@ -579,7 +579,7 @@ class RefundCreateView(LoginRequiredMixin,View):
                 with transaction.atomic():
                     # Save the Sale
                     refund = refund_form.save(commit=False)
-                    sale = Sale.objects.get(id=refund.so) #link to sale as foreign key
+                    sale = Sale.objects.get(id=refund.so_id) #link to sale as foreign key
                     refund.sale = sale
                     refund.user = request.user
                     refund.save()
@@ -653,7 +653,7 @@ class RefundDealerCreateView(LoginRequiredMixin,View):
                 with transaction.atomic():
                     # Save the refund
                     refund = refund_form.save(commit=False)
-                    sale = Sale.objects.get(id=refund.so) #link to sale as foreign key
+                    sale = Sale.objects.get(id=refund.so_id) #link to sale as foreign key
                     refund.sale = sale
                     refund.user = request.user
                     refund.save()

@@ -1,11 +1,11 @@
-<diagram program="umletino" version="15.1"><zoom_level>8</zoom_level><element><id>UMLClass</id><coordinates><x>528</x><y>80</y><w>136</w><h>120</h></coordinates><panel_attributes>Item
+<diagram program="umletino" version="15.1"><zoom_level>8</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>384</x><y>80</y><w>136</w><h>120</h></coordinates><panel_attributes>Item
 --
 +item=PK
 +name
 +description
 +price
 
-bg=PINK</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>728</x><y>592</y><w>112</w><h>64</h></coordinates><panel_attributes>Devis
+bg=PINK</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>584</x><y>592</y><w>112</w><h>64</h></coordinates><panel_attributes>Devis
 --
 +d_id
 +customer_name
@@ -22,7 +22,7 @@ bg=PINK</panel_attributes><additional_attributes></additional_attributes></eleme
 --
 
 
-bg=YELLOW</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1288</x><y>704</y><w>72</w><h>56</h></coordinates><panel_attributes>SaleToDealer
+bg=YELLOW</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1144</x><y>704</y><w>72</w><h>56</h></coordinates><panel_attributes>SaleToDealer
 --
 dealer
 --
@@ -31,10 +31,10 @@ dealer
 
 
 
-bg=ORANGE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>720</x><y>848</y><w>24</w><h>24</h></coordinates><panel_attributes>lt=-
+bg=ORANGE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>576</x><y>848</y><w>24</w><h>24</h></coordinates><panel_attributes>lt=-
 m1=1
 m2=1.*
-</panel_attributes><additional_attributes>10;10;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>936</x><y>856</y><w>88</w><h>48</h></coordinates><panel_attributes>Order_line
+</panel_attributes><additional_attributes>10;10;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>792</x><y>856</y><w>88</w><h>48</h></coordinates><panel_attributes>Order_line
 --
 +sale_id
 
@@ -42,15 +42,15 @@ m2=1.*
 
 
 
-bg=RED</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>672</x><y>856</y><w>120</w><h>40</h></coordinates><panel_attributes>Devis_line
+bg=RED</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>528</x><y>856</y><w>120</w><h>40</h></coordinates><panel_attributes>Devis_line
 --
 +devis_id
 
-bg=YELLOW</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1312</x><y>592</y><w>128</w><h>56</h></coordinates><panel_attributes>Sale
+bg=YELLOW</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1168</x><y>592</y><w>128</w><h>56</h></coordinates><panel_attributes>Sale
 --
 
 
-bg=RED</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1016</x><y>304</y><w>128</w><h>136</h></coordinates><panel_attributes>/AbstractClass/
+bg=RED</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>872</x><y>304</y><w>128</w><h>136</h></coordinates><panel_attributes>/AbstractClass/
 --
 +date:
 --
@@ -58,11 +58,7 @@ _getTVA()
 _getTTC()
 _countItem()
 bg=BLACK
-fg=WHITE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1432</x><y>520</y><w>72</w><h>128</h></coordinates><panel_attributes>lt=-
-m1=1
-m2=1.*
-fg=blue
-</panel_attributes><additional_attributes>10;130;40;130;40;10;70;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1368</x><y>640</y><w>24</w><h>56</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;50</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1080</x><y>696</y><w>120</w><h>160</h></coordinates><panel_attributes>Dealer
+fg=WHITE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1224</x><y>640</y><w>24</w><h>56</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;50</additional_attributes></element><element><id>UMLClass</id><coordinates><x>936</x><y>696</y><w>120</w><h>160</h></coordinates><panel_attributes>Dealer
 --
 name 
 phone 
@@ -73,40 +69,40 @@ get_total_sales()
 get_count_sales()
 get_balance()
 
-bg=PINK</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>760</x><y>496</y><w>624</w><h>112</h></coordinates><panel_attributes>lt=-
-</panel_attributes><additional_attributes>10;120;10;20;760;20;760;120</additional_attributes></element><element><id>Relation</id><coordinates><x>1072</x><y>432</y><w>24</w><h>96</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>Relation</id><coordinates><x>472</x><y>512</y><w>296</w><h>280</h></coordinates><panel_attributes>lt=-
+bg=PINK</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>616</x><y>496</y><w>624</w><h>112</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;120;10;20;760;20;760;120</additional_attributes></element><element><id>Relation</id><coordinates><x>928</x><y>432</y><w>24</w><h>96</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>Relation</id><coordinates><x>328</x><y>512</y><w>296</w><h>280</h></coordinates><panel_attributes>lt=-
 m1=1
 m2=1.*
 
-fg=BLUE</panel_attributes><additional_attributes>10;10;240;10;240;320;350;320</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1248</x><y>328</y><w>72</w><h>56</h></coordinates><panel_attributes>user
+fg=BLUE</panel_attributes><additional_attributes>10;10;240;10;240;320;350;320</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1104</x><y>328</y><w>72</w><h>56</h></coordinates><panel_attributes>user
 --
 
-bg=BLUE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1136</x><y>344</y><w>128</w><h>40</h></coordinates><panel_attributes>lt=-
+bg=BLUE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>992</x><y>344</y><w>128</w><h>40</h></coordinates><panel_attributes>lt=-
 m1=1
 m2=1.*
 
-fg=BLUE</panel_attributes><additional_attributes>140;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1616</x><y>560</y><w>96</w><h>72</h></coordinates><panel_attributes>Transaction
+fg=BLUE</panel_attributes><additional_attributes>140;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1472</x><y>560</y><w>96</w><h>72</h></coordinates><panel_attributes>Transaction
 
 --
 +amount
-bg=GREEN</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>944</x><y>536</y><w>72</w><h>56</h></coordinates><panel_attributes>Refund
+bg=GREEN</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>800</x><y>536</y><w>72</w><h>56</h></coordinates><panel_attributes>Refund
 --
-bg=MAGENTA</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>976</x><y>504</y><w>24</w><h>48</h></coordinates><panel_attributes>lt=-
+bg=MAGENTA</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>832</x><y>504</y><w>24</w><h>48</h></coordinates><panel_attributes>lt=-
 
-</panel_attributes><additional_attributes>10;40;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>752</x><y>712</y><w>120</w><h>64</h></coordinates><panel_attributes>LineItem
+</panel_attributes><additional_attributes>10;40;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>608</x><y>712</y><w>120</w><h>64</h></coordinates><panel_attributes>LineItem
 AbstractClass
 --
 getHT()
-bg=BLACK</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>720</x><y>808</y><w>272</w><h>64</h></coordinates><panel_attributes>lt=-
-</panel_attributes><additional_attributes>10;60;10;20;320;20;320;60</additional_attributes></element><element><id>Relation</id><coordinates><x>792</x><y>768</y><w>24</w><h>72</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>Relation</id><coordinates><x>1016</x><y>624</y><w>512</w><h>288</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+bg=BLACK</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>576</x><y>808</y><w>272</w><h>64</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;60;10;20;320;20;320;60</additional_attributes></element><element><id>Relation</id><coordinates><x>648</x><y>768</y><w>24</w><h>72</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>Relation</id><coordinates><x>872</x><y>624</y><w>512</w><h>288</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1
 m2=*
 fg=red
-</panel_attributes><additional_attributes>530;10;620;10;620;330;10;330</additional_attributes></element><element><id>Relation</id><coordinates><x>624</x><y>632</y><w>120</w><h>280</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+</panel_attributes><additional_attributes>530;10;620;10;620;330;10;330</additional_attributes></element><element><id>Relation</id><coordinates><x>480</x><y>632</y><w>120</w><h>280</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1
 m2=*
 fg=green
-</panel_attributes><additional_attributes>130;10;10;10;10;320;60;320</additional_attributes></element><element><id>UMLClass</id><coordinates><x>808</x><y>856</y><w>88</w><h>40</h></coordinates><panel_attributes>Return_line
+</panel_attributes><additional_attributes>130;10;10;10;10;320;60;320</additional_attributes></element><element><id>UMLClass</id><coordinates><x>664</x><y>856</y><w>88</w><h>40</h></coordinates><panel_attributes>Return_line
 --
 +reture_id
 
@@ -114,16 +110,16 @@ fg=green
 
 
 
-bg=MAGENTA</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>840</x><y>816</y><w>24</w><h>56</h></coordinates><panel_attributes>lt=-
+bg=MAGENTA</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>696</x><y>816</y><w>24</w><h>56</h></coordinates><panel_attributes>lt=-
 m1=
 m2=
-</panel_attributes><additional_attributes>10;50;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>888</x><y>552</y><w>72</w><h>352</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+</panel_attributes><additional_attributes>10;50;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>744</x><y>552</y><w>72</w><h>352</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
 m1=1
 m2=*
-fg=MAGENTA</panel_attributes><additional_attributes>70;10;30;10;30;410;10;410</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1536</x><y>696</y><w>96</w><h>56</h></coordinates><panel_attributes>CashPayment
+fg=MAGENTA</panel_attributes><additional_attributes>70;10;30;10;30;410;10;410</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1392</x><y>696</y><w>96</w><h>56</h></coordinates><panel_attributes>CashPayment
 --
 
-bg=GREEN</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1656</x><y>624</y><w>24</w><h>72</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>UMLClass</id><coordinates><x>192</x><y>64</y><w>160</w><h>144</h></coordinates><panel_attributes>Recipt
+bg=GREEN</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1512</x><y>624</y><w>24</w><h>72</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>UMLClass</id><coordinates><x>48</x><y>64</y><w>160</w><h>144</h></coordinates><panel_attributes>Recipt
 
 --
 date
@@ -131,11 +127,11 @@ item
 qte_by_carton
 --
 get_total_arrvegae_entry
-bg=BLUE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>432</x><y>120</y><w>112</w><h>152</h></coordinates><panel_attributes>lt=-
+bg=BLUE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>288</x><y>120</y><w>112</w><h>152</h></coordinates><panel_attributes>lt=-
 m1=1
 m2=0.*
 
-fg=BLUE</panel_attributes><additional_attributes>120;10;10;10;10;170</additional_attributes></element><element><id>UMLClass</id><coordinates><x>328</x><y>256</y><w>152</w><h>96</h></coordinates><panel_attributes> ReceiptItem
+fg=BLUE</panel_attributes><additional_attributes>120;10;10;10;10;170</additional_attributes></element><element><id>UMLClass</id><coordinates><x>184</x><y>256</y><w>152</w><h>96</h></coordinates><panel_attributes> ReceiptItem
 --
 +item 
 +receipt
@@ -143,57 +139,51 @@ fg=BLUE</panel_attributes><additional_attributes>120;10;10;10;10;170</additional
 +unit_price
 
 
-bg=CYAN</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1048</x><y>632</y><w>152</w><h>48</h></coordinates><panel_attributes>RefundSaleFromDealer
-bg=MAGENTA</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>984</x><y>584</y><w>24</w><h>48</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;40</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1656</x><y>696</y><w>112</w><h>72</h></coordinates><panel_attributes>MonthlyPayment
+bg=CYAN</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>904</x><y>632</y><w>152</w><h>48</h></coordinates><panel_attributes>RefundSaleFromDealer
+bg=MAGENTA</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>840</x><y>584</y><w>24</w><h>48</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;40</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1512</x><y>696</y><w>112</w><h>72</h></coordinates><panel_attributes>MonthlyPayment
 --
 +dealer
-bg=GREEN</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1560</x><y>664</y><w>184</w><h>48</h></coordinates><panel_attributes>lt=-
-</panel_attributes><additional_attributes>10;40;10;20;210;20;210;40</additional_attributes></element><element><id>Relation</id><coordinates><x>1192</x><y>736</y><w>112</w><h>32</h></coordinates><panel_attributes>lt=-
+bg=GREEN</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1416</x><y>664</y><w>184</w><h>48</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;40;10;20;210;20;210;40</additional_attributes></element><element><id>Relation</id><coordinates><x>1048</x><y>736</y><w>112</w><h>32</h></coordinates><panel_attributes>lt=-
 m1=1
 m2=1.*
-fg=blue</panel_attributes><additional_attributes>10;10;120;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>144</x><y>488</y><w>152</w><h>40</h></coordinates><panel_attributes>StockAler
+fg=blue</panel_attributes><additional_attributes>10;10;120;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>488</y><w>152</w><h>40</h></coordinates><panel_attributes>StockAler
 --
 send_notification(item)
-fg=RED</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>288</x><y>496</y><w>88</w><h>40</h></coordinates><panel_attributes>lt=-
+fg=RED</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>144</x><y>496</y><w>88</w><h>40</h></coordinates><panel_attributes>lt=-
 m1=1
 m2=1.*
 
-fg=BLUE</panel_attributes><additional_attributes>90;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>360</x><y>464</y><w>120</w><h>88</h></coordinates><panel_attributes>Stock
+fg=BLUE</panel_attributes><additional_attributes>90;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>216</x><y>464</y><w>120</w><h>88</h></coordinates><panel_attributes>Stock
 --
 +item = PK
 +current_qte
-bg=YELLOW</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1192</x><y>760</y><w>544</w><h>64</h></coordinates><panel_attributes>lt=-
+bg=YELLOW</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1048</x><y>760</y><w>544</w><h>64</h></coordinates><panel_attributes>lt=-
 m1=1
 m2=1.*
 
-fg=BLUE</panel_attributes><additional_attributes>10;50;640;50;640;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>920</x><y>640</y><w>96</w><h>48</h></coordinates><panel_attributes>RefoundNormal
-bg=MAGENTA</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>928</x><y>600</y><w>168</w><h>56</h></coordinates><panel_attributes>lt=-
-</panel_attributes><additional_attributes>10;50;10;20;190;20;190;40</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1488</x><y>504</y><w>80</w><h>112</h></coordinates><panel_attributes>SalePayment
+fg=BLUE</panel_attributes><additional_attributes>10;50;640;50;640;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>776</x><y>640</y><w>96</w><h>48</h></coordinates><panel_attributes>RefoundNormal
+bg=MAGENTA</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>784</x><y>600</y><w>168</w><h>56</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;50;10;20;190;20;190;40</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1352</x><y>448</y><w>80</w><h>112</h></coordinates><panel_attributes>SalePayment
 --
 +sale_id
 +payment_id
 +amount_paid
-bg=BLUE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1560</x><y>520</y><w>72</w><h>112</h></coordinates><panel_attributes>lt=-
-m1=1
-m2=1.*
-fg=blue</panel_attributes><additional_attributes>70;110;50;110;50;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>1008</x><y>568</y><w>320</w><h>80</h></coordinates><panel_attributes>lt=-
-m1=1
-m2=1.0
-fg=blue</panel_attributes><additional_attributes>380;70;340;70;340;10;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1792</x><y>696</y><w>112</w><h>72</h></coordinates><panel_attributes>RefundPayment
+bg=BLUE</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1648</x><y>696</y><w>112</w><h>72</h></coordinates><panel_attributes>RefundPayment
 --
 
-bg=GREEN</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1720</x><y>664</y><w>144</w><h>48</h></coordinates><panel_attributes>lt=-
+bg=GREEN</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1576</x><y>664</y><w>144</w><h>48</h></coordinates><panel_attributes>lt=-
 m1=
 m2=
-</panel_attributes><additional_attributes>160;40;160;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>1016</x><y>656</y><w>80</w><h>104</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>160;40;160;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>872</x><y>656</y><w>80</w><h>104</h></coordinates><panel_attributes>lt=-
 m1=1
 m2=1.*
 fg=blue
-</panel_attributes><additional_attributes>80;100;20;100;20;10;40;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1912</x><y>696</y><w>112</w><h>72</h></coordinates><panel_attributes>RefundDealerPayment
+</panel_attributes><additional_attributes>80;100;20;100;20;10;40;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1768</x><y>696</y><w>112</w><h>72</h></coordinates><panel_attributes>RefundDealerPayment
 --
 
-bg=GREEN</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1840</x><y>664</y><w>136</w><h>48</h></coordinates><panel_attributes>lt=-
-</panel_attributes><additional_attributes>10;20;150;20;150;40</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1392</x><y>704</y><w>72</w><h>56</h></coordinates><panel_attributes>SaleToPersone
+bg=GREEN</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1696</x><y>664</y><w>136</w><h>48</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;20;150;20;150;40</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1248</x><y>704</y><w>72</w><h>56</h></coordinates><panel_attributes>SaleToPersone
 --
 dealer
 --
@@ -202,17 +192,24 @@ dealer
 
 
 
-bg=ORANGE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1312</x><y>664</y><w>136</w><h>56</h></coordinates><panel_attributes>lt=-
-</panel_attributes><additional_attributes>10;50;10;20;150;20;150;50</additional_attributes></element><element><id>Relation</id><coordinates><x>1312</x><y>344</y><w>480</w><h>368</h></coordinates><panel_attributes>lt=-
+bg=ORANGE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1168</x><y>664</y><w>136</w><h>56</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;50;10;20;150;20;150;50</additional_attributes></element><element><id>Relation</id><coordinates><x>1168</x><y>344</y><w>480</w><h>368</h></coordinates><panel_attributes>lt=-
 m1=1
 m2=1.*
 
-fg=BLUE</panel_attributes><additional_attributes>10;20;560;20;560;440</additional_attributes></element><element><id>UMLClass</id><coordinates><x>488</x><y>296</y><w>80</w><h>24</h></coordinates><panel_attributes>The
-bg=pink</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>616</x><y>296</y><w>80</w><h>24</h></coordinates><panel_attributes>Parfum
-bg=pink</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>592</x><y>192</y><w>24</w><h>88</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;90</additional_attributes></element><element><id>Relation</id><coordinates><x>520</x><y>248</y><w>152</w><h>64</h></coordinates><panel_attributes>lt=-
-</panel_attributes><additional_attributes>10;60;10;20;170;20;170;60</additional_attributes></element><element><id>Relation</id><coordinates><x>472</x><y>112</y><w>248</w><h>408</h></coordinates><panel_attributes>lt=[key]-
+fg=BLUE</panel_attributes><additional_attributes>10;20;560;20;560;440</additional_attributes></element><element><id>UMLClass</id><coordinates><x>344</x><y>296</y><w>80</w><h>24</h></coordinates><panel_attributes>The
+bg=pink</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>472</x><y>296</y><w>80</w><h>24</h></coordinates><panel_attributes>Parfum
+bg=pink</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>448</x><y>192</y><w>24</w><h>88</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;90</additional_attributes></element><element><id>Relation</id><coordinates><x>376</x><y>248</y><w>152</w><h>64</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;60;10;20;170;20;170;60</additional_attributes></element><element><id>Relation</id><coordinates><x>328</x><y>112</y><w>248</w><h>408</h></coordinates><panel_attributes>lt=[key]-
 m2=1
 m1=0..1
-</panel_attributes><additional_attributes>20;480;290;480;290;10;240;10</additional_attributes></element><element><id>Relation</id><coordinates><x>336</x><y>200</y><w>32</w><h>72</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+</panel_attributes><additional_attributes>20;480;290;480;290;10;240;10</additional_attributes></element><element><id>Relation</id><coordinates><x>192</x><y>200</y><w>32</w><h>72</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=1
-m2=*</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element></diagram>
+m2=*</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>Relation</id><coordinates><x>864</x><y>552</y><w>320</w><h>96</h></coordinates><panel_attributes>lt=[key]-&gt;
+m2=1
+m1=0..1
+</panel_attributes><additional_attributes>20;20;300;20;300;90;380;90</additional_attributes></element><element><id>Relation</id><coordinates><x>1376</x><y>552</y><w>24</w><h>80</h></coordinates><panel_attributes>lt=.
+</panel_attributes><additional_attributes>10;10;10;80</additional_attributes></element><element><id>Relation</id><coordinates><x>1289</x><y>600</y><w>200</w><h>40</h></coordinates><panel_attributes>lt=-
+m1=*
+m2=*
+</panel_attributes><additional_attributes>10;20;230;20</additional_attributes></element></diagram>

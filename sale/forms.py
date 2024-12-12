@@ -92,12 +92,12 @@ class MonthlyPaymentForm(forms.ModelForm):
 class RefundForm(forms.ModelForm):
     class Meta:
         model = RefundNormal
-        fields = ['so','reason'] 
+        fields = ['so_id','reason'] 
       
 class RefundFromDealerForm(forms.ModelForm):
     class Meta:
         model = RefundFromDealer
-        fields = ['so','dealer','reason']
+        fields = ['so_id','dealer','reason']
 
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)

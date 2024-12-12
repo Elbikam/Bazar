@@ -8,8 +8,8 @@ class SaleAdmin(admin.ModelAdmin):
 
 @admin.register(Refund)
 class RefundAdmin(admin.ModelAdmin):
-    list_display = ('id', 'so', 'sale', 'reason', 'get_TTC', 'total_of_items')
-    search_fields = ('so',)
+    list_display = ('sale', 'reason', 'get_TTC', 'total_of_items')
+    search_fields = ('sale',)
 
 @admin.register(Devis)
 class DevisAdmin(admin.ModelAdmin):
@@ -43,7 +43,7 @@ class SaleToDealerAdmin(admin.ModelAdmin):
 
 @admin.register(RefundFromDealer)
 class RefundFromDealerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'dealer', 'sale', 'get_HT')
+    list_display = ('sale', 'dealer', 'get_HT')
     search_fields = ('dealer__name',)
 
 @admin.register(CashPayment)

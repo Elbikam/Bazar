@@ -47,8 +47,8 @@ class Refund(Commun):
         ('ERROR','ERROR'),
         ('DEFECTIVE','DEFECTIVE')
     ]
-    so = models.CharField(max_length=30)
-    sale = models.OneToOneField(Sale, on_delete=models.PROTECT, null=True, blank=True)  # One-to-one relationship with Sale
+    sale = models.OneToOneField(Sale, on_delete=models.DO_NOTHING,blank=True,primary_key=True)  # key Qualifie association
+    so_id = models.IntegerField(verbose_name='sale_id')
     reason = models.CharField(max_length=10,choices=CAT_CHOICES)
     @property
     def get_HT(self):
