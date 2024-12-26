@@ -158,7 +158,7 @@ fg=BLUE</panel_attributes><additional_attributes>90;20;10;20</additional_attribu
 --
 +item = PK
 +current_qte
-bg=YELLOW</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1048</x><y>760</y><w>544</w><h>64</h></coordinates><panel_attributes>lt=-
+bg=YELLOW</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1048</x><y>760</y><w>536</w><h>64</h></coordinates><panel_attributes>lt=-
 m1=1
 m2=1.*
 
@@ -193,7 +193,7 @@ dealer
 
 
 bg=ORANGE</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1168</x><y>664</y><w>136</w><h>56</h></coordinates><panel_attributes>lt=-
-</panel_attributes><additional_attributes>10;50;10;20;150;20;150;50</additional_attributes></element><element><id>Relation</id><coordinates><x>1168</x><y>344</y><w>480</w><h>368</h></coordinates><panel_attributes>lt=-
+</panel_attributes><additional_attributes>10;50;10;20;150;20;150;50</additional_attributes></element><element><id>Relation</id><coordinates><x>1168</x><y>344</y><w>472</w><h>368</h></coordinates><panel_attributes>lt=-
 m1=1
 m2=1.*
 
@@ -205,7 +205,7 @@ m2=1
 m1=0..1
 </panel_attributes><additional_attributes>20;480;290;480;290;10;240;10</additional_attributes></element><element><id>Relation</id><coordinates><x>192</x><y>200</y><w>32</w><h>72</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=1
-m2=*</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>Relation</id><coordinates><x>864</x><y>552</y><w>320</w><h>96</h></coordinates><panel_attributes>lt=[key]-&gt;
+m2=*</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>Relation</id><coordinates><x>864</x><y>552</y><w>320</w><h>96</h></coordinates><panel_attributes>lt=[key]-
 m2=1
 m1=0..1
 </panel_attributes><additional_attributes>20;20;300;20;300;90;380;90</additional_attributes></element><element><id>Relation</id><coordinates><x>1376</x><y>552</y><w>24</w><h>80</h></coordinates><panel_attributes>lt=.

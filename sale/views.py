@@ -749,7 +749,7 @@ def RefundDealerDetails(request,pk):
 
 #////////////////////// generate refund from dealer //////////////
 def generate_refund(request, refund_id):
-    refund = get_object_or_404(RefundFromDealer, id=refund_id)
+    refund = get_object_or_404(RefundFromDealer, sale_id=refund_id)#search by qualify key is sale_id in Refund class also in Sale class
     dealer = refund.dealer
     amount = refund.get_TTC
     date = refund.date
