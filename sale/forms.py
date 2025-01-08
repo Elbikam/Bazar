@@ -64,7 +64,7 @@ class DealerForm(forms.ModelForm):
 class SaleToDealerForm(forms.ModelForm):
     class Meta:
         model = SaleToDealer
-        fields = ['dealer']
+        fields = ['dealer','matricule','ville']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

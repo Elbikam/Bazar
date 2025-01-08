@@ -40,6 +40,6 @@ class StockAlertAdmin(admin.ModelAdmin):
 
 @admin.register(The)
 class TheAdmin(admin.ModelAdmin):
-    list_display = ('id','name','description','price','ref','category','weight')
+    list_display = ('id','name','description','cost_price','price','ref','category','weight')
     search_fields = ('id',)
     list_filter = ('ref','weight')

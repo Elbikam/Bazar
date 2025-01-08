@@ -9,8 +9,9 @@ class Item(models.Model):
     id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=30)
     # category = models.CharField(max_length=10, choices=CAT_CHOICES)
-    description = models.CharField(max_length=100, blank=True)
+    description = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10,decimal_places=2)
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # New field for cost price
 
     def __str__(self):
         return self.name
@@ -68,7 +69,10 @@ class Stock(models.Model):
             units = self.current_quantity % self.unit_by_carton
             return f"{cartons} cartons | {units} Unit"
         return "0 cartons | 0 units"
-    
+    @property
+    def total_value(self):
+        """Calculates the total current value of the stock."""
+        return self.current_quantity * self.item.cost_price
     def check_stock_alert(self):
         alerts = StockAlert.objects.filter(item=self)
         for alert in alerts:

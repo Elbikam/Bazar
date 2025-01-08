@@ -187,6 +187,8 @@ class Dealer(models.Model):
 # SaleToDealer Model
 class SaleToDealer(Sale):
     dealer = models.ForeignKey(Dealer,related_name='sales', on_delete=models.PROTECT)
+    matricule  = models.CharField(max_length=30,blank=True)
+    ville = models.CharField(max_length=30,blank=True)
     @property
     def amount_due(self):
         """Calculate the amount still due for this sale."""
