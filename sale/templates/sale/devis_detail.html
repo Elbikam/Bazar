@@ -2,46 +2,209 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h1>Devis</h1>
-<h3> Devis Details</h3>
-<p><strong>Customer :</strong> {{ devis.customer }}</p>
-<p><strong>Devis ID:</strong> {{ devis.pk }}</p>
-<p><strong>Date:</strong> {{ devis.date|date:"d/m/Y H:i:s" }}</p>
 
-<p><strong>Total of Items:</strong> {{ devis.total_of_items }}</p>
-<p><strong>Total HT:</strong> {{ devis.get_HT }}</p>
-<p><strong>Total TVA:</strong> {{ devis.get_TVA }}</p>
-<p><strong>Total TTC:</strong> {{ devis.get_TTC }}</p>
+<style>
+    .devis-detail-container {
+        max-width: 85%;
+        min-width: 320px;
+        padding: 3rem;
+        margin: 2rem auto;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e1e8ed;
+    }
 
-<h2>Orders</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Description</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Subtotal</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in devis.devis_line_set.all %}
-        <tr>
-            <td>{{ order.item.pk }}</td>
-            <td>{{ order.description }}</td>
-            <td>{{ order.quantity }}</td>
-            <td>{{ order.price }}</td>
-            <td>{{ order.get_subtotal }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5">No orders found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<div class="pdf-buttons">
-    <!-- Download PDF Button -->
-    <a href="{% url 'sale:generate_devis_pdf' devis_id=devis.pk %}" class="btn btn-primary" download="ticket-{{ devis.pk }}.pdf">Ticket PDF</a>
+    .devis-header {
+        border-bottom: 3px solid #6366f1;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .devis-header h1 {
+        color: #312e81;
+        font-size: 2.4em;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .devis-header h3 {
+        color: #6366f1;
+        font-size: 1.3em;
+        font-weight: 500;
+    }
+
+    .devis-info {
+        background-color: #f8fafc;
+        border-radius: 12px;
+        padding: 2.5rem;
+        margin-bottom: 2.5rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .devis-info p {
+        margin: 1rem 0;
+        font-size: 1.1em;
+        color: #1f2937;
+    }
+
+    .devis-info strong {
+        color: #312e81;
+        min-width: 150px;
+        display: inline-block;
+    }
+
+    .totals-section {
+        background-color: #eef2ff;
+        border-radius: 12px;
+        padding: 2.5rem;
+        margin: 2.5rem 0;
+        border: 1px solid #6366f1;
+    }
+
+    .totals-section p {
+        margin: 1rem 0;
+        font-size: 1.2em;
+        color: #312e81;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .totals-section strong {
+        font-weight: 600;
+    }
+
+    .table {
+        background-color: #ffffff;
+        border-radius: 12px;
+        margin-top: 2rem;
+        border: 1px solid #e5e7eb;
+        width: 100%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    }
+
+    .table thead th {
+        background-color: #eef2ff;
+        border-bottom: 2px solid #6366f1;
+        padding: 1.5rem;
+        font-weight: 600;
+        color: #312e81;
+        text-transform: uppercase;
+        font-size: 0.95em;
+        letter-spacing: 0.5px;
+    }
+
+    .table tbody td {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        color: #4b5563;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f5f6ff;
+    }
+
+    .pdf-buttons {
+        margin-top: 2rem;
+        text-align: right;
+    }
+
+    .btn-primary {
+        background-color: #6366f1;
+        color: white;
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: 600;
+        transition: all 0.2s;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #4f46e5;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .devis-detail-container {
+            padding: 1.5rem;
+            margin: 1rem;
+        }
+
+        .devis-info {
+            padding: 1.5rem;
+        }
+
+        .devis-info strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .table thead th {
+            padding: 1rem;
+            font-size: 0.85em;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<div class="devis-detail-container">
+    <div class="devis-header">
+        <h1>Devis</h1>
+        <h3>Devis Details</h3>
+    </div>
+
+    <div class="devis-info">
+        <p><strong>Customer:</strong> {{ devis.customer }}</p>
+        <p><strong>Devis ID:</strong> {{ devis.pk }}</p>
+        <p><strong>Date:</strong> {{ devis.date|date:"d/m/Y H:i:s" }}</p>
+    </div>
+
+    <div class="totals-section">
+        <p><strong>Total of Items:</strong> <span>{{ devis.total_of_items }}</span></p>
+        <p><strong>Total HT:</strong> <span>{{ devis.get_HT }}</span></p>
+        <p><strong>Total TVA:</strong> <span>{{ devis.get_TVA }}</span></p>
+        <p><strong>Total TTC:</strong> <span>{{ devis.get_TTC }}</span></p>
+    </div>
+
+    <h2>Orders</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in devis.devis_line_set.all %}
+            <tr>
+                <td>{{ order.item.pk }}</td>
+                <td>{{ order.description }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.get_subtotal }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No orders found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="pdf-buttons">
+        <a href="{% url 'sale:generate_devis_pdf' devis_id=devis.pk %}" class="btn-primary" download="ticket-{{ devis.pk }}.pdf">
+            Download Ticket PDF
+        </a>
+    </div>
 </div>
 {% endblock %}

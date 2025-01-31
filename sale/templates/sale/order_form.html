@@ -1,64 +1,296 @@
+<title>create order </title>
 {% extends 'sale/base.html' %}
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h1>Sale</h1>
-<h3> Create Order</h3>
-<hr>
-<div class="col-md-4">
-    {% if messages %}
-    <ul class="messages" style="color: red;">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    <form id="sale-order-form" action="" method="post">{% csrf_token %}
-        {{sale_form.as_p}}
-        <table class="table"> 
-            <!-- Orders Formset -->
-            <h5>Orders</h5>
-            {{ orders.management_form }}
-            {% for form in orders.forms %}
-                {% if forloop.first %}
-                <thead>
-                    <tr>
+
+<!-- Add this style section in the header -->
+<style>
+    /* Main container */
+    .order-container {
+        padding: 2.5rem;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        margin: 2.5rem auto;
+        max-width: 1200px;
+        border: 1px solid #e1e8ed;
+    }
+
+    /* Header styling */
+    .order-header {
+        border-bottom: 3px solid #6366f1;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .order-header h1 {
+        color: #312e81;
+        font-size: 2.4em;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    .order-header h3 {
+        color: #6366f1;
+        font-size: 1.3em;
+        font-weight: 500;
+    }
+
+    /* Table styling */
+    .table {
+        background-color: #ffffff;
+        border-radius: 12px;
+        margin-top: 2rem;
+        border: 1px solid #e5e7eb;
+        width: 100%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    }
+
+    .table thead th {
+        background-color: #eef2ff;
+        border-bottom: 2px solid #6366f1;
+        padding: 1.5rem;
+        text-align: left;
+        min-width: 150px;
+        font-weight: 600;
+        color: #312e81;
+        text-transform: uppercase;
+        font-size: 0.9em;
+        letter-spacing: 0.5px;
+    }
+
+    .formset_row td {
+        padding: 1.5rem;
+        min-width: 150px;
+        vertical-align: middle;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .formset_row:hover {
+        background-color: #f5f6ff;
+    }
+
+    /* Total amount section */
+    .total-amount {
+        margin: 2.5rem 0;
+        padding: 1.8rem;
+        background-color: #eef2ff;
+        border-radius: 12px;
+        font-size: 1.4em;
+        color: #312e81;
+        border: 1px solid #6366f1;
+        font-weight: 600;
+    }
+
+    /* Form controls */
+    input[type="text"], 
+    input[type="number"],
+    select {
+        padding: 1rem 1.2rem;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        width: 100%;
+        font-size: 1.1em;
+        transition: all 0.2s;
+        background-color: #f9fafb;
+        min-height: 48px;
+        margin: 0.5rem 0;
+    }
+
+    /* Management form and formset styling */
+    .management-form {
+        margin-bottom: 1.5rem;
+    }
+
+    /* Specific field widths */
+    input[name$="-quantity"] {
+        min-width: 120px;
+    }
+
+    input[name$="-price"] {
+        min-width: 150px;
+    }
+
+    input[name$="-description"] {
+        min-width: 250px;
+    }
+
+    /* Form field focus state */
+    input[type="text"]:focus, 
+    input[type="number"]:focus,
+    select:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        background-color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+    /* Form labels */
+    label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #374151;
+        font-size: 1.05em;
+    }
+
+    /* Buttons */
+    input[type="submit"] {
+        background-color: #6366f1;
+        color: white;
+        padding: 0.875rem 2rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 600;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #4f46e5;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .add-row {
+        background-color: #10b981;
+        color: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-weight: 500;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .delete-row {
+        background-color: #ef4444;
+        color: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-weight: 500;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .add-row:hover {
+        background-color: #059669;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .delete-row:hover {
+        background-color: #dc2626;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .devis-container {
+            padding: 1.5rem;
+            margin: 1rem;
+        }
+
+        .devis-header h1 {
+            font-size: 2em;
+        }
+
+        .table thead th {
+            padding: 1rem;
+            font-size: 0.85em;
+        }
+
+        .formset_row td {
+            padding: 1rem;
+        }
+
+        input[type="text"], 
+        input[type="number"] {
+            padding: 0.75rem;
+        }
+
+        .total-amount {
+            padding: 1.5rem;
+            font-size: 1.2em;
+        }
+    }
+</style>
+
+<!-- Wrap your existing content in the new container -->
+<div class="order-container">
+    <div class="order-header">
+        <h1>Order</h1>
+        <h3>Create Order</h3>
+    </div>
+    <div class="col-md-4">
+        <form id="sale-order-form" action="" method="post">{% csrf_token %}
+            {{sale_form.as_p}}
+            <table class="table"> 
+                <!-- Orders Formset -->
+                <h5>Orders</h5>
+                {{ orders.management_form }}
+                {% for form in orders.forms %}
+                    {% if forloop.first %}
+                    <thead>
+                        <tr>
+                            {% for field in form.visible_fields %}
+                                <th>{{ field.label|capfirst }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    {% endif %}
+                    <tr class="{% cycle 'row1' 'row2' %} formset_row">
                         {% for field in form.visible_fields %}
-                            <th>{{ field.label|capfirst }}</th>
+                            <td>
+                                {% if forloop.first %}
+                                    {% for hidden in form.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
+                                {% endif %}
+                                {{ field.errors.as_ul }}
+                                {{ field }}
+                            </td>
                         {% endfor %}
                     </tr>
-                </thead>
-                {% endif %}
-                <tr class="{% cycle 'row1' 'row2' %} formset_row">
-                    {% for field in form.visible_fields %}
-                        <td>
-                            {% if forloop.first %}
-                                {% for hidden in form.hidden_fields %}
-                                    {{ hidden }}
-                                {% endfor %}
-                            {% endif %}
-                            {{ field.errors.as_ul }}
-                            {{ field }}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </table>
-        <!-- Payment Form -->
-        <h5>Payment Information</h5>
-        {{ payment_form.as_p }}
-        <div class="total-amount">
-            <strong>Total Amount: <span id="total-amount">0.00</span></strong>
-        </div>
-        <input type="submit" value="Submit"/> 
-    </form>
-</div>
+                {% endfor %}
+            </table>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script><input type="checkbox" name="inlineorder_set-0-refunded" id="id_inlineorder_set-0-refunded" style="display: none;">
+            <div class="total-amount">
+                <strong>Total Amount: <span id="total-amount">0.00</span></strong>
+            </div>
+            <div class="section-card mb-4">
+                <h5 class="section-title">
+                    <i class="fas fa-credit-card me-2"></i>Payment Information
+                </h5>
+                <div class="p-3">
+                    {{ payment_form|crispy }}
+                </div>
+            </div>
+           
+            <input type="submit" value="Submit"/> 
+        </form>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript">
     $(document).ready(function() {   
-
         $('.formset_row').formset({
             addText: 'Add Order',
             deleteText: 'Remove',
@@ -152,5 +384,3 @@ function calculateTotal() {
 </script>
 
 {% endblock %}
-
-

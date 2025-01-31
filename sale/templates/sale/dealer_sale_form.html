@@ -3,55 +3,195 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h1>Sale</h1>
-<h3> Create Sale to Dealer </h3>
-<hr>
-<div class="col-md-4">
-    {% if messages %}
-    <ul class="messages" style="color: red;">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    <form id="sale-order-form" action="" method="post">{% csrf_token %}
-        <div class="form-group">
-            {{ sale_to_dealer_form|crispy }}  
-        </div>
-        <table class="table"> 
-            <!-- Orders Formset -->
-            <h5>Orders</h5>
-            {{ orders.management_form }}
-            {% for form in orders.forms %}
-                {% if forloop.first %}
-                <thead>
-                    <tr>
+
+<!-- Add style block at the top -->
+<style>
+    .sale-container {
+        padding: 30px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        max-width: 1200px;
+    }
+    
+    h1, h3 {
+        color: #343a40;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    
+    .table {
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-radius: 6px;
+        margin-top: 25px;
+        border: 1px solid #dee2e6;
+    }
+    
+    .table thead th {
+        background-color: #e9ecef;
+        color: #495057;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+        padding: 12px 15px;
+    }
+    
+    .formset_row td {
+        padding: 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .total-amount {
+        margin: 25px 0;
+        padding: 20px;
+        background-color: #e9ecef;
+        border-radius: 6px;
+        font-size: 1.3em;
+        color: #212529;
+        border: 1px solid #dee2e6;
+    }
+    
+    input[type="submit"] {
+        background-color: #0d6efd;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        font-size: 1.1em;
+    }
+    
+    input[type="submit"]:hover {
+        background-color: #0b5ed7;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .messages {
+        padding: 15px;
+        margin-bottom: 25px;
+        border-radius: 6px;
+        background-color: #f8d7da;
+        border: 1px solid #f5c2c7;
+        color: #842029;
+    }
+    
+    .add-row, .delete-row {
+        display: inline-block;
+        padding: 8px 16px;
+        margin: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .add-row {
+        background-color: #198754;
+        color: white;
+        border: none;
+    }
+    
+    .add-row:hover {
+        background-color: #157347;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .delete-row {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+    }
+    
+    .delete-row:hover {
+        background-color: #bb2d3b;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Form control styling */
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 8px 12px;
+        transition: border-color 0.15s ease-in-out;
+    }
+
+    .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Form group spacing */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    /* Labels */
+    label {
+        font-weight: 500;
+        color: #212529;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<!-- Wrap content in container -->
+<div class="sale-container">
+    <h1>Sale</h1>
+    <h3>Create Sale</h3>
+    <hr>
+    <div class="col-md-4">
+        {% if messages %}
+        <ul class="messages" style="color: red;">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <form id="sale-order-form" action="" method="post">{% csrf_token %}
+            <div class="form-group">
+                {{ sale_to_dealer_form|crispy }}  
+            </div>
+            <table class="table"> 
+                <!-- Orders Formset -->
+                <h5>Orders</h5>
+                {{ orders.management_form }}
+                {% for form in orders.forms %}
+                    {% if forloop.first %}
+                    <thead>
+                        <tr>
+                            {% for field in form.visible_fields %}
+                                <th>{{ field.label|capfirst }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    {% endif %}
+                    <tr class="{% cycle 'row1' 'row2' %} formset_row">
                         {% for field in form.visible_fields %}
-                            <th>{{ field.label|capfirst }}</th>
+                            <td>
+                                {% if forloop.first %}
+                                    {% for hidden in form.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
+                                {% endif %}
+                                {{ field.errors.as_ul }}
+                                {{ field }}
+                            </td>
                         {% endfor %}
                     </tr>
-                </thead>
-                {% endif %}
-                <tr class="{% cycle 'row1' 'row2' %} formset_row">
-                    {% for field in form.visible_fields %}
-                        <td>
-                            {% if forloop.first %}
-                                {% for hidden in form.hidden_fields %}
-                                    {{ hidden }}
-                                {% endfor %}
-                            {% endif %}
-                            {{ field.errors.as_ul }}
-                            {{ field }}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </table>
-        <div class="total-amount">
-            <strong>Total Amount: <span id="total-amount">0.00</span></strong>
-        </div>
-        <input type="submit" value="Submit"/> 
-    </form>
+                {% endfor %}
+            </table>
+            <div class="total-amount">
+                <strong>Total Amount: <span id="total-amount">0.00</span></strong>
+            </div>
+            <input type="submit" value="Submit"/> 
+        </form>
+    </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="{% static 'js/jquery.formset.js' %}"></script>

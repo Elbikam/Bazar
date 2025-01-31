@@ -2,59 +2,466 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h1>Sale</h1>
-<h3> Sale Details</h3>
-<p><strong>Sale ID:</strong> {{ sale.pk }}</p>
-<p><strong>Date:</strong> {{ sale.date|date:"d/m/Y H:i:s" }}</p>
 
-<p><strong>Total of Items:</strong> {{ sale.total_of_items }}</p>
-<p><strong>Total HT:</strong> {{ sale.get_HT }}</p>
-<p><strong>Total TVA:</strong> {{ sale.get_TVA }}</p>
-<p><strong>Total TTC:</strong> {{ sale.get_TTC }}</p>
-
-<h2>Orders</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Description</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Subtotal</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in sale.order_line_set.all %}
-        <tr>
-            <td>{{ order.item.pk }}</td>
-            <td>{{ order.description }}</td>
-            <td>{{ order.quantity }}</td>
-            <td>{{ order.price }}</td>
-            <td>{{ order.get_subtotal }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5">No orders found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<h2>Payments</h2>
-{% if sale_payments %}
-    {% for sale_payment in sale_payments %}
-        <p><strong>Amount received:</strong> {{ sale_payment.payment.cashpayment.cash_received }}</p>
-        <p><strong>Change:</strong> {{ sale_payment.payment.cashpayment.get_change }}</p> <!-- This assumes the Payment instance is accessible -->
-    {% endfor %}
-{% else %}
-    <p>No payments have been received yet.</p>
-{% endif %}
-
-
-<!-- Buttons for PDF Download and Print -->
-<div class="pdf-buttons">
-    <!-- Download PDF Button -->
-    <a href="{% url 'sale:generate_ticket_pdf' sale_id=sale.pk %}" class="btn btn-primary" download="ticket-{{ sale.pk }}.pdf">Ticket PDF</a>
+<!-- Print Header: Visible Only in Print -->
+<div class="print-header no-print">
+    <img src="{% static 'images/logo.png' %}" alt="Company Logo" class="logo">
+    <div class="company-info">
+        <p>{{ company_info.name }}</p>
+        <p>{{ company_info.address }}</p>
+        <p>{{ company_info.phone }}</p>
+    </div>
 </div>
 
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="mb-0">
+                    <i class="fas fa-file-invoice me-2"></i>Sale Details
+                </h4>
+                <span class="badge bg-primary">Sale #{{ sale.pk }}</span>
+            </div>
+            <div class="action-buttons">
+                <a href="{% url 'sale:generate_ticket_pdf' sale_id=sale.pk %}" class="btn btn-primary" download="ticket-{{ sale.pk }}.pdf">
+                    <i class="fas fa-file-pdf me-2"></i>Download Ticket
+                </a>
+                <button onclick="window.print()" class="btn btn-secondary ms-2">
+                    <i class="fas fa-print me-2"></i>Print
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Sale Information -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-card">
+                    <h5><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+                    <div class="info-item">
+                        <span class="label">Date:</span>
+                        <span class="value">{{ sale.date|date:"d/m/Y H:i:s" }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-card totals">
+                    <h5><i class="fas fa-calculator me-2"></i>Totals</h5>
+                    <div class="info-item">
+                        <span class="label">Total Items:</span>
+                        <span class="value">{{ sale.total_of_items }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Total HT:</span>
+                        <span class="value">{{ sale.get_HT }} DH</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Total TVA:</span>
+                        <span class="value">{{ sale.get_TVA }} DH</span>
+                    </div>
+                    <div class="info-item total-ttc">
+                        <span class="label">Total TTC:</span>
+                        <span class="value">{{ sale.get_TTC }} Dh</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="section-card mt-4">
+            <h5 class="section-title">
+                <i class="fas fa-shopping-cart me-2"></i>Orders
+            </h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in sale.order_line_set.all %}
+                        <tr>
+                            <td><span class="badge bg-secondary">#{{ order.item.pk }}</span></td>
+                            <td>{{ order.description }}</td>
+                            <td>{{ order.quantity }}</td>
+                            <td>{{ order.price }} Dh</td>
+                            <td><strong>{{ order.get_subtotal }} Dh</strong></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">
+                                <i class="fas fa-box-open me-2"></i>No orders found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Payments Section -->
+        <div class="section-card mt-4">
+            <h5 class="section-title">
+                <i class="fas fa-money-bill-wave me-2"></i>Payments
+            </h5>
+            <div class="payment-details">
+                {% if sale_payments %}
+                    {% for sale_payment in sale_payments %}
+                    <div class="payment-card">
+                        <div class="info-item">
+                            <span class="label">Amount Received:</span>
+                            <span class="value">{{ sale_payment.payment.cashpayment.cash_received }} Dh</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Change:</span>
+                            <span class="value">{{ sale_payment.payment.cashpayment.get_change }} Dh</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-exclamation-circle me-2"></i>No payments have been received yet
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hide Print Header on Screen */
+    .print-header {
+        display: none;
+    }
+
+    /* Print Styles */
+    @media print {
+        /* Body Styling */
+        body {
+            font-family: monospace; /* Consistent character width */
+            font-size: 8px; /* Readable font size for print */
+            margin: 2px; /* Minimal margins */
+            line-height: 1.2; /* Compact line spacing */
+            width: 57mm; /* Standard receipt width */
+        }
+
+        /* Print Header: Company Logo and Information */
+        .print-header {
+            display: block !important; /* Ensure it's visible in print */
+            text-align: center !important; /* Center-align content */
+            margin-bottom: 10px !important; /* Space below the header */
+        }
+
+        .print-header img {
+            width: 80px !important; /* Fixed width for the logo */
+            height: auto !important; /* Maintain aspect ratio */
+            margin-bottom: 5px !important; /* Space below the logo */
+        }
+
+        .print-header .company-info {
+            font-size: 10px !important; /* Consistent font size */
+            line-height: 1.1 !important; /* Tight line spacing */
+        }
+
+        /* Hide Non-Essential Elements */
+        .card-header,
+        .action-buttons,
+        nav,
+        footer,
+        .btn,
+        .badge {
+            display: none !important; /* Hide these elements in print */
+        }
+
+        /* Reset Card Styles for Printing */
+        .card, 
+        .card-body {
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+            background: none !important; /* Remove background colors */
+        }
+
+        /* Table Styling */
+        table, th, td {
+            border: 0 !important; /* Remove table borders for a cleaner look */
+            border-collapse: collapse !important; /* Collapse borders */
+        }
+
+        th, td {
+            padding: 1px !important; /* Minimal padding */
+            text-align: left !important; /* Align text to the left */
+        }
+
+        /* Center Alignment */
+        .center {
+            text-align: center !important; /* Center-align specific elements */
+        }
+
+        /* Headings Adjustment */
+        h3, h4 {
+            margin: 5px 0 !important; /* Compact margins */
+            font-size: 12px !important; /* Slightly larger font for headings */
+        }
+
+        /* Totals Styling */
+        .totals .total-ttc {
+            margin-top: 10px !important; /* Space above totals */
+            padding-top: 10px !important; /* Padding for separation */
+            border-top: 2px dashed #000 !important; /* Dashed line separator */
+        }
+
+        .totals .total-ttc .value {
+            font-size: 12px !important; /* Emphasize totals */
+            color: #000 !important; /* Ensure visibility */
+            font-weight: bold !important; /* Bold for emphasis */
+        }
+
+        /* Payment Details Styling */
+        .payment-details {
+            margin-top: 10px !important; /* Space above payment details */
+        }
+
+        .payment-card {
+            background: none !important; /* Remove background for a clean print */
+            border: none !important; /* Remove borders */
+            padding: 0 !important; /* Remove padding */
+            margin: 0 !important; /* Remove margin */
+        }
+
+        /* Ensure Print Header is Visible Only in Print */
+        .no-print {
+            display: none !important; /* Hide elements with class no-print in print */
+        }
+    }
+
+    /* Card Styles */
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #1a237e, #0d47a1);
+        color: white;
+        border-radius: 12px 12px 0 0 !important;
+        padding: 1.5rem;
+    }
+
+    /* Info Cards */
+    .info-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+        height: 100%;
+    }
+
+    .info-card h5 {
+        color: #1a237e;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        padding: 0.5rem;
+        border-radius: 6px;
+        transition: background-color 0.3s ease;
+    }
+
+    .info-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .info-item .label {
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .info-item .value {
+        font-weight: 600;
+        color: #1a237e;
+    }
+
+    /* Totals Section */
+    .totals .total-ttc {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 2px dashed #e9ecef;
+    }
+
+    .totals .total-ttc .value {
+        font-size: 1.2rem;
+        color: #2e7d32;
+    }
+
+    /* Table Styles */
+    .table thead th {
+        background: linear-gradient(135deg, #1a237e, #0d47a1);
+        color: white;
+        border: none;
+        padding: 1rem;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(41, 98, 255, 0.05);
+    }
+
+    /* Section Cards */
+    .section-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-title {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 1rem;
+        margin: 0;
+        color: #1a237e;
+        font-weight: 600;
+    }
+
+    /* Payment Card */
+    .payment-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #1a237e, #0d47a1);
+        border: none;
+        box-shadow: 0 4px 15px rgba(41, 98, 255, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(41, 98, 255, 0.3);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #757575, #616161);
+        border: none;
+        box-shadow: 0 4px 15px rgba(117, 117, 117, 0.2);
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(117, 117, 117, 0.3);
+    }
+
+    /* Badges */
+    .badge {
+        padding: 0.5em 1em;
+        border-radius: 6px;
+    }
+
+    /* Print Styles */
+    @media print {
+        body {
+            font-family: monospace; /* Use monospace font for consistent character width */
+            font-size: 8px; /* Adjust font size as needed */
+            margin: 0; /* Minimize margins */
+            line-height: 1.2; /* Reduce line spacing for more content */
+            width: 57mm; /* Set paper width explicitly */
+        }
+
+        /* Add Company Logo, Name, and Address for Print */
+        .print-header {
+            display: block !important; /* Ensure the header is displayed when printing */
+            text-align: center !important; /* Center alignment for print */
+            margin-bottom: 5px !important; /* Space below the header */
+        }
+
+        .print-header img {
+            width: 100% !important; /* Scale logo to fit available width */
+            max-width: 150px !important; /* Limit max width for the logo */
+        }
+
+        .print-header p {
+            font-size: 10px !important; /* Adjust font size for company name and address */
+            margin: 0 !important; /* Remove margin for company name and address */
+        }
+
+        /* Hide web-only elements */
+        .card-header,
+        .action-buttons,
+        nav,
+        footer,
+        .btn,
+        .no-print,
+        .badge {
+            display: none !important;
+        }
+
+        /* Reset card styles for printing */
+        .card, .card-body {
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        /* Table styles for receipt */
+        table, th, td {
+            border: 0 !important; /* Remove table borders for a cleaner look */
+            border-collapse: collapse !important; /* Collapse borders */
+        }
+
+        th, td {
+            padding: 1px !important; /* Minimal padding */
+            text-align: left !important; /* Align text to the left */
+        }
+
+        /* Center alignment */
+        .center {
+            text-align: center !important; /* Center alignment for specific elements */
+        }
+
+        h3, h4 {
+            margin: 0 !important; /* Remove margins for headings */
+            font-size: 8px !important; /* Adjust font size for headings */
+        }
+
+        /* Total amounts */
+        .total-amount {
+            text-align: center !important; /* Center total amounts */
+            margin: 2px 0 !important; /* Adjust margins for total amounts */
+        }
+
+        /* Payment section */
+        .payment-details {
+            margin-top: 2px !important; /* Adjust margin for payment details */
+        }
+    }
+</style>
 {% endblock %}
+
 

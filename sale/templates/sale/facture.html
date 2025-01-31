@@ -2,98 +2,236 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>Facture</title>
     <style>
+        :root {
+            --primary: #2B3467;
+            --secondary: #EB455F;
+            --text: #2B3467;
+            --light: #FCFFE7;
+            --border: #BAD7E9;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            color: var(--text);
+            background-color: #f5f5f5;
         }
 
-        h1 {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
+        .invoice-container {
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 10px;
+            border-top: 5px solid var(--primary);
         }
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-bottom: 20px;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
         }
 
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+        .logo {
+            width: 150px;
         }
 
         .invoice-info {
-            margin-bottom: 20px;
-        }
-
-        .invoice-info p {
-            margin: 0;
-        }
-
-        .total-section {
             text-align: right;
+        }
+
+        .invoice-number {
+            font-size: 24px;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .date {
+            color: #666;
+        }
+
+        .billing-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .billing-details h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 40px 0;
+        }
+
+        .items-table th {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .items-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .amount {
+            text-align: right;
+        }
+
+        .summary {
+            margin-left: auto;
+            width: 300px;
+            margin-top: 30px;
+        }
+
+        .summary-table {
+            width: 100%;
+        }
+
+        .summary-table td {
+            padding: 10px 0;
+        }
+
+        .summary-table .total-row {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--secondary);
+            border-top: 2px solid var(--border);
+            padding-top: 15px;
+        }
+
+        .notice {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: var(--light);
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: var(--text);
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border);
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .invoice-container {
+                box-shadow: none;
+                max-width: none;
+                margin: 0;
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="width: 220px; height: auto; margin: 0 auto;display: block;margin-top: 20px;">
-    <h2 style="font-size: 20;text-align: center;">Facture</h2>
-    <div class="invoice-info">
-        <p><strong>Revendeur:</strong> {{sale_to_dealer.dealer.name}}</p>
-        <p><strong>Vente ID:</strong> {{sale_to_dealer}}</p>
-        <p><strong>Date:</strong> {{sale_to_dealer.date|date:"d/m/Y H:i:s"}}</p>
-    </div>
+    <div class="invoice-container">
+        <div class="header">
+            <div class="logo-container">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+            </div>
+            <div class="invoice-info">
+                <div class="invoice-number">FACTURE #{{sale_to_dealer.pk}}</div>
+                <div class="date">{{sale_to_dealer.date|date:"d/m/Y H:i:s"}}</div>
+            </div>
+        </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Description</th>
-                <th>Qte</th>
-                <th>Prix</th>
-                <th>Total HT</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in orders %}
-            <tr>
-                <td>{{order.item.pk}}</td>
-                <td>{{order.description}}</td>
-                <td>{{order.quantity}}</td>
-                <td>{{order.price}}</td>
-                <td>{{order.get_subtotal}}</td>
-            </tr>
-            {% endfor %}
+        <div class="billing-info">
+            <div class="billing-details">
+                <h3>Émis par</h3>
+                <p>
+                    <strong>Nina Bazar</strong><br>
+                    AV YOUSSEF BEN TACHFINE N138<br>
+                    GUELMIM
+                </p>
+            </div>
+            <div class="billing-details">
+                <h3>Facturé à</h3>
+                <p>
+                    <strong>{{sale_to_dealer.dealer.name}}</strong><br>
+                    {{sale_to_dealer.dealer.address}}<br>
+                    GUELMIM
+                </p>
+            </div>
+        </div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Réf.</th>
+                    <th>Description</th>
+                    <th>Qté</th>
+                    <th>Prix Unit.</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{order.item.pk}}</td>
+                    <td>{{order.description}}</td>
+                    <td>{{order.quantity}}</td>
+                    <td class="amount">{{order.price}} DH</td>
+                    <td class="amount">{{order.get_subtotal}} DH</td>
+                </tr>
+                {% endfor %}
             </tbody>
-    </table>
+        </table>
 
-    <div class="total-section">
-        <p><strong>Total HT:</strong> {{sale_to_dealer.get_HT}}</p>
-        <p><strong>TVA:</strong> {{sale_to_dealer.get_TVA}}</p>
-        <p><strong>TTC:</strong> {{sale_to_dealer.get_TTC}}</p>
-        <p><strong></strong> {{sale_to_dealer.total_of_items}} article(s)</p>
+        <div class="summary">
+            <table class="summary-table">
+                <tr>
+                    <td>Total HT</td>
+                    <td class="amount">{{sale_to_dealer.get_HT}} DH</td>
+                </tr>
+                <tr>
+                    <td>TVA (20%)</td>
+                    <td class="amount">{{sale_to_dealer.get_TVA}} DH</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Total TTC</td>
+                    <td class="amount">{{sale_to_dealer.get_TTC}} DH</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="notice">
+            Ces produits et services seront réservés pour vous jusqu'à l'heure de fermeture. 
+            Vous pouvez payer les produits et services à notre caisse.
+        </div>
+
+        <div class="footer">
+            RC1021 ICE:001680586000002 PATENTE:49659021 | TEL: 06 72 38 17 47
+        </div>
     </div>
-    <body>
-        <footer style="position: absolute; bottom: 0; left: 0; right: 0; text-align: center; padding: 10px;">
-            <p class="title-footer" style="font-size: 14px; color: #555555; margin: 0; margin-bottom: 10px;">
-                RC1021 ICE:001680586000002 PATENTE:49659021 Address: AV YOUSSEF BEN TACHFINE N138 GUELMIM. TEL: 06 72 38 17 47
-            </p>
-        </footer>
-    </body>
-
 </body>
 </html>

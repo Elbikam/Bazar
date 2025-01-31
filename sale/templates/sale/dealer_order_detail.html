@@ -1,74 +1,268 @@
-<title>order details</title>
+<title>Order Details</title>
 {% extends 'sale/base.html' %}
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<h1>Sale</h1>
-<h3> Sale Details</h3>
 
-<p><strong>Dealer:</strong> {{ sale_to_dealer.dealer.name }}</p>
-<p><strong>Sale ID:</strong> {{sale_to_dealer.pk }}</p>
-<p><strong>Date:</strong> {{ sale_to_dealer.date|date:"d/m/Y H:i:s" }}</p>
-
-<p><strong>Total of Items:</strong> {{ sale_to_dealer.total_of_items }}</p>
-<p><strong>Total HT:</strong> {{ sale_to_dealer.get_HT }}</p>
-<p><strong>Total TVA:</strong> {{ sale_to_dealer.get_TVA }}</p>
-<p><strong>Total TTC:</strong> {{ sale_to_dealer.get_TTC }}</p>
-
-<h2>Orders</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Description</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Subtotal</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in sale_to_dealer.order_line_set.all %}
-        <tr>
-            <td>{{ order.item.pk }}</td>
-            <td>{{ order.description }}</td>
-            <td>{{ order.quantity }}</td>
-            <td>{{ order.price }}</td>
-            <td>{{ order.get_subtotal }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5">No orders found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<h2>Status</h2>
-<p><strong>Balance :</strong> {{sale_to_dealer.dealer.get_balance }}</p>
-
-
-<!-- Buttons for PDF Download and Print -->
-<div class="pdf-buttons">
-    <!-- Download PDF Button -->
-    <a href="{% url 'sale:generate_facture_pdf' sale_id=sale_to_dealer.pk %}" class="btn btn-primary" download="ticket-{{ sale_to_dealer.pk }}.pdf">facture pdf</a>
-    <a href="{% url 'sale:generate_bonlivraison_pdf' sale_id=sale_to_dealer.pk %}" class="btn btn-primary" download="ticket-{{ sale_to_dealer.pk }}.pdf">Bon Livraison</a>
-    <a href="{% url 'sale:generate_ticket_dealer_pdf' sale_id=sale_to_dealer.pk %}" class="btn btn-primary" download="ticket-{{ sale_to_dealer.pk }}.pdf">Ticket</a>
-</div>
-
-<!-- Print Styles -->
 <style>
-    @media print {
-        .pdf-buttons {
-            display: none; /* Hide buttons when printing */
+    :root {
+        --primary: #0ea5e9;
+        --primary-dark: #0284c7;
+        --success: #22c55e;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+    }
+
+    .detail-container {
+        padding: 2rem;
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        margin: 2rem auto;
+        max-width: 1200px;
+    }
+
+    .page-title {
+        color: var(--gray-800);
+        font-size: 1.875rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid var(--gray-200);
+        padding-bottom: 1rem;
+    }
+
+    .info-section {
+        background-color: var(--gray-50);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--gray-200);
+    }
+
+    .info-section h2 {
+        color: var(--gray-800);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .info-label {
+        color: var(--gray-700);
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+
+    .info-value {
+        color: var(--gray-800);
+        font-weight: 600;
+        font-size: 1.125rem;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 2rem 0;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: 1px solid var(--gray-200);
+    }
+
+    .table thead th {
+        background-color: var(--primary);
+        color: white;
+        font-weight: 600;
+        text-align: left;
+        padding: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: var(--gray-50);
+    }
+
+    .table td {
+        padding: 1rem;
+        color: var(--gray-700);
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .actions-section {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background-color: var(--gray-50);
+        border-radius: 0.75rem;
+        border: 1px solid var(--gray-200);
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-1px);
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-weight: 500;
+        font-size: 0.875rem;
+        background-color: var(--success);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .detail-container {
+            margin: 1rem;
+            padding: 1rem;
         }
-        
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .actions-section {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media print {
+        .actions-section {
+            display: none;
+        }
     }
 </style>
 
-<script>
-    function printTicket() {
-        window.print(); // Opens the print dialog to print the current page
-    }
-</script>
+<div class="detail-container">
+    <h1 class="page-title">Sale Details</h1>
+
+    <div class="info-section">
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Dealer</span>
+                <span class="info-value">{{ sale_to_dealer.dealer.name }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Sale ID</span>
+                <span class="info-value">#{{ sale_to_dealer.pk }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Date</span>
+                <span class="info-value">{{ sale_to_dealer.date|date:"d/m/Y H:i:s" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Total Items</span>
+                <span class="info-value">{{ sale_to_dealer.total_of_items }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Total HT</span>
+                <span class="info-value">{{ sale_to_dealer.get_HT }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Total TVA</span>
+                <span class="info-value">{{ sale_to_dealer.get_TVA }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Total TTC</span>
+                <span class="info-value">{{ sale_to_dealer.get_TTC }}</span>
+            </div>
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in sale_to_dealer.order_line_set.all %}
+            <tr>
+                <td>{{ order.item.pk }}</td>
+                <td>{{ order.description }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.price }}</td>
+                <td>{{ order.get_subtotal }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">No orders found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="info-section">
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Balance</span>
+                <span class="info-value">{{ sale_to_dealer.dealer.get_balance }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions-section">
+        <a href="{% url 'sale:generate_facture_pdf' sale_id=sale_to_dealer.pk %}" class="btn btn-primary" download>
+            Facture PDF
+        </a>
+        <a href="{% url 'sale:generate_bonlivraison_pdf' sale_id=sale_to_dealer.pk %}" class="btn btn-primary" download>
+            Bon Livraison
+        </a>
+        <a href="{% url 'sale:generate_ticket_dealer_pdf' sale_id=sale_to_dealer.pk %}" class="btn btn-primary" download>
+            Ticket
+        </a>
+    </div>
+</div>
 
 {% endblock %}

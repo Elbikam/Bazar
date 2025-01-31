@@ -1,113 +1,236 @@
 {% load static %}
 <!doctype html>
 <html lang="en">
-<head> 
-    <!-- Required meta tags -->
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}NINA BAZAR{% endblock %}</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
     <style>
-        /* Custom styling */
+        :root {
+            --primary-color: #1a237e;
+            --secondary-color: #0d47a1;
+            --accent-color: #2962ff;
+            --success-color: #2e7d32;
+            --warning-color: #ed6c02;
+            --danger-color: #d32f2f;
+            --background-light: #f6f9fc;
+            --text-primary: #1a237e;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+        }
+
         body {
+            background-color: var(--background-light);
+            min-height: 100vh;
             padding-top: 60px;
         }
+
+        /* Navbar Styles */
         .navbar {
-            background-color: #f8f9fa;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 0.75rem 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
+
         .navbar-brand {
-            font-weight: bold;
-            color: #007bff !important;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            display: flex;
+            align-items: center;
         }
-        .navbar-nav .nav-link {
-            color: #555 !important;
+
+        .navbar-logo {
+            height: 40px;
+            width: auto;
+            margin-right: 10px;
         }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            padding: 0.75rem 1rem !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link i {
+            margin-right: 8px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        /* Dropdown Styles */
+        .dropdown-menu {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem;
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            margin-right: 8px;
+            font-size: 0.9em;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(41, 98, 255, 0.1);
+            color: var(--accent-color);
+        }
+
+        /* Main Content Area */
         main {
-            padding: 20px;
+            padding: 2rem;
+            margin: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         }
-        /* Optional: Sidebar styling */
-        @media (min-width: 992px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                bottom: 0;
-                left: 0;
-                width: 200px;
-                padding-top: 60px;
-                background-color: #343a40;
-                color: #fff;
-                z-index: 1000;
-            }
-            .sidebar .nav-link {
-                color: #adb5bd !important;
-            }
-            main {
-                margin-left: 220px;
-            }
+
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem;
+        }
+
+        /* Form Styles */
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(41, 98, 255, 0.1);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            border: none;
+            box-shadow: 0 4px 15px rgba(41, 98, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(41, 98, 255, 0.3);
+        }
+
+        /* Alert Styles */
+        .alert {
+            border: none;
+            border-radius: 12px;
         }
     </style>
 </head>
 <body>
-    <!-- Navbar with Logo, Name, and User Greeting -->
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <img src="{% static 'images/logo.png' %}" alt="NINA BAZAR Logo" width="30" height="30" class="d-inline-block align-text-top" aria-label="NINA BAZAR">
-                NINA BAZAR
+            <a class="navbar-brand" href="{% url 'dashboard:dashboard' %}">
+                <img src="{% static 'images/logo.png' %}" alt="Nina Bazar Logo" class="navbar-logo">
+                <span>NINA BAZAR</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <!-- Stock Dropdown -->
+                <ul class="navbar-nav me-auto">
+                    <!-- Stock -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Stock</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-box"></i> Stock
+                        </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'stock:create_receipt' %}" target="_blank">Receipt</a></li>
-                            <li><a class="dropdown-item" href="{% url 'stock:receipt_list' %}" target="_blank">List Receipts</a></li>
-                            <li><a class="dropdown-item" href="{% url 'stock:create_the' %}" target="_blank">Create The</a></li>
-                            <li><a class="dropdown-item" href="{% url 'stock:the_list' %}" target="_blank">The list</a></li>
-                            <li><a class="dropdown-item" href="{% url 'stock:create_alert' %}" target="_blank">Alert</a></li>
-                            <li><a class="dropdown-item" href="{% url 'stock:search_item' %}" target="_blank">Search</a></li>
+                            <li><a class="dropdown-item" href="{% url 'stock:create_receipt' %}" target="_blank"><i class="fa-solid fa-file"></i>Receipt</a></li>
+                            <li><a class="dropdown-item" href="{% url 'stock:receipt_list' %}" target="_blank"><i class="fa-solid fa-list"></i>List Receipts</a></li>
+                            <li><a class="dropdown-item" href="{% url 'stock:create_the' %}" target="_blank"><i class="fa-solid fa-plus"></i>Create The</a></li>
+                            <li><a class="dropdown-item" href="{% url 'stock:the_list' %}" target="_blank"><i class="fa-solid fa-list-ul"></i>The list</a></li>
+                            <li><a class="dropdown-item" href="{% url 'stock:create_alert' %}" target="_blank"><i class="fa-solid fa-bell"></i>Alert</a></li>
+                            <li><a class="dropdown-item" href="{% url 'stock:search_item' %}" target="_blank"><i class="fa-solid fa-magnifying-glass"></i>Search</a></li>
                         </ul>
                     </li>
-                    <!-- Sale Dropdown -->
+                    <!-- Sale -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Sale</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-cart-shopping"></i> Sale
+                        </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'sale:order-create' %}" target="_blank">Order</a></li>
-                            <li><a class="dropdown-item" href="{% url 'sale:devis-create' %}" target="_blank">Devis</a></li>
-                            <li><a class="dropdown-item" href="{% url 'sale:refund-create' %}" target="_blank">Refund</a></li>
+                            <li><a class="dropdown-item" href="{% url 'sale:order-create' %}" target="_blank"><i class="fa-solid fa-cart-plus"></i>Order</a></li>
+                            <li><a class="dropdown-item" href="{% url 'sale:devis-create' %}" target="_blank"><i class="fa-solid fa-file-lines"></i>Devis</a></li>
+                            <li><a class="dropdown-item" href="{% url 'sale:refund-create' %}" target="_blank"><i class="fa-solid fa-rotate-left"></i>Refund</a></li>
                         </ul>
                     </li>
-                    <!-- Dealer Dropdown -->
+                    <!-- Revendeur -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Revendeur</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-users"></i> Revendeur
+                        </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'sale:dealer-create' %}" target="_blank">New Revendeur</a></li>
-                            <li><a class="dropdown-item" href="{% url 'sale:dealer-list' %}" target="_blank">List</a></li>
-                            <li><a class="dropdown-item" href="{% url 'sale:dealer-sale' %}" target="_blank">Sale to Revendeur</a></li>
-                            <li><a class="dropdown-item" href="{% url 'sale:monthly-payment-create' %}" target="_blank">Monthly Payment</a></li>
-                            <li><a class="dropdown-item" href="{% url 'sale:refund-dealer-create' %}" target="_blank">Refund</a></li>
+                            <li><a class="dropdown-item" href="{% url 'sale:dealer-create' %}" target="_blank"><i class="fa-solid fa-user-plus"></i>New Revendeur</a></li>
+                            <li><a class="dropdown-item" href="{% url 'sale:dealer-list' %}" target="_blank"><i class="fa-solid fa-address-book"></i>List</a></li>
+                            <li><a class="dropdown-item" href="{% url 'sale:dealer-sale' %}" target="_blank"><i class="fa-solid fa-handshake"></i>Sale to Revendeur</a></li>
+                            <li><a class="dropdown-item" href="{% url 'sale:monthly-payment-create' %}" target="_blank"><i class="fa-solid fa-calendar-check"></i>Monthly Payment</a></li>
+                            <li><a class="dropdown-item" href="{% url 'sale:refund-dealer-create' %}" target="_blank"><i class="fa-solid fa-right-left"></i>Refund</a></li>
                         </ul>
                     </li>
                 </ul>
-                <!-- Display logged-in user's name and logout option -->
-                <ul class="navbar-nav ms-auto">
+                <!-- User section -->
+                <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <p class="navbar-text me-3">acoount:{{ user.username }}</p>
+                            <span class="nav-link">
+                                <i class="fa-solid fa-user"></i> {{ user.username }}
+                            </span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:logout' %}" onclick="return confirm('Are you sure you want to logout?');">Logout</a>
+                            <a class="nav-link" href="{% url 'dashboard:logout' %}" onclick="return confirm('Are you sure you want to logout?');">
+                                <i class="fa-solid fa-right-from-bracket"></i> Logout
+                            </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'dashboard:login' %}" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                            <a class="nav-link" href="{% url 'dashboard:login' %}">
+                                <i class="fa-solid fa-right-to-bracket"></i> Login
+                            </a>
                         </li>
                     {% endif %}
                 </ul>
@@ -116,39 +239,22 @@
     </nav>
 
     <main>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
         {% block content %}
         {% endblock %}
     </main>
 
-    <!-- Login Modal -->
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'dashboard:login' %}" method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Optional JavaScript -->
+    <!-- Scripts -->
     <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 </body>
 </html>

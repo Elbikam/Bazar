@@ -3,18 +3,132 @@
 {% block content %}
 {% load static %}
 {% load crispy_forms_tags %}
-<title></title>
-<h2>Create Revendeur </h2>
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6"> <!-- Adjust the width using Bootstrap's grid system -->
-            <form method="POST" action="{% url 'sale:dealer-create' %}">
-                {% csrf_token %}
-                {{ dealer_form|crispy }}
-                <button type="submit" class="btn btn-primary">Save</button>
-            </form>
-        </div>
+<style>
+    /* Main container */
+    .dealer-container {
+        padding: 2.5rem;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        margin: 2.5rem auto;
+        max-width: 85%;
+        border: 1px solid #e1e8ed;
+    }
+
+    /* Header styling */
+    .dealer-header {
+        border-bottom: 3px solid #10b981;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .dealer-header h2 {
+        color: #065f46;
+        font-size: 2.4em;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Form styling */
+    .form-container {
+        background-color: #f0fdf4;
+        border-radius: 12px;
+        padding: 2rem;
+        border: 1px solid #d1fae5;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        color: #065f46;
+        font-weight: 600;
+        font-size: 1.1em;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        padding: 0.875rem 1rem;
+        border: 1.5px solid #d1fae5;
+        border-radius: 8px;
+        width: 100%;
+        font-size: 1.1em;
+        transition: all 0.2s;
+        background-color: #ffffff;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    /* Button styling */
+    .btn-primary {
+        background-color: #10b981;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.1em;
+        font-weight: 600;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 1rem;
+        width: 100%;
+    }
+
+    .btn-primary:hover {
+        background-color: #059669;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    }
+
+    /* Error messages */
+    .invalid-feedback {
+        color: #dc2626;
+        font-size: 0.9em;
+        margin-top: 0.25rem;
+    }
+
+    /* Help text */
+    .form-text {
+        color: #065f46;
+        font-size: 0.9em;
+        margin-top: 0.25rem;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .dealer-container {
+            padding: 1.5rem;
+            margin: 1rem;
+        }
+
+        .form-container {
+            padding: 1.5rem;
+        }
+
+        .dealer-header h2 {
+            font-size: 2em;
+        }
+    }
+</style>
+
+<div class="dealer-container">
+    <div class="dealer-header">
+        <h2>Create Revendeur</h2>
+    </div>
+
+    <div class="form-container">
+        <form method="POST" action="{% url 'sale:dealer-create' %}">
+            {% csrf_token %}
+            {{ dealer_form|crispy }}
+            <button type="submit" class="btn btn-primary">Save Revendeur</button>
+        </form>
     </div>
 </div>
 
