@@ -18,7 +18,7 @@ urlpatterns = [
   
     # Pesrone kind of customer
     path('order/', SaleCreateView.as_view(), name='order-create'),
-    path('order/item-price/', views.get_item_price, name='item-price-api'),
+    path('order/item-price/', views.get_item_price, name='item-price-api'),#get price 
     path('order/detail/<int:pk>', views.SaleDetailView, name='sale-detail'),
     path('ticket/<int:sale_id>/pdf/', views.generate_sale_ticket, name='generate_ticket_pdf'),
     # # Devis

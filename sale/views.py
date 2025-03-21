@@ -122,7 +122,7 @@ class SaleCreateView(LoginRequiredMixin,View):
 def get_item_price(request):
     item_id = request.GET.get('item_id')
     try:
-        item = Stock.objects.get(item=item_id)
+        item = Stock.objects.get(item_id=item_id)
         price = item.item.price
         description = item.item.description
         return JsonResponse({'price': price,'description':description}) 
