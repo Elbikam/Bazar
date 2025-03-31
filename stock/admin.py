@@ -27,19 +27,19 @@ class ReceiptAdmin(admin.ModelAdmin):
     search_fields = ('id',)
     inlines = [ReceiptItemInline]  # Including the ReceiptItem inline
 
-@admin.register(ReceiptItem)
-class ReceiptItemAdmin(admin.ModelAdmin):
-    list_display = ('receipt', 'item', 'quantity', 'qte_by_carton')
-    search_fields = ('item__name', 'receipt__bon_de_livraison')
+# @admin.register(ReceiptItem)
+# class ReceiptItemAdmin(admin.ModelAdmin):
+#     list_display = ('receipt', 'item', 'quantity','cost_price' ,'qte_by_carton')
+#     search_fields = ('item__name', 'receipt__bon_de_livraison')
 
-@admin.register(StockAlert)
-class StockAlertAdmin(admin.ModelAdmin):
-    list_display = ('item', 'threshold', 'created_at')
-    search_fields = ('item__item__name',)
-    list_filter = ('created_at',)
+# @admin.register(StockAlert)
+# class StockAlertAdmin(admin.ModelAdmin):
+#     list_display = ('item', 'threshold', 'created_at')
+#     search_fields = ('item__item__name',)
+#     list_filter = ('created_at',)
 
-@admin.register(The)
-class TheAdmin(admin.ModelAdmin):
-    list_display = ('id','name','description','cost_price','price','ref','category','weight')
-    search_fields = ('id',)
-    list_filter = ('ref','weight')
+# @admin.register(The)
+# class TheAdmin(admin.ModelAdmin):
+#     list_display = ('id','name','description','cost_price','price','ref','category','weight')
+#     search_fields = ('id',)
+#     list_filter = ('ref','weight')

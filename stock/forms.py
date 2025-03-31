@@ -40,7 +40,7 @@ class ReceiptForm(forms.ModelForm):
 class ReceiptItemForm(forms.ModelForm):
     class Meta:
         model = ReceiptItem
-        fields = ['item', 'description','quantity', 'unit_by_carton']
+        fields = ['item', 'description','quantity', 'unit_by_carton','cost_price']
 
     item = forms.CharField(label="Item ID", widget=forms.TextInput(attrs={'placeholder': 'Enter Item ID'}))
     def clean_item(self):

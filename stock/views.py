@@ -16,13 +16,20 @@ from django.views.generic import DetailView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+
 #////////////////////////////// Function check is empty form ///////////////////////////////////////
 def is_form_not_empty(form):
     return any(field.value() for field in form if field.name != 'DELETE')
 
 def is_formset_not_empty(formset):
     return any(is_form_not_empty(form) for form in formset)
+# inventory/views.py
+from django.shortcuts import render
+from .utils import generate_stock_sales_report
 
+def stock_report_view(request):
+    report_data = generate_stock_sales_report()
+    return render(request, 'stock/stock_report.html', {'report_data': report_data})
 # //////////////////////////////////////////////////////
 class TheCreateView(CreateView):
     model = The

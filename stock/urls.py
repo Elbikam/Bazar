@@ -8,7 +8,7 @@ from .views import (TheCreateView,  ReceiptCreateView,
                     fetch_items,ReceiptListView,ReceiptDetailView, search_item_in_stock
                    
                    )
-
+from . import views
 app_name = 'stock'
 
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path('receipt/detail/<int:pk>/', ReceiptDetailView.as_view(), name='receipt-detail'),  # Receipt detail view
     # Search
     path('search/', search_item_in_stock, name='search_item'),
+    
 ]
 
     

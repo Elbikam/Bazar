@@ -45,6 +45,7 @@ class Stock(models.Model):
     item = models.OneToOneField(Item, on_delete=models.DO_NOTHING, related_name='stock',primary_key=True)
     current_quantity = models.PositiveIntegerField(default=0)
     unit_by_carton = models.PositiveIntegerField(default=1)
+    lead_time = models.IntegerField(default=0)
 
     @property
     def get_current_qte(self):
@@ -120,6 +121,7 @@ class ReceiptItem(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     quantity = models.PositiveIntegerField()
     unit_by_carton = models.PositiveSmallIntegerField()
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # New field for cost price
     def save(self, *args, **kwargs):
         """
         Overrides the save method to ensure the Stock entry for the item exists.

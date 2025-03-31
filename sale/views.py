@@ -169,7 +169,8 @@ def generate_sale_ticket(request, sale_id):
     html = HTML(string=html_string,base_url=request.build_absolute_uri())
     pdf_file = html.write_pdf()
     response = HttpResponse(pdf_file, content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="SO{sale_id}.pdf"'
+    # response['Content-Disposition'] = f'inline; filename="SO{sale_id}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="SOF{sale_id}.pdf"'
     return response
 # #/////////////////////////////// Devis /////////////////////////////////
 class DevisCreateView(LoginRequiredMixin,View):
