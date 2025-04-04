@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HomeView,login_user,logout_user,optimize_inventory,ask_gemini
+from .views import HomeView,login_user,logout_user,optimize_inventory,ask_gemini,ai_report_generator
 from django.contrib.auth import views as auth_views
 from . import views
 
@@ -13,6 +13,8 @@ urlpatterns = [
    
     path('optimize-inventory/', views.optimize_inventory, name='optimize_inventory'),
     path('ask_gemini/', views.ask_gemini, name='ask_gemini'),
+    path('ask_gemini/', ask_gemini, name='ask_gemini'),
+    path('report_ai/', ai_report_generator, name='report_ai'),
 ]
   
 

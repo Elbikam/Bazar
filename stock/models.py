@@ -11,7 +11,7 @@ class Item(models.Model):
     # category = models.CharField(max_length=10, choices=CAT_CHOICES)
     description = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10,decimal_places=2)
-    cost_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # New field for cost price
+
 
     def __str__(self):
         return self.name
@@ -45,7 +45,11 @@ class Stock(models.Model):
     item = models.OneToOneField(Item, on_delete=models.DO_NOTHING, related_name='stock',primary_key=True)
     current_quantity = models.PositiveIntegerField(default=0)
     unit_by_carton = models.PositiveIntegerField(default=1)
-    lead_time = models.IntegerField(default=0)
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    threshold_amount= models.PositiveIntegerField(default=0)
+    reorder_point = models.PositiveIntegerField(default=0) #ADD This
+    lead_time = models.IntegerField(default=7, help_text="Lead time in days")  # Add the lead_time field
+    
 
     @property
     def get_current_qte(self):
@@ -73,7 +77,7 @@ class Stock(models.Model):
     @property
     def total_value(self):
         """Calculates the total current value of the stock."""
-        return self.current_quantity * self.item.cost_price
+        return self.current_quantity * self.cost_price
     def check_stock_alert(self):
         alerts = StockAlert.objects.filter(item=self)
         for alert in alerts:
@@ -134,6 +138,7 @@ class ReceiptItem(models.Model):
         super().save(*args, **kwargs)
         stock.get_current_qte += self.quantity
         stock.qte_by_carton = self.unit_by_carton
+        stock.cost_price = self.cost_price
         stock.save()
   
     @property

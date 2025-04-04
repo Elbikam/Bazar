@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "crispy_forms",
     "crispy_bootstrap5",
-   
+  
    
  
 ]
@@ -163,8 +163,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 ADMIN_SITE_HEADER = "My administration"
 
 
-from decouple import config
-GEMINI_API_KEY = config('GEMINI_API_KEY')
+# settings.py
+GEMINI_API_KEY = "AIzaSyATj6JRLkDgMF6ahEALjx6yWa22Yu_ew8o"  # Replace with your actual key
 
 
 

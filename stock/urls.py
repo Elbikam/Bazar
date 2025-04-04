@@ -1,14 +1,14 @@
 from django.urls import path
-
+from . import views
 from django.urls import path
 from .views import (TheCreateView,  ReceiptCreateView,
                    TheListView,
                    stock_alert_view,StockAlertCreateView,
-                   AlertSuccessView,filter_items,
-                    fetch_items,ReceiptListView,ReceiptDetailView, search_item_in_stock
+                   AlertSuccessView,filter_items,test_function_calling,
+                    fetch_items,ReceiptListView,ReceiptDetailView, search_item_in_stock,get_item_quantity
                    
                    )
-from . import views
+
 app_name = 'stock'
 
 
@@ -24,9 +24,12 @@ urlpatterns = [
     path('fetch-items/', fetch_items, name='fetch_items'),
     path('receipt/list', ReceiptListView.as_view(), name='receipt_list'),  # Receipt list view
     path('receipt/detail/<int:pk>/', ReceiptDetailView.as_view(), name='receipt-detail'),  # Receipt detail view
+
     # Search
     path('search/', search_item_in_stock, name='search_item'),
-    
+    path('ai/', views.get_item_quantity, name='get_item_quantity'),
+    path('test-function-calling/', views.test_function_calling, name='test_function_calling'),
+
 ]
 
     

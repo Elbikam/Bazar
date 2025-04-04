@@ -23,8 +23,15 @@ import pandas as pd
 import plotly.express as px
 import os
 import google.generativeai as genai
-
-
+from . import reporting 
+from .reporting import *
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+import json
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
+import google.ai.generativelanguage as glm # For FunctionResponse
+from datetime import datetime # Needed for date parsing
+import plotly.graph_objects as go
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////
 class HomeView(TemplateView):
     template_name = 'dashboard/dashboard.html'  
@@ -223,14 +230,14 @@ def optimize_inventory(request):
     # Fetch stock data
     stocks = Stock.objects.all()
     total_items = stocks.count()
-    total_value = sum(float(stock.total_value) for stock in stocks)
+    total_value = sum(float(item.total_value) for item in stocks)
 
     # Debug: Print stock details
-    print("Stock Values:", [(stock.item.name, stock.current_quantity, float(stock.item.cost_price), float(stock.total_value)) for stock in stocks])
+    print("Stock Values:", [(stock.item.name, stock.current_quantity, float(stock.cost_price), float(stock.total_value)) for stock in stocks])
     print("Total Value:", total_value)
 
-    # Calculate net demand and sales trends (last 60days)
-    ninety_days_ago = timezone.now() - timedelta(days=60)
+    # Calculate net demand and sales trends (last 90days)
+    ninety_days_ago = timezone.now() - timedelta(days=90)
     order_lines = Order_Line.objects.filter(sale__date__gte=ninety_days_ago).select_related('item', 'sale', 'item__item').prefetch_related('sale__sale_payments')
     refund_lines = Refund_Line.objects.filter(refund__date__gte=ninety_days_ago).select_related('item', 'refund')
 
@@ -441,7 +448,9 @@ def optimize_inventory(request):
 - **Profitability**:
   - Profit per unit = `Order_Line.price` - `Item.cost_price`.
 - **Reorder Point**:
-  - (Adjusted Demand / 30) * `lead_time` + (demand / 2).
+  - (Adjusted Demand / 30) * `lead_time` + (demand / 2)
+  
+  .I want response in Arabic Langguage .
 """
 
     # Google Gemini API optimization
@@ -450,14 +459,14 @@ def optimize_inventory(request):
 
 Analyze the following inventory and sales data:
 - Total items: {total_items}
-- Total value (at cost): ${total_value:.2f}
+- Total value (at cost): MAD{total_value:.2f}
 - Inventory:
 {inventory_summary}
 - Low stock items (below threshold):
 {low_stock_summary}
 - Overstocked items (over 3 months' demand):
 {overstock_summary}
-- Holding cost per unit per month: ${holding_cost_per_unit}
+- Holding cost per unit per month: MAD{holding_cost_per_unit}
 - Dealer Risk Analysis:
 {dealer_summary}
 - Dealer Sales Breakdown:
@@ -465,7 +474,7 @@ Analyze the following inventory and sales data:
 - Adjusted Demand per Item (Seasonal):
 {inventory_summary}
 - Actual Revenue and Unpaid Amounts per Item:
-{'\n'.join([f'  {stock.item.name}: Revenue ${actual_revenue.get(stock.item.id, 0):.2f}, Unpaid ${unpaid_amounts.get(stock.item.id, 0):.2f}' for stock in stocks])}
+{'\n'.join([f'  {stock.item.name}: Revenue MAD{actual_revenue.get(stock.item.id, 0):.2f}, Unpaid MAD{unpaid_amounts.get(stock.item.id, 0):.2f}' for stock in stocks])}
 
 Provide:
 1. Summary of current inventory state.
@@ -580,3 +589,192 @@ Provide:
         "monthly_demand": monthly_demand,
         "sales_velocity": sales_velocity
     })
+
+
+def ai_report_generator(request):
+    """Handles user prompts and interacts with the Gemini API using a loop for function calls."""
+    try:
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        # Use a model that supports function calling well
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        # Define the tools the AI can use
+        tools = [
+            glm.Tool(
+                function_declarations=[
+                    glm.FunctionDeclaration(
+                        name="get_sales_data",
+                        description="Retrieves detailed sales data (line items) for a specific month and year. Defaults to the current month if date is not provided.",
+                        parameters=glm.Schema(
+                            type=glm.Type.OBJECT,
+                            properties={
+                                'date': glm.Schema(type=glm.Type.STRING, description="Optional. The date (YYYY-MM) for which to retrieve sales data. E.g., '2023-10'.")
+                            },
+                            required=[]
+                        )
+                    ),
+                    glm.FunctionDeclaration(
+                        name="get_refund_data",
+                        description="Retrieves detailed refund data (line items) for a specific month and year. Defaults to the current month if date is not provided.",
+                        parameters=glm.Schema(
+                            type=glm.Type.OBJECT,
+                            properties={
+                                'date': glm.Schema(type=glm.Type.STRING, description="Optional. The date (YYYY-MM) for which to retrieve refund data. E.g., '2023-10'.")
+                            },
+                            required=[]
+                        )
+                    )
+                ]
+            )
+        ]
+
+        # Updated Initial prompt instructing the AI
+        initial_prompt = """### AI Agent Responsibilities
+- **Profit Maximization**:
+  - Identify high-profit items (highest `total profit`) and recommend sales strategies (e.g., increase price, promote more).
+  - Analyze pricing data (`Order_Line.price` vs. `Item.cost_price`) to suggest optimal selling prices (e.g., increase price if profit margin is low).
+  - Predict future sales trends based on historical demand (e.g., extrapolate monthly demand).
+  - Recommend strategies to reduce COGS (e.g., focus on high-margin items, reduce stock of low-profit items).
+- **Cost Reduction**:
+  - Analyze holding costs (`total_value * 0.10` per month) and recommend reducing excess inventory.
+  - Suggest negotiating better terms with suppliers for items with high COGS (`Item.cost_price`).
+  - Optimize stock levels to reduce waste (e.g., reduce overstock of slow-moving items).
+- **Stock Optimization**:
+  - Forecast demand using historical sales data (monthly demand).
+  - Calculate reorder points: Reorder when safe stock duration < 2 weeks.
+  - Identify stockouts (current_quantity = 0) and overstock (safe stock duration > 12 weeks).
+  - Minimize holding costs by reducing excess inventory.
+  - Recommend strategies for slow-moving items (safe stock duration > 12 weeks, e.g., discounts).
+  - Use lead times to minimize safety stock (reorder earlier for items with longer lead times).
+- **Reporting and Analysis**:
+  - Generate KPIs: profit margin (total profit / total HT), inventory turnover, holding costs, stockout frequency.
+  - Provide insights and recommendations based on data analysis.
+  - Track effectiveness by comparing KPIs over time (requires historical data).
+        Generate a comprehensive report for the current month that includes:
+1.  **Sales Data Overview**: Total sales amount, number of transactions, and sales breakdown by item based on the retrieved data.
+2.  **Refund Data Overview**: Total refund amount, number of refunds, and refund breakdown by item based on the retrieved data.
+3.  **Insights and Recommendations**: Provide brief insights based on the sales and refund data (e.g., top-selling items, items with high refunds).
+4.  **Visualization Suggestions**: Based on the sales and refund data, suggest 1-2 relevant charts that would help visualize the key findings (e.g., "Bar chart showing sales per item", "Pie chart showing refund reasons if available"). Describe what each suggested chart would show.
+
+Please use the available tools to fetch the sales and refund data for the current month first. Then, use that data to construct the report including all four sections above. Respond in Markdown format.
+"""
+
+        # Start a chat session for multi-turn conversation
+        chat = model.start_chat(enable_automatic_function_calling=False) # We handle calls manually
+
+        # Send the initial prompt
+        response = chat.send_message(initial_prompt, tools=tools)
+
+        # --- Store fetched data ---
+        # Use dictionaries to store results keyed by function name for easier access
+        fetched_data = {}
+
+        # --- Loop to handle function calls ---
+        while response.candidates and response.candidates[0].content.parts:
+            function_call_parts = [part for part in response.candidates[0].content.parts if part.function_call]
+
+            if not function_call_parts:
+                break
+
+            api_tool_responses = []
+            for part in function_call_parts:
+                function_call = part.function_call
+                function_name = function_call.name
+                args = dict(function_call.args)
+                print(f"AI requested function call: {function_name} with args: {args}")
+
+                function_response_content = None
+                api_tool_response_part = None
+
+                try:
+                    date_str = args.get('date', None)
+                    target_date = None
+                    if date_str:
+                        try:
+                            target_date = datetime.strptime(date_str, '%Y-%m')
+                        except ValueError:
+                            print(f"Warning: Could not parse date '{date_str}'. Using current month.")
+                            target_date = datetime.now()
+                    else:
+                        target_date = datetime.now()
+
+                    # --- Execute function and store result ---
+                    result_data = None # Variable to hold the raw result
+                    if function_name == "get_sales_data":
+                        result_data = reporting.get_sales_data(date=target_date)
+                        fetched_data['sales'] = result_data # Store sales data
+                        function_response_content = json.dumps(result_data)
+                    elif function_name == "get_refund_data":
+                        result_data = reporting.get_refunds_data(date=target_date)
+                        fetched_data['refunds'] = result_data # Store refund data
+                        function_response_content = json.dumps(result_data)
+                    else:
+                        print(f"Error: Unknown function call requested: {function_name}")
+                        function_response_content = json.dumps({"error": f"Unknown function: {function_name}"})
+
+                    # --- Prepare the response part for this specific function call ---
+                    api_tool_response_part = glm.Part(
+                        function_response=glm.FunctionResponse(
+                            name=function_name,
+                            response={'content': function_response_content}
+                        )
+                    )
+
+                except Exception as e:
+                    print(f"Error executing function {function_name}: {str(e)}")
+                    # Send an error back for this specific function call
+                    api_tool_response_part = glm.Part(
+                        function_response=glm.FunctionResponse(
+                            name=function_name,
+                            response={'content': json.dumps({"error": f"Failed to execute function: {str(e)}"}) }
+                        )
+                    )
+
+                if api_tool_response_part:
+                    api_tool_responses.append(api_tool_response_part)
+
+            if api_tool_responses:
+                print(f"Sending {len(api_tool_responses)} function response(s) back to AI.")
+                response = chat.send_message(api_tool_responses, tools=tools)
+            else:
+                print("Error: No API tool responses generated despite function calls.")
+                break
+        # --- End of loop ---
+
+        # --- Generate Pareto Chart ---
+        pareto_chart_path = None
+        # Check if sales data was fetched successfully
+        if 'sales' in fetched_data and fetched_data['sales'] and 'sales data' in fetched_data['sales']:
+            try:
+                # Pass the list of sales dictionaries to the reporting function
+                pareto_chart_path = reporting.generate_monthly_sales_pareto(fetched_data['sales']['sales data'])
+            except Exception as e:
+                print(f"Error generating Pareto chart: {e}") # Log error if chart generation fails
+
+        # --- Prepare final context ---
+        final_report_text = ""
+        if response.text:
+            final_report_text = response.text
+            print("AI finished function calls and provided final report.")
+        else:
+            # Handle cases where AI didn't provide text (e.g., error, stopped)
+            print("Error: AI did not provide a final text response after function calls.")
+            if response.candidates and response.candidates[0].finish_reason != 'STOP':
+                 print(f"AI stopped unexpectedly. Reason: {response.candidates[0].finish_reason}")
+                 # Optionally add error message to report or return JsonResponse
+                 final_report_text = f"\n\n*Error: AI processing stopped unexpectedly ({response.candidates[0].finish_reason}). Report may be incomplete.*"
+            else:
+                 final_report_text = "\n\n*Error: AI did not generate the final report text.*"
+
+
+        context = {
+            'report_markdown': final_report_text,
+            'pareto_chart_path': pareto_chart_path # Add chart path to context
+        }
+        return render(request, 'dashboard/report_template.html', context)
+
+    except Exception as e:
+        print(f"Error in ai_report_generator: {str(e)}")
+        # Consider more specific error handling based on exception type
+        return JsonResponse({'error': f'An unexpected error occurred: {str(e)}'}, status=500)
+
+    
