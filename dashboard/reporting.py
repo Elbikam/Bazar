@@ -10,7 +10,7 @@ import pandas as pd
 import plotly.express as px
 import os
 from django.conf import settings
-
+from django.db.models import Max
 def get_inventory_summary_data():
     """Retrieves a summary of the current inventory (returns raw data)."""
     stocks = Stock.objects.all()
@@ -34,7 +34,7 @@ def get_inventory_summary_data():
    
 
 
-def get_sales_data(date=None):
+def get_sales_data(date=None,category=None):
     """Retrieves a sales data"""
     if date is None:
         date = datetime.now()  # Default to current date
@@ -78,6 +78,7 @@ def get_refunds_data(date=None):
             'refund_date':r.refund.date.strftime('%Y-%m-%d'),
             'item_refund_id':r.item_id,
             'item refund name':r.item.item.name,
+            'reason refund':r.refund.reason,
             'quantity ':r.quantity,
             'price selling ': float(r.price) if isinstance(r.price, Decimal) else r.price,
             'price cost': float(r.item.cost_price) if isinstance(r.item.cost_price, Decimal) else r.item.cost_price,
@@ -86,6 +87,123 @@ def get_refunds_data(date=None):
     return {
         'refunds data': refunds_data
     }
+#tools:The inventory Report
+def get_the_data():
+    """Retrieves the current stock information for items belonging to a specific subclass,
+      referred to as 'The'. This includes details such as item ID, name, description, price, reference, and weight. The function 
+    filters the inventory to return only those items that are categorized under 
+    the specified subclass."""
+    inventory = Stock.objects.all()
+    the_in_inventory=[]
+    for t in inventory:
+        if t.item.the:
+            t={
+                'id':t.pk,
+                'name':t.item.name,
+                'description':t.item.description,
+                'current_quantity':t.current_quantity,
+                'price':float(t.cost_price)if isinstance(t.cost_price, Decimal) else t.cost_price,
+                'ref':t.item.the.ref,
+                'weight':t.item.the.weight
+
+            }
+            the_in_inventory.append(t)
+
+    return {
+        'the_in_inventory':the_in_inventory  }  
+#tools:History Purchassing 
+def get_the_purchass_data():
+    receipt_items = ReceiptItem.objects.all()
+    the_purchassing = []
+    for r in receipt_items:
+        if r.item.the:
+            r={
+                'date':r.receipt.date.strftime('%Y-%m-%d'),
+                'receipt_id':r.id,
+                'item_id':r.item.id,
+                'item name':r.item.name,
+                'quantity PurchaseOrder':r.quantity,
+                'cost_price':float(r.cost_price) if  isinstance(r.cost_price, Decimal) else r.cost_price,
+            }
+            the_purchassing.append(r)
+    return {
+        'the purchass Order':the_purchassing}
+       
+#tolls:The sales data
+def get_the_sales_data(date=None):
+    if date is None:
+        date = datetime.now()  # Default to current date
+
+    # Extract year and month from the date
+    year = date.year
+    month = date.month
+
+    # Filter sales based on the specified month and year
+    sales = Order_Line.objects.filter(sale__date__year=year, sale__date__month=month).all()
+    the_sales_data = []
+    for s in sales:
+        
+        if s.item.item.the:
+            order_data={
+                'date':s.sale.date.strftime('%Y-%m-%d'),
+                'item_id':s.item.pk,
+                'item name':s.item.item.name,
+                'quantity':s.quantity,
+                'price selling': float(s.price) if isinstance(s.price, Decimal) else s.price,
+                'price cost': float(s.item.cost_price) if isinstance(s.item.cost_price, Decimal) else s.item.cost_price,
+                'ref':s.item.item.the.ref,
+                'weight':s.item.item.the.weight}
+            the_sales_data.append(order_data)
+    # return the_sales_data
+    return {
+        'the_sales data':the_sales_data,
+    }
+
+
+
+#tool LEAD TIME
+def get_lead_time():
+    """Retreive lead time for each items ins stock """
+    s=Stock.objects.all()
+    lead_time = []
+    for i in s:
+        item = {
+            'item_id':i.pk,
+            'item name':i.item.name,
+            'current quantity':i.current_quantity,
+            'lead time':i.calculate_lead_time(),
+        }
+        lead_time.append(item)
+    return {
+        'lead_time':lead_time
+    } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def generate_monthly_sales_pareto(monthly_sales_data):
     """

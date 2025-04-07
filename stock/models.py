@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Sum
 from django.utils import timezone
 from django.contrib.auth.models import User
-
+from django.db.models import Max
 class Item(models.Model):
     id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=30)
@@ -12,7 +12,9 @@ class Item(models.Model):
     description = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10,decimal_places=2)
 
-
+    def get_item_details(self):
+        """is polymorphism function"""
+        pass
     def __str__(self):
         return self.name
 class The(Item):
@@ -35,11 +37,13 @@ class The(Item):
         (2000, '2kg'),
         (3000, '3kg'),
     ]
-  
+    
     ref = models.CharField(max_length=15, choices=REF_CHOICES)
     category = models.CharField(max_length=15, choices=CAT_CHOICES)
     weight = models.IntegerField(choices=WEIGHT_CHOICES)
 
+    def get_item_details(self):
+        return f"ref:{self.ref}|category:{self.category}|weight:{self.weight}"
 
 class Stock(models.Model):
     item = models.OneToOneField(Item, on_delete=models.DO_NOTHING, related_name='stock',primary_key=True)
@@ -84,7 +88,19 @@ class Stock(models.Model):
             if self.current_quantity <= alert.threshold:
                 # Logic to send alert, e.g., email, notification
                 print(f"Alert! Stock for {self.item.name} is below threshold.")
-
+    def calculate_lead_time(self):
+        """Calculates the lead time for the stock item."""
+        # Fetch the last reorder date from ReceiptItem
+        last_reorder_date = ReceiptItem.objects.filter(item=self.item).aggregate(Max('receipt__date'))['receipt__date__max']
+        
+        if last_reorder_date:
+            # Calculate the lead time
+            current_date = timezone.now().date()
+            lead_time = current_date - last_reorder_date
+            
+            return lead_time.days  # Return lead time in days
+        else:
+            return None  # No reorder history found
     def __str__(self):
         return f"Stock for {self.item.name}: {self.current_quantity} units"
 
