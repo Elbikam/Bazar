@@ -102,12 +102,16 @@ def ai_report_generator(request):
         # Updated Initial prompt instructing the AI
         initial_prompt = """### AI Agent Responsibilities
          AI Agent Responsibilities
-    Based *only* on the information provided by the available tools (get_sales_data, get_refunds_data), generate a comprehensive report that includes:
+    Based *only* on the information provided by the available tools (get_sales_data, get_refunds_data),
+      generate a comprehensive report that includes:
       1. **Sales Data Overview**: Total sales amount, number of transactions, and sales .
       2. **Refund Data Overview**: Total refund amount, number of refunds.
-      3. **Visualizations**: Describe 1-2 effective visualizations for the combined data (e.g., bar chart for sales/refunds by item, line chart for totals if multiple periods were requested).
-      4. **Insights and Recommendations**: Provide 2-3 concise insights and actionable recommendations based *strictly* on the processed sales and refund data provided. Focus on high-selling items, items with high refunds, and potential profitability issues.
-
+      3. **Visualizations**: Describe 1-2 effective visualizations for the combined data
+        (e.g., bar chart for sales/refunds by item, line chart for totals if multiple periods were requested).
+      4. **Insights and Recommendations**: Provide 2-3 concise insights and actionable recommendations
+        based *strictly* on the processed sales and refund data provided. Focus on high-selling items, items with high refunds, and potential profitability issues.
+      5.The report should in Arabic Language.
+      6.The currency money MAD (Morcocco Dirham)
     Use the available tools to fetch the necessary data. If a date is specified in the user request, use that date for the tools. Otherwise, use the default (current month). You may need to call multiple tools.
         """
 
@@ -323,10 +327,15 @@ def ai_report_the_inventory(request):
         3. **Refund Data**: Note that I do not require refund data for this report.
 
         4. **Insights and Recommendations**: Based on the retrieved sales data, provide insights into which items are selling well and suggest optimizing stock levels accordingly.
+           To estimate the optimal stock levels, we need to consider sales volume, lead time, and a safety stock buffer. A simple approach:
+
+            1.  **Calculate Average Daily Sales:** Divide the total quantity sold this month by the number of days in the month.
+            2.  **Calculate Lead Time Demand:** Multiply the average daily sales by the lead time.
+            3.  **Determine Safety Stock:** This is a buffer to cover unexpected demand surges. A common method is to use a percentage of the lead time demand (e.g., 20-30%).
+            4.  **Optimal Stock Level:** Lead Time Demand + Safety Stock.
 
         5. **Visualizations**: Recommend visualizations to illustrate the sales data, such as bar charts for sales quantities or pie charts for sales percentages.
-      
-        Please proceed with generating the report based on the available data and function calls. Thank you!
+        Please generating the data tables using the `get_the_data` and `get_the_sales_data` and `get_lead_time` functions. Thank you!
                         
         """      
         # Start a chat session for multi-turn conversation
@@ -372,7 +381,7 @@ def ai_report_the_inventory(request):
                     result_data = None # Variable to hold the raw result
                     #The sales
                     if function_name == "get_the_sales_data":
-                        result_data = reporting.get_the_sales_data(date=target_date)
+                        result_data = reporting.get_the_sales_data_asList(date=target_date)
                         fetched_data['the_sales'] = result_data # Store sales data
                         function_response_content = json.dumps(result_data)
                     #Refunds The    
@@ -425,7 +434,16 @@ def ai_report_the_inventory(request):
                 print("Error: No API tool responses generated despite function calls.")
                 break
         # --- End of loop ---
-
+        # generate Bar chart
+        bar_chart_path = None
+        pie_chart_path = None
+        if 'the_sales' in fetched_data:
+            try:
+                # Pass the list of sales dictionaries to the reporting function
+                bar_chart_path = reporting.generate_sales_quantity_bar_chart(fetched_data['the_sales'])
+                pei_chart_path = reporting.generate_sales_percentage_by_item_pie_chart(fetched_data['the_sales'])
+            except Exception as e:
+                print(f"Error generating Pareto chart: {e}")
 
         final_report_text = ""
         if response.text:
@@ -444,6 +462,8 @@ def ai_report_the_inventory(request):
 
         context = {
             'report_markdown': final_report_text,
+            'bar_chart_path':bar_chart_path,
+            'pie_chart_path':pei_chart_path
 
         }
         return render(request, 'dashboard/the_inventory_report.html', context)

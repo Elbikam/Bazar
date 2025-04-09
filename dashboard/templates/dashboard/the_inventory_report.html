@@ -40,12 +40,17 @@
         {{ report_markdown | safe }}
     </div>
 
-    {% if pareto_chart_path %}
+    {% if bar_chart_path %}
         <div class="chart-container">
-            <h2>Monthly Sales Pareto Chart</h2>
-            <iframe src="{{ pareto_chart_path }}"></iframe>
+            <h2>Monthly Sales Bar Chart</h2>
+            <iframe src="{{ bar_chart_path }}"></iframe>
         </div>
     {% endif %}
-
+    {% if pie_chart_path %}
+        <div class="chart-container">
+            <h2>Monthly Sales Pei Chart</h2>
+            <iframe src="{{ pie_chart_path }}"></iframe>
+        </div>
+    {% endif %}
 </body>
 </html>

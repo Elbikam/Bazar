@@ -11,6 +11,9 @@ import plotly.express as px
 import os
 from django.conf import settings
 from django.db.models import Max
+
+import matplotlib.pyplot as plt
+#//////////////////////////////////////////////////////////////////
 def get_inventory_summary_data():
     """Retrieves a summary of the current inventory (returns raw data)."""
     stocks = Stock.objects.all()
@@ -132,17 +135,12 @@ def get_the_purchass_data():
 #tolls:The sales data
 def get_the_sales_data(date=None):
     if date is None:
-        date = datetime.now()  # Default to current date
-
-    # Extract year and month from the date
+        date = datetime.now()
     year = date.year
     month = date.month
-
-    # Filter sales based on the specified month and year
     sales = Order_Line.objects.filter(sale__date__year=year, sale__date__month=month).all()
     the_sales_data = []
     for s in sales:
-        
         if s.item.item.the:
             order_data={
                 'date':s.sale.date.strftime('%Y-%m-%d'),
@@ -154,12 +152,9 @@ def get_the_sales_data(date=None):
                 'ref':s.item.item.the.ref,
                 'weight':s.item.item.the.weight}
             the_sales_data.append(order_data)
-    # return the_sales_data
     return {
         'the_sales data':the_sales_data,
     }
-
-
 
 #tool LEAD TIME
 def get_lead_time():
@@ -177,6 +172,110 @@ def get_lead_time():
     return {
         'lead_time':lead_time
     } 
+#list The data 
+def get_the_sales_data_asList(date=None):
+    if date is None:
+        date = datetime.now()
+    year = date.year
+    month = date.month
+    sales = Order_Line.objects.filter(sale__date__year=year, sale__date__month=month).all()
+    the_sales_data = []
+    for s in sales:
+        if s.item.item.the:
+            order_data={
+                'date':s.sale.date.strftime('%Y-%m-%d'),
+                'item_id':s.item.pk,
+                'item name':s.item.item.name,
+                'quantity':s.quantity,
+                'price selling': float(s.price) if isinstance(s.price, Decimal) else s.price,
+                'price cost': float(s.item.cost_price) if isinstance(s.item.cost_price, Decimal) else s.item.cost_price,
+                'ref':s.item.item.the.ref,
+                'weight':s.item.item.the.weight}
+            the_sales_data.append(order_data)
+    return the_sales_data
+    
+#tool gerenerate sales qte bar chart
+def generate_sales_quantity_bar_chart(monthly_sales_data):
+    """Generates a bar chart for sales quantities."""
+    if not monthly_sales_data:
+        print("No sales data provided for the chart.")
+        return None
+
+    # Convert list of sales data dictionaries to DataFrame
+    df = pd.DataFrame(monthly_sales_data)
+
+    # Group by item_id and item name, then sum the quantities
+    sales_summary = df.groupby(['item_id', 'item name'])['quantity'].sum().reset_index()
+
+    # Create the bar chart using Plotly
+    fig = px.bar(sales_summary, x='item name', y='quantity',
+                 color='item_id',  # Use item_id for color differentiation
+                 labels={'quantity': 'Total Quantity Sold', 'item name': 'Item'},
+                 title='Sales Quantity Bar Chart')
+
+    # Update layout for better visualization
+    fig.update_layout(
+        xaxis_title="Item",
+        yaxis_title="Total Quantity Sold",
+        title_x=0.5,  # Center title
+        barmode='group'  # Group bars by item_id
+    )
+
+    # Define save path (use a distinct name)
+    chart_filename = 'sales_quantity_bar_chart.html'  # Save as HTML for better compatibility
+    chart_save_path = os.path.join(settings.STATICFILES_DIRS[0], chart_filename)
+    fig.write_html(chart_save_path)
+
+    # Define static URL path for the HTML file
+    chart_url_path = f"/static/{chart_filename}"
+    print(f"Generated Sales Quantity Bar Chart: {chart_url_path}")  # Debugging
+    return chart_url_path
+
+
+
+
+
+##//////////////////////////////////////////////////////////////////////////////////////////////////////////
+def generate_sales_quantity_bar_chart(data: list):
+    """
+    Generates a bar chart showing the quantity sold for each item in a specified subclass ("The" or "Parfum").
+    (Uses Matplotlib)
+    """
+
+    sales_data = {}
+    for i in data:  # data is list of dictionaries
+        if i['item_id'] in sales_data.keys():
+            sales_data[i['item_id']] += i['quantity']  # Update quantity
+        else:
+            sales_data[i['item_id']] = i['quantity']  # Initialize quantity
+
+    if not sales_data:
+        return "No sales data found for subclass."
+
+    # Convert sales_data to a DataFrame for better handling
+    df = pd.DataFrame(list(sales_data.items()), columns=['item_id', 'quantity'])
+
+    # Create the bar chart using Plotly instead of Matplotlib
+    fig = px.bar(df, x='item_id', y='quantity',
+                 labels={'quantity': 'Total Quantity Sold', 'item_id': 'Item ID'},
+                 title='Sales Quantity Bar Chart')
+
+    # Update layout for better visualization
+    fig.update_layout(
+        xaxis_title="Item ID",
+        yaxis_title="Total Quantity Sold",
+        title_x=0.5  # Center title
+    )
+
+    # Define save path (use a distinct name)
+    chart_filename = 'sales_quantity_bar_chart.html'
+    chart_save_path = os.path.join(settings.STATICFILES_DIRS[0], chart_filename)
+    fig.write_html(chart_save_path)
+
+    # Define static URL path for the HTML file
+    chart_url_path = f"/static/{chart_filename}"
+    print(f"Generated Sales Quantity Bar Chart: {chart_url_path}")  # Debugging
+    return chart_url_path
 
 
 
@@ -187,6 +286,51 @@ def get_lead_time():
 
 
 
+
+
+
+
+
+
+
+
+# ----------------------------------------------------------------------------------------
+
+def generate_stock_level_vs_sales_chart(data: list) -> str:
+    """
+    Generates a combined chart showing both the current stock level and the sales quantity for each item.
+
+    Args:
+        data (list): A list of Stock dictionaries, where each stock dictionary has 'stock_level' and sales data derived from ReceiptItems.
+                     The structure is as follows:
+                     [
+                         {
+                            'item': {
+                                  'id': int,
+                                  'name': str,
+                                   'description': str,
+                                   'current_quantity': int
+                                },
+                             'stock_level': int,  # Current stock level
+                             'total_quantity_sold': int  # Total quantity sold
+                         },
+                         ...
+                     ]
+
+    Returns:
+        str: A string representation of the combined chart.
+    """
+
+    if not data:
+        return "No data available to generate the stock level vs. sales chart."
+
+    # Logic to generate the combined chart (replace with your preferred charting library)
+    chart_string = "Stock Level vs. Sales Quantity:\n"
+    for item_data in data:
+        chart_string += f"{item_data['item']['name']}: Stock = {item_data['stock_level']}, Sales = {item_data['total_quantity_sold']}\n"
+
+    return chart_string
+#////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -331,6 +475,49 @@ def get_most_sales_product():
     print(f"Generated Overall Pareto chart: {diagram_path}") # Debugging
     return diagram_path #Return the chart path
 
+def generate_sales_percentage_by_item_pie_chart(monthly_sales_data):
+    """
+    Generates a pie chart for sales percentages by item.
+    
+    Args:
+        monthly_sales_data (list): A list of dictionaries, where each dict
+                                   represents an order line like:
+                                   {'item name': str, 'quantity': int, 'price selling': float}
+
+    Returns:
+        str: The static URL path to the generated chart HTML file, or None if no data.
+    """
+    if not monthly_sales_data:
+        print("No sales data provided for the chart.")
+        return None
+
+    # Convert list of sales data dictionaries to DataFrame
+    df = pd.DataFrame(monthly_sales_data)
+
+    # Group by item name and sum the quantities
+    sales_summary = df.groupby('item name')['quantity'].sum().reset_index()
+
+    # Calculate total sales for percentage calculation
+    total_sales = sales_summary['quantity'].sum()
+    sales_summary['percentage'] = (sales_summary['quantity'] / total_sales) * 100
+
+    # Create the pie chart using Plotly
+    fig = px.pie(sales_summary, values='percentage', names='item name',
+                 labels={'percentage': 'Sales Percentage', 'item name': 'Item'},
+                 title='Sales Percentage by Item')
+
+    # Update layout for better visualization
+    fig.update_traces(textinfo='percent+label')  # Show percentage and label on the pie chart
+
+    # Define save path (use a distinct name)
+    chart_filename = 'sales_percentage_by_item_pie_chart.html'
+    chart_save_path = os.path.join(settings.STATICFILES_DIRS[0], chart_filename)
+    fig.write_html(chart_save_path)
+
+    # Define static URL path
+    chart_url_path = f"/static/{chart_filename}"
+    print(f"Generated Sales Percentage by Item Pie Chart: {chart_url_path}")  # Debugging
+    return chart_url_path
 
 
 
