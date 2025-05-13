@@ -10,14 +10,16 @@ venv/
 #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
 
 # Database
-db.sqlite3
+# db.sqlite3  # Commented out to track database
 
 # Static folder at project root
-/static/
+# /static/    # Commented out to track static files
+
 # Visual Studio
-.vscode/
+# .vscode/    # Commented out to track VS Code settings
 .history/
 *.code-workspace
+
 # migrations
-.stock/migrations
-.sale/migrations
+# .stock/migrations  # Commented out to track migrations
+# .sale/migrations   # Commented out to track migrations
