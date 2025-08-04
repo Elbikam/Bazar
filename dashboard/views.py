@@ -110,8 +110,7 @@ def ai_report_generator(request):
         (e.g., bar chart for sales/refunds by item, line chart for totals if multiple periods were requested).
       4. **Insights and Recommendations**: Provide 2-3 concise insights and actionable recommendations
         based *strictly* on the processed sales and refund data provided. Focus on high-selling items, items with high refunds, and potential profitability issues.
-      5.The report should in Arabic Language.
-      6.The currency money MAD (Morcocco Dirham)
+      5. The currency is MAD (Moroccan Dirham).
     Use the available tools to fetch the necessary data. If a date is specified in the user request, use that date for the tools. Otherwise, use the default (current month). You may need to call multiple tools.
         """
 
@@ -303,7 +302,7 @@ def ai_report_the_inventory(request):
         ]
         prompt=""""### AI Agent Responsibilities:
         *The goal is optimizaing inventory.
-        I would like to generate a report focusing on the items in the subclass "The" for the current month. Please proceed with the following steps:
+        I would like to generate a report focusing on the items in the subclass "The" for the current month, Please proceed with the following steps:
 
         1. **Current Month**: Use the current month as the default date for the report.
 
@@ -333,10 +332,9 @@ def ai_report_the_inventory(request):
             2.  **Calculate Lead Time Demand:** Multiply the average daily sales by the lead time.
             3.  **Determine Safety Stock:** This is a buffer to cover unexpected demand surges. A common method is to use a percentage of the lead time demand (e.g., 20-30%).
             4.  **Optimal Stock Level:** Lead Time Demand + Safety Stock.
-
-        5. **Visualizations**: Recommend visualizations to illustrate the sales data, such as bar charts for sales quantities or pie charts for sales percentages.
-        Please generating the data tables using the `get_the_data` and `get_the_sales_data` and `get_lead_time` functions. Thank you!
-                        
+            5.  **Reorder Point:** This is the stock level at which you should reorder. It's the sum of the lead time demand and the safety stock.
+            
+        
         """      
         # Start a chat session for multi-turn conversation
         chat = model.start_chat(enable_automatic_function_calling=False) # We handle calls manually
