@@ -471,3 +471,11 @@ def ai_report_the_inventory(request):
         # Consider more specific error handling based on exception type
         return JsonResponse({'error': f'An unexpected error occurred: {str(e)}'}, status=500)  
  
+
+# ///////////////////////////////////////////////////////////////////////////////////////////////////////
+def inventory_report(request):
+    """Generates an inventory report with sales and stock data."""
+    context = {
+        'test': "test"
+    }
+    return render(request, 'dashboard/inventory_report.html', context)

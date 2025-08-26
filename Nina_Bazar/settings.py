@@ -164,7 +164,7 @@ ADMIN_SITE_HEADER = "My administration"
 
 
 # settings.py
-GEMINI_API_KEY = "AIzaSyATj6JRLkDgMF6ahEALjx6yWa22Yu_ew8o"  # Replace with your actual key
+GEMINI_API_KEY = "AIzaSyBCMD160V8ruoWsg8ve8LFQshbKdzsoQCE"
 
 
 

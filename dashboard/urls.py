@@ -13,6 +13,7 @@ urlpatterns = [
     #AI report
     path('report_ai/', ai_report_generator, name='report_ai'),
     path('the_ai_report/', ai_report_the_inventory, name='the_ai_report'),
+    path('inventory_report/', views.inventory_report, name='inventory_report'),
 ]
   
 
