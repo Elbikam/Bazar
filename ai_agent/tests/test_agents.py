@@ -16,15 +16,7 @@ async def test_call_db_agent():
     print("...continuing with test.")
     date = datetime.datetime.today().strftime("%Y-%m-%d")
     query = f"""
-        You are a database agent that can answer questions about the Nina Bazar database.
-        You can use SQL to query the database and return results in a human-readable format.
-        You can also use the tools provided to interact with the database.using tools.
-        You can use the following tools:
-        1. `get_tables`: Use this tool to get to understand structure of database.
-        2. `get_table_info`: Use this tool to get detailed information about a specific table, including its columns and data types.
-        3. `execute_query`: Use this tool to run SQL queries on the database.
-        
-    today is {date}.what is total quantiy and value  purchase  of item LWADLAAER with id =1  this year"""
+ today is {date}.what is total sales for month June 2025"""
     response = await call_db_agent(query)
     print(f"DB Agent Response: {response}")
 
