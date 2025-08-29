@@ -18,7 +18,7 @@ os.environ["GOOGLE_API_KEY"] = settings.GEMINI_API_KEY
 import google.generativeai as genai
 genai.configure(api_key=settings.GEMINI_API_KEY)
 
-AGENT_NAME = "db_agent "
+AGENT_NAME = "db_agent"
 APP_NAME = "Nina_Bazar"
 USER_ID = "user1234"
 SESSION_ID = "session_execeute_query_async"
@@ -27,7 +27,7 @@ GEMINI_MODEL = "gemini-2.0-flash"
 
 db_agent = LlmAgent(
     model=GEMINI_MODEL,
-    name=APP_NAME,
+    name=AGENT_NAME,
     description="This agent handles database queries.",
     instruction=get_db_agent_instruction(),
     tools=[execute_query, connect_to_db, get_tables, get_table_info ],
