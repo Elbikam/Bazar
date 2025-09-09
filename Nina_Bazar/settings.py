@@ -162,9 +162,18 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 ADMIN_SITE_HEADER = "My administration"
 
+import os
+from pathlib import Path
 
-# settings.py
-GEMINI_API_KEY = "AIzaSyBCMD160V8ruoWsg8ve8LFQshbKdzsoQCE"
+BASE_DIR = Path(__file__).resolve().parent.parent
+from dotenv import load_dotenv
+load_dotenv(os.path.join(BASE_DIR, '.env')) # Specify the path to your .env file
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# Ensure it's not None if the key is mandatory
+if GEMINI_API_KEY is None:
+    raise ValueError("GEMINI_API_KEY environment variable not set. Please set it in your .env file.")
+
 
 
 

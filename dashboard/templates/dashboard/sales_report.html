@@ -1,0 +1,59 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Orchestrator Agent Result</h1>
+
+    <div class="section">
+        <h2>Query</h2>
+        <p class="query">{{ query }}</p>
+    </div>
+
+    {% if result %}
+
+        <!-- Final Summary Section -->
+        {% if final_summary %}
+        <div class="section">
+            <h2>Final Summary</h2>
+            <div class="final-answer">
+                {{ final_summary }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- CHART DISPLAY SECTION (NEW) -->
+        {% if chart_path %}
+        <div class="section">
+            <h2>Generated Chart</h2>
+            <!-- The 'static' template tag correctly resolves the URL -->
+            {% load static %}
+            <img src="{% static chart_path|cut:'static/' %}" alt="Generated Sales Chart" style="max-width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+        {% endif %}
+
+        <!-- Intermediate Steps Section -->
+        {% if result.events %}
+        <div class="section">
+            <h2>Agent's Thought Process</h2>
+            <ul class="event-log">
+                {% for event in result.events %}
+                    <li>{{ event }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Error Section -->
+        {% if result.error %}
+        <div class="section">
+            <h2>An Error Occurred</h2>
+            <div class="error">
+                {{ result.error }}
+            </div>
+        </div>
+        {% endif %}
+        
+    {% else %}
+        <!-- ... (no changes to the else block) ... -->
+    {% endif %}
+{% endblock %}

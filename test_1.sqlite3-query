@@ -5,4 +5,4 @@ SELECT * FROM stock_stock WHERE current_quantity < 14;
 SELECT name FROM sqlite_master WHERE type='table';
 SELECT name FROM pragma_table_info('stock_stock');
 
-SELECT SUM(quantity) FROM sale_order_line;
+SELECT * FROM sale_order_line;

@@ -1,6 +1,7 @@
 import logging
 import sqlite3
 
+from django.apps import apps
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,12 +21,9 @@ def connect_to_db() -> sqlite3.Connection:
 
 def get_tables() -> list:
     """Retrieves the list of tables in the SQLite database."""
-    query = "SELECT name FROM sqlite_master WHERE type='table';"
-    result = execute_query(query)
-    if result and result['state'] == 'success':
-        return {'tables': [row['name'] for row in result['data']], 'state': 'success'}
-    else:
-        return {'tables': [], 'state': 'error'}
+    all_models = apps.get_models()
+    table_names = [model._meta.db_table for model in all_models]
+    return table_names
 
 
 
@@ -33,19 +31,30 @@ def get_table_info(table_name: str) -> list:
     """Retrieves the information about a specific table in the SQLite database."""
     query = f"SELECT name FROM pragma_table_info('{table_name}');"
     result = execute_query(query)
-    if result and result['state'] == 'success':
-        return {'columns': [row['name'] for row in result['data']], 'state': 'success'}
-    else:
-        return {'columns': [], 'state': 'error'}
+    data = result['data']
+    details = []
+    for i in data:
+        details.append(i['name'])
+    return details 
 
 
-def execute_query(sql: str) -> list:
-    """Executes a SQL query on the SQLite database and returns all rows as a list of dicts.
+
+
+
+def execute_query(sql: str) -> dict:
+    """
+    Executes a SINGLE, read-only SQL query on the database.
+    Args:
+        sql (str): The SQL SELECT query string to be executed.
+    Return :
+        dict: A dictionary with one of the following structures:
+            - On success: {'state': 'success', 'data': [dict_row1, dict_row2, ...]}
+            - On failure: {'state': 'error', 'message': 'A description of the error.'}
     """
     logger.info(f"Executing query: {sql}")
     conn = connect_to_db()
     if conn is None:
-        return {'data': [], 'state': 'error'}
+        return {'data': [], 'status': 'error'}
     try:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
@@ -54,7 +63,7 @@ def execute_query(sql: str) -> list:
         rows = cur.fetchall()
         conn.close()
         result = [dict(row) for row in rows]
-        return {'data': result, 'state': 'success'}
+        return {"status": "success","data":result}
     except Exception as e:
         logger.error(f"Database error: {e}")
-        return {'data': [], 'state': 'error'}
+        return {"data": [], "status": "error"}

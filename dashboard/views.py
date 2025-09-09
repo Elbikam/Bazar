@@ -479,3 +479,50 @@ def inventory_report(request):
         'test': "test"
     }
     return render(request, 'dashboard/inventory_report.html', context)
+##########################################################################
+
+
+
+
+# async def generate_sales_report_view(request):
+#     """
+#     Asynchronously calls the orchestrator with a HIGH-LEVEL GOAL.
+#     """
+#     # BAD QUERY (What you have now):
+#     # query = "analysis sales for this year 2025 first step understand database using db_agent ,he can use tool get_tables..."
+
+#     # GOOD QUERY (What you should use):
+#     query = """Create a summary report and a bar chart for the quarterly sales data of 2025.
+#         to fetch data from database use too agent db_agent ,then he can use tool get_tables to understand structure of database,and tool get_tabel_info to clarefy specific table (coloumn  name)
+#         to analysis use tool agent ds_agent"""
+    
+    
+#     result_data = await call_orchestrator_agent(query)
+
+#     # The rest of your view logic is likely correct
+#     final_summary = ""
+#     chart_path = None
+#     # ... etc.
+#     if result_data and result_data.get("final_response"):
+#         try:
+#             final_output = json.loads(result_data["final_response"])
+#             final_summary = final_output.get("summary")
+#             chart_path = final_output.get("chart_path")
+#         except (json.JSONDecodeError, TypeError):
+#             final_summary = "The agent returned a non-JSON response. Displaying raw text."
+#             if isinstance(result_data.get("final_response"), str):
+#                  final_summary = result_data.get("final_response")
+
+
+#     context = {
+#         'query': query,
+#         'result': result_data,
+#         'final_summary': final_summary,
+#         'chart_path': chart_path,
+#     }
+    
+#     return await sync_to_async(render, thread_sensitive=True)(request, 'dashboard/sales_report.html', context)
+
+async def generate_sales_report_view(request):
+    context = {'test':'test'}
+    return render(request, 'dashboard/sales_report.html', context)
