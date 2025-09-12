@@ -29,7 +29,6 @@ root_agent = LlmAgent(
     model=GEMINI_MODEL,
     name=AGENT_NAME,
     instruction=instructions_root_agent(),
-    # tools=[AgentTool(agent=db_agent),AgentTool(agent=ds_agent)],
     sub_agents=[db_agent,ds_agent],
     global_instruction=f"today is {date_today},please read carefily you instructions before to response "
 )

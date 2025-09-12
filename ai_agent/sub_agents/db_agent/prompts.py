@@ -22,12 +22,18 @@ def db_instruction_prompt():
     3.  **Execute One Query at a Time:** Call the `execute_query` tool for each step of your plan. Wait for the result from one step before starting the next.
     
     4.  **CRITICAL TOOL FORMATTING:** When you call the `execute_query` tool, the `sql` parameter MUST be a raw, valid SQL query string and NOTHING else.
-        - **CORRECT:** `execute_query(sql="SELECT * FROM sale_order_line;")`
+        - **CORRECT:** format like this `execute_query(sql="SELECT * FROM sale_order_line;")`
         - **INCORRECT:** `execute_query(sql="Here is the query: SELECT ...")`
+        - Don't Write parameter of tool `execute_query` like this  `sql=
+                            ```sql
+                            SELECT ...'
+                            ```)`
+                        
 
     5.  **Final Answer:** Once all steps in your plan are complete, analyze the final data and provide a clear, human-readable answer to the user. Do not show the user the final SQL query, just the answer.
-   
-
+    
+    6.You MUST use the exact table and column names provided in the schema below.
+    
     === SCHEMA ===
         {setup()}
     === END SCHEMA ===

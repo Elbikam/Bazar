@@ -1,8 +1,11 @@
 """Test cases for the analytics agent and its sub-agents."""
 import pytest
-from unittest import mock 
+from unittest.mock import patch,MagicMock
 from ai_agent.sub_agents.db_agent.tools import execute_query, connect_to_db, get_table_info,get_tables
+from ai_agent.sub_agents.ds_agent.tools import calculate_lead_time,get_purchase_price_of_goods
 import datetime
+import decimal
+from stock.models import *
 date_today = datetime.datetime.today().strftime("%Y-%m-%d")
 
 def test_execute_query():
@@ -31,7 +34,36 @@ def test_get_table_info():
     response = get_table_info('stock_stock')
     assert response == expected_res
     print(f"response:{response}")
-    
 
-    
 
+
+
+
+@pytest.mark.django_db(True)
+def test_calculate_lead_time():
+    expected =  {"status": "success", "lead_time":11 }
+    user = User.objects.create(id=233,password="bfhfjfj",last_login=datetime.datetime(2025, 9, 1,12, 26,49, 434555, tzinfo=datetime.timezone.utc))
+    item = Item.objects.create(id=22,name="test name ",description="test",price=decimal.Decimal('70.00'))
+    receipt = Receipt.objects.create(id=1323,date=datetime.date(2025, 4, 3),bon_de_livraison=3234,qte_total=200,qte_by_carton=20,user_id=user.id)
+    receipt_item = ReceiptItem.objects.create(id=23,description="test",quantity=23,unit_by_carton=10,cost_price=decimal.Decimal('70.00'),item_id=item.id,receipt_id= receipt.id)
+    response = calculate_lead_time(item.id,datetime.date(2025, 9, 23))
+    assert response == expected
+    print(f"response:{response}")
+
+
+@pytest.mark.django_db(True)
+def test_get_purchase_price_of_goods():
+    item = Item.objects.create(id=22,name="test name ",description="test",price=decimal.Decimal('70.00'))
+    stock = Stock.objects.create(current_quantity=23,unit_by_carton=10,cost_price=decimal.Decimal('70.00'),item_id=item.id)
+    response = get_purchase_price_of_goods()
+    assert response == {'status':'success','purchase_price_of_goods':Decimal('1610.00')}
+
+
+def test_inventory_service_costs():
+    pass
+def test_storage_space_costs():
+    pass
+def test_inventory_risk_costs():
+    pass
+def test_holding_costs():
+    pass

@@ -5,6 +5,8 @@ def get_ds_agent_instructions() -> str:
     """ ds_agent """
 
     instructions_v0= """
-    ds_agent (Data Science / Charting Agent):
+    You are expert Python programming :
+    1.Write a code python.
+    2.Delegates execution to code_executor_agent
     """
     return instructions_v0
