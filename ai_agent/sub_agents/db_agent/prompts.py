@@ -22,11 +22,11 @@ def db_instruction_prompt():
     3.  **Execute One Query at a Time:** Call the `execute_query` tool for each step of your plan. Wait for the result from one step before starting the next.
     
     4.  **CRITICAL TOOL FORMATTING:** When you call the `execute_query` tool, the `sql` parameter MUST be a raw, valid SQL query string and NOTHING else.
-        - **CORRECT:** format like this `execute_query(sql="SELECT * FROM sale_order_line;")`
+        - **CORRECT:** MUST format like this `execute_query(sql="SELECT * FROM sale_order_line;")`
         - **INCORRECT:** `execute_query(sql="Here is the query: SELECT ...")`
-        - Don't Write parameter of tool `execute_query` like this  `sql=
+        - **DON'T WRITE PARAMETRE SQL of tool `execute_query` like this  execute_query(`sql=
                             ```sql
-                            SELECT ...'
+                            SELECT ...
                             ```)`
                         
 
