@@ -6,7 +6,7 @@ import decimal
 from math import sqrt
 
 
-def calculate_lead_time(item_id:int)->dict:
+def calculate_lead_time(item_id:int,current_date=date_today)->dict:
     """Calculates the lead time for the stock item in days.
     Args:
         item_id: item_id.
@@ -15,7 +15,7 @@ def calculate_lead_time(item_id:int)->dict:
         A dictionary with the lead time , e.g., {'status': 'success', 'result':53}
 
     """
-    current_date=date_today
+    # current_date=date_today
     last_reorder= ReceiptItem.objects.filter(item_id=item_id).aggregate(Max('receipt__date'))['receipt__date__max']
     if last_reorder:
         lead_time = current_date - last_reorder
@@ -41,7 +41,7 @@ def average_cost_per_pallet(total_monthly_waherhousing_costs=2000,number_of_pall
     """
     The Total warehousing costs divided by numer_of_space.
     """
-    result = round(total_monthly_waherhousing_costs*12/number_of_pallet_space,2)
+    result = round((total_monthly_waherhousing_costs*12)/number_of_pallet_space,2)
     return result
 
 
@@ -71,4 +71,4 @@ def setup_cost():
     return {'status':'success','setup_cost':100.00}
 
 def eoq(h,s,d):
-    return sqrt((2*d*s)/h)
+    return round(sqrt((2*d*s)/h),2)

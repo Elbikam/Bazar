@@ -2,10 +2,10 @@
 from unittest.mock import patch,MagicMock
 import pytest
 from ai_agent.agent import call_root_agent
-from ai_agent.sub_agents.artifact_user_agent.agent import *
+from ai_agent.sub_agents.artifact_agent.agent import *
 import asyncio
-
-
+from ai_agent.use_case import CallAgent
+from ai_agent.service_agent import mock_call_adk
 
 @pytest.mark.asyncio
 async def test_quantity_sold_it():
@@ -66,9 +66,6 @@ async def test_calculate_total_for_each_item():
 async def test_item_not_existe():
     query = "what is current quantity of item X with id=232 ?" 
     response = await call_root_agent(query)   
-@pytest.mark.asyncio
-
-
 
 @pytest.mark.asyncio
 async def test_calculate_EOQ():
@@ -82,23 +79,15 @@ async def test_calculate_EOQ():
 #         TEST Artifact AGENT                #                                   
 #                                            #
 ##############################################
-
 @pytest.mark.asyncio
-async def test_pdf_artifact():
-    """ Test generating and saving a PDF artifact. Hello World PDF"""
-    pdf_bytes = b'%PDF-1.7\n%\xc4\xe5\xf2\xe5\xeb\xa7\n1 0 obj\n<<\n/Type /Catalog\n/Pages 2 0 R\n>>\nendobj\n\n2 0 obj\n<<\n/Type /Pages\n/Kids [4 0 R]\n/Count 1\n>>\nendobj\n\n4 0 obj\n<<\n/Type /Page\n/Parent 2 0 R\n/MediaBox [0 0 595 842]\n/Contents 5 0 R\n/Resources <<\n/ProcSet [/PDF /Text]\n/Font << /F1 6 0 R >>\n>>\n>>\nendobj\n\n5 0 obj\n<<\n/Length 55\n>>\nstream\nBT\n/F1 12 Tf\n72 720 Td\n(Hello World) Tj\nET\nendstream\nendobj\n\n6 0 obj\n<<\n/Type /Font\n/Subtype /Type1\n/Name /F1\n/BaseFont /Helvetica\n>>\nendobj\n\nxref\n0 7\n0000000000 65535 f\n0000000009 00000 n\n0000000067 00000 n\n0000000122 00000 n\n0000000213 00000 n\n0000000262 00000 n\n0000000305 00000 n\n\ntrailer\n<<\n/Size 7\n/Root 1 0 R\n>>\nstartxref\n350\n%%EOF\n'
-    mime_type = "application/pdf"           
-    response = await call_artifact_agent(pdf_bytes, mime_type)
-    assert "The PDF has been generated and saved as 'generated_report.pdf' with version '0'" in response
+async def test_api_adk():
+    query =" hi "
+    response = await mock_call_adk(query)
+    # assert response == {'status':'succes'}
     print(f"response:{response}")
-   
-    
-    
 
-@pytest.mark.asyncio
-async def test_image_artifact():
-    image_bytes = b'\x89PNG\r\n\x1a\n...' # Your raw image data
-    image_mime_type = "image/png"           
-    response = await call_artifact_agent(image_bytes, image_mime_type)
-    # assert response == "artifact_version_123"
-    print(f"response:{response}")
+
+
+# @pytest.mark.asyncio
+# async def test_api_quantity_sold_it():
+#     prompt = 

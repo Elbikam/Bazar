@@ -18,7 +18,7 @@ genai.configure(api_key=settings.GEMINI_API_KEY)
 from .prompts import instructions_root_agent
 from ai_agent.sub_agents.db_agent.agent import db_agent
 from ai_agent.sub_agents.ds_agent.agent import ds_agent
-from ai_agent.sub_agents.artifact_user_agent.agent import artifact_agent
+from ai_agent.sub_agents.artifact_agent.agent import artifact_agent
 import datetime 
 date_today = datetime.datetime.today().strftime("%Y-%m-%d")
 
@@ -33,8 +33,7 @@ GEMINI_MODEL = "gemini-2.0-flash"
 
 
 
-def my_before_model_logic():
-    pass 
+
 
 
     
@@ -42,10 +41,10 @@ root_agent = LlmAgent(
     model=GEMINI_MODEL,
     name=AGENT_NAME,
     instruction=instructions_root_agent(),
-    sub_agents=[db_agent,ds_agent,artifact_agent],
+    sub_agents=[db_agent,ds_agent],
     global_instruction=f"today is {date_today},please read carefily you instructions before to response ",
-    before_model_callback=my_before_model_logic,
-    tools=[]
+
+   
 
 )
 
@@ -68,5 +67,5 @@ async def call_root_agent(query):
             final_response = event.content.parts[0].text
             print("Agent Response: ", final_response)
             return final_response    
-    return final_response
+    return 'No final response'
 

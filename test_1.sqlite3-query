@@ -1,8 +1,0 @@
--- database: ./db.sqlite3
-
-SELECT * FROM stock_stock;
-SELECT * FROM stock_stock WHERE current_quantity < 14;
-SELECT name FROM sqlite_master WHERE type='table';
-SELECT name FROM pragma_table_info('stock_stock');
-
-SELECT * FROM sale_order_line;
