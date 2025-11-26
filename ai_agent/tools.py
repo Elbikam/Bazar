@@ -1,15 +1,11 @@
-import asyncio 
-from google.genai import types
-from django.conf import settings
-import os
-import logging
+import google.genai.types as types
+import os 
+
+from fpdf import FPDF  # Import the library you just installed
+
+import logging # It's good practice to log errors
+
 logger = logging.getLogger(__name__)
 
-logger.setLevel(logging.DEBUG)
-os.environ["GOOGLE_API_KEY"] = settings.GEMINI_API_KEY
-import google.generativeai as genai
 
 
-
-
-    

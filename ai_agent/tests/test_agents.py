@@ -1,93 +1,23 @@
 """Test cases for the analytics agent and its sub-agents."""
-from unittest.mock import patch,MagicMock
+import json
+from unittest.mock import patch,MagicMock,AsyncMock
+from numpy import full
 import pytest
-from ai_agent.agent import call_root_agent
-from ai_agent.sub_agents.artifact_agent.agent import *
-import asyncio
-from ai_agent.use_case import CallAgent
-from ai_agent.service_agent import mock_call_adk
+from ai_agent.agent import GeminiAPI
 
-@pytest.mark.asyncio
-async def test_quantity_sold_it():
-    query = "what is total quantity sold it for month July 2025?"
-    expected_response = "The total quantity sold in July 2025 is 155."
-    response = await call_root_agent(query)
-
-
-@pytest.mark.asyncio
-async def test_calculate_total_sales():
-    q="What is total sales for this year 2025?"  
-    response = await call_root_agent(q) 
-    print(f"response:{response}")
-    # assert response == "The total sales for the year 2025 is 63680.8."
-
-@pytest.mark.asyncio
-async def test_current_qte_and_value():
-    query = "what is total current quantity in the stock and value?"
-    response = await call_root_agent(query)
-    
-
-
-@pytest.mark.asyncio
-async def test_pareto_chart():
-    query = "Please generate Pareto chart"
-    response = await call_root_agent(query)
-    print(f"response:{response}")
-
-@pytest.mark.asyncio
-async def test_20_80():
-    query = "i want to find the items (name and ID) that contribute to 80% of total revenue?"
-    response = await call_root_agent(query)
-    
-    print(f"response:{response}")
-
-@pytest.mark.asyncio
-async def test_give_smart_rec():
-    query = "could you give me smart recommondations what can i purchasse for this month and what can reduce from stock?"  
-    response = await call_root_agent(query) 
-
-@pytest.mark.asyncio
-async def test_forcasting():
-    query = "Create a sales forecast."\
-    "product forcasting all items"\
-    "period:next week"\
-    "factors:sales"
-    response = await call_root_agent(query)
-@pytest.mark.asyncio
-async def test_summary_analysis():
-    query = "give me summary analysis for this year 2025"
-    response = await call_root_agent(query)
-
-@pytest.mark.asyncio
-async def test_calculate_total_for_each_item():
-    query = "what is total sales for each items for this year?"
-    response = await call_root_agent(query)
-@pytest.mark.asyncio
-async def test_item_not_existe():
-    query = "what is current quantity of item X with id=232 ?" 
-    response = await call_root_agent(query)   
-
-@pytest.mark.asyncio
-async def test_calculate_EOQ():
-    q="calculating the Economic Order Quantity (EOQ) for each items in stock.to fetch data use db_agent and to analysis use ds_agent."\
-    "the annual demand for each item based on the available sales data"\
-    "Use tools Holding cost setup_cost to get info "
-    response = await call_root_agent(q)
-  
-
-##############################################
-#         TEST Artifact AGENT                #                                   
-#                                            #
-##############################################
-@pytest.mark.asyncio
-async def test_api_adk():
-    query =" hi "
-    response = await mock_call_adk(query)
-    # assert response == {'status':'succes'}
-    print(f"response:{response}")
+from ai_agent.interface import ServiceAgent
 
 
 
-# @pytest.mark.asyncio
-# async def test_api_quantity_sold_it():
-#     prompt = 
+class TestServiceAgent():
+
+    @pytest.mark.asyncio 
+    async def test_strem_event(self):
+        query = "hi,how are u?"
+        gemini = GeminiAPI()
+        service_agent = ServiceAgent(gemini)
+        response = await service_agent.full_response_text(query)
+        assert response == "I am doing well, thank you for asking. How can I help you today?"
+
+
+        

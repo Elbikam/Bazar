@@ -1,0 +1,118 @@
+[{
+    "session_id": "session-abc-123",
+    "user_id": "user-456",
+    "app_name": "task-manager-agent",
+    "events": [
+      {
+        "id": "evt-001",
+        "timestamp": "2025-11-20T10:00:00Z",
+        "author": "user",
+        "event_type": "user_input",
+        "invocation_id": "inv-789",
+        "content": {
+          "role": "user",
+          "parts": [
+            {
+              "text": "Please create a new task: 'Review API response structure'."
+            }
+          ]
+        },
+        "state_delta": {}
+      },
+      {
+        "id": "evt-002",
+        "timestamp": "2025-11-20T10:00:01Z",
+        "author": "task_agent",
+        "event_type": "tool_call_request",
+        "invocation_id": "inv-789",
+        "content": {
+          "role": "function",
+          "parts": [
+            {
+              "function_call": {
+                "name": "create_task",
+                "parameters": {
+                  "task_name": "Review API response structure",
+                  "priority": "medium",
+                  "due_date": "2025-11-25"
+                }
+              }
+            }
+          ]
+        },
+        "state_delta": {}
+      },
+      {
+        "id": "evt-003",
+        "timestamp": "2025-11-20T10:00:03Z",
+        "author": "system",
+        "event_type": "tool_response",
+        "invocation_id": "inv-789",
+        "content": {
+          "role": "function_response",
+          "parts": [
+            {
+              "text": "Task 'Review API response structure' created successfully with ID TSK-055."
+            }
+          ]
+        },
+        "state_delta": {
+          "TSK-055_status": "created"
+        }
+      },
+      {
+        "id": "evt-004",
+        "timestamp": "2025-11-20T10:00:04Z",
+        "author": "task_agent",
+        "event_type": "agent_response",
+        "invocation_id": "inv-789",
+        "content": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "I have successfully created the task 'Review API response structure' (ID TSK-055)."
+            }
+          ]
+        },
+        "state_delta": {}
+      },
+      {
+        "id": "evt-005",
+        "timestamp": "2025-11-20T10:05:00Z",
+        "author": "user",
+        "event_type": "user_input",
+        "invocation_id": "inv-790",
+        "content": {
+          "role": "user",
+          "parts": [
+            {
+              "text": "What is the status of TSK-055?"
+            }
+          ]
+        },
+        "state_delta": {}
+      },
+      {
+        "id": "evt-006",
+        "timestamp": "2025-11-20T10:05:01Z",
+        "author": "task_agent",
+        "event_type": "agent_response",
+        "invocation_id": "inv-790",
+        "content": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Task TSK-055 currently has the status: 'created'."
+            }
+          ]
+        },
+        "state_delta": {}
+      }
+    ],
+    "metadata": {
+      "api_version": "1.0",
+      "request_status": "success",
+      "event_count": 6
+    }
+  }]
+  

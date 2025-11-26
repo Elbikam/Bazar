@@ -4,7 +4,7 @@ from django.urls import path
 from .views import (TheCreateView,  ReceiptCreateView,
                    TheListView,
                    stock_alert_view,StockAlertCreateView,
-                   AlertSuccessView,filter_items,test_function_calling,
+                   AlertSuccessView,filter_items,
                     fetch_items,ReceiptListView,ReceiptDetailView, search_item_in_stock,get_item_quantity
                    
                    )

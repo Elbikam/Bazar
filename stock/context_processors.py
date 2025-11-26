@@ -1,5 +1,7 @@
 from .models import StockAlert
 
+
+
 def stock_alerts(request):
     alerts = []
     items = StockAlert.objects.all()

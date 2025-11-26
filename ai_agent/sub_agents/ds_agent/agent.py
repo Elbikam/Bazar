@@ -7,8 +7,9 @@ os.environ["GOOGLE_API_KEY"] = settings.GEMINI_API_KEY
 import google.generativeai as genai
 genai.configure(api_key=settings.GEMINI_API_KEY)
 from .prompts import get_ds_agent_instructions 
-from .tools import holding_costs,setup_cost
+from .tools import *
 from ai_agent.sub_agents.code_executor_tool.agent import code_executor_agent
+from google.adk.tools import load_artifacts
 
 AGENT_NAME = "ds_agent" 
 APP_NAME = "Nina_Bazar"
@@ -21,7 +22,7 @@ ds_agent = LlmAgent(
     name=AGENT_NAME,
     instruction=get_ds_agent_instructions(),
     tools=[agent_tool.AgentTool(agent=code_executor_agent),holding_costs,
-           setup_cost
+           setup_cost,load_artifacts,generate_interactive_report
         ],
     
 

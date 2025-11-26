@@ -3,7 +3,6 @@ import pytest
 import asyncio
 from unittest.mock import patch,MagicMock,AsyncMock
 from ai_agent.sub_agents.db_agent.tools import execute_query, connect_to_db, get_table_info,get_tables
-from ai_agent.sub_agents.artifact_agent.tools import *
 from ai_agent.sub_agents.ds_agent.tools import *
 import datetime
 import decimal
@@ -113,54 +112,8 @@ def test_EOQ():
     response = eoq(13.49,100,127.05)
     print(f"EOQ={response}")
     assert response==expected
-########################################################
-#                                                      #
-#             Test tools Artifact_user_agent           #
-#                                                      #
-# ######################################################    
-# Note: Understanding artifacts involves grasping a few key components: the service that manages them
-# the data structure used to hold them, and how they are identified and versioned.
-
-@patch('ai_agent.sub_agents.artifact_agent.tools.CallbackContext',new_callable=AsyncMock)
-@patch('ai_agent.sub_agents.artifact_agent.tools.types',new_callable=AsyncMock)
-@pytest.mark.asyncio 
-async def test_save_generated_report(mock_types,mock_context):
-    #Arrange
-    filename="report.pdf"
-    mock_types = AsyncMock()
-    mock_context = AsyncMock()
-    raw_data = b'%PDF-1.4...'
-    report_artifact = mock_types.Part.from_bytes(data=raw_data,mime_type="application/pdf")
-    mock_context.return_value = '0'
-    # #Action
-    version = await mock_context.save_artifact(filename=filename,artifact=report_artifact)
-    response = await save_generated_report_pdf(mock_context,raw_data)
-    #Assert
-    assert response == print(f"Successfully saved Python artifact '{filename}' as version {version}.")
-    mock_context.assert_awaited
 
 
-
-
-
-
-
-
-
-def test_generate_pdf():
-    """Generate pdf """
-    response = create_report_content()
-    assert Path('report.pdf').exists()
 
 
     
-    
-    
-   
-    
-   
-    
-    
-
-
-   

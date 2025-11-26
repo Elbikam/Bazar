@@ -16,7 +16,7 @@ APP_NAME = "Nina_Bazar"
 USER_ID = "user1234"
 SESSION_ID = "session_execeute_query_async"
 GEMINI_MODEL = "gemini-2.0-flash"
-# GEMINI_MODEL = 'gemini-1.5-pro-latest'
+
 
 
 db_agent = LlmAgent(

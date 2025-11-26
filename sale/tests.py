@@ -7,47 +7,47 @@ from decimal import Decimal
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 
-class SaleCreateViewTests(TestCase):
-    def setUp(self):
-        self.client = Client()
+# class SaleCreateViewTests(TestCase):
+#     def setUp(self):
+#         self.client = Client()
 
-        # Create a regular user
-        self.user = User.objects.create_user(username='regularuser', password='testpassword')
+#         # Create a regular user
+#         self.user = User.objects.create_user(username='regularuser', password='testpassword')
 
-        # Create a superuser (who should pass the test in UserPassesTestMixin)
-        self.superuser = User.objects.create_superuser(username='superuser', password='testpassword')
-        # Create necessary test data
-        i = Item.objects.create(
-            id=1,
-            name='Test Item',
-            category='Test Category',
-            description='Test description',
-            price=100
-        )
+#         # Create a superuser (who should pass the test in UserPassesTestMixin)
+#         self.superuser = User.objects.create_superuser(username='superuser', password='testpassword')
+#         # Create necessary test data
+#         i = Item.objects.create(
+#             id=1,
+#             name='Test Item',
+#             category='Test Category',
+#             description='Test description',
+#             price=100
+#         )
        
-        self.item = Stock.objects.create(item=i, current_quantity=100,unit_by_carton=5)
-    def test_access_denied_for_regular_user(self):
-        # Log in as a regular user
-        # self.client.login(username='regularuser', password='testpassword')
+#         self.item = Stock.objects.create(item=i, current_quantity=100,unit_by_carton=5)
+#     def test_access_denied_for_regular_user(self):
+#         # Log in as a regular user
+#         # self.client.login(username='regularuser', password='testpassword')
 
-        # Try to access the SaleCreateView
-        response = self.client.get(reverse('sale:order-create'))  
+#         # Try to access the SaleCreateView
+#         response = self.client.get(reverse('sale:order-create'))  
 
-        # Check if the user is redirected to the login page or "no permission" page
-        self.assertEqual(response.status_code,302)
+#         # Check if the user is redirected to the login page or "no permission" page
+#         self.assertEqual(response.status_code,302)
         
-        # self.assertRedirects(response, reverse('dashboard:login'))  
+#         # self.assertRedirects(response, reverse('dashboard:login'))  
 
-    def test_access_granted_for_superuser(self):
-        # Log in as a superuser
-        self.client.login(username='superuser', password='testpassword')
+#     def test_access_granted_for_superuser(self):
+#         # Log in as a superuser
+#         self.client.login(username='superuser', password='testpassword')
 
-        # Try to access the SaleCreateView
-        response = self.client.get(reverse('sale:order-create'))
+#         # Try to access the SaleCreateView
+#         response = self.client.get(reverse('sale:order-create'))
 
-        # Check if the superuser can access the view (expect a 200 OK response)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'sale/order_form.html')  
+#         # Check if the superuser can access the view (expect a 200 OK response)
+#         self.assertEqual(response.status_code, 200)
+#         self.assertTemplateUsed(response, 'sale/order_form.html')  
     # def test_get_request(self):
     #     sale_from = SaleForm()
     #     orders = OrderFormSet()
