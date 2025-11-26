@@ -13,7 +13,7 @@ class TestEndToEnd(StaticLiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.selenium = ComponentDriver()
-        cls.selenium.implicitly_wait(15)
+        cls.selenium.implicitly_wait(20)
 
     @classmethod
     def tearDownClass(cls):

@@ -21,9 +21,7 @@ ds_agent = LlmAgent(
     model=GEMINI_MODEL,
     name=AGENT_NAME,
     instruction=get_ds_agent_instructions(),
-    tools=[agent_tool.AgentTool(agent=code_executor_agent),holding_costs,
-           setup_cost,load_artifacts,generate_interactive_report
-        ],
+    tools=[agent_tool.AgentTool(agent=code_executor_agent),load_artifacts],
     
 
 )
