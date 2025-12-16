@@ -29,3 +29,7 @@ class TestEndToEnd(StaticLiveServerTestCase):
     def test_generate_report_end_to_end(self):
         app = ApplicationRunner(self.selenium,self.live_server_url)
         app.get_report()
+    def test_walking_skeleton_chat_with_agent(self):
+        main = ApplicationRunner(self.selenium,self.live_server_url)
+        main.chat()
+        

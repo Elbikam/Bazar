@@ -18,7 +18,7 @@ genai.configure(api_key=settings.GEMINI_API_KEY)
 from .prompts import instructions_root_agent
 from ai_agent.sub_agents.db_agent.agent import db_agent
 from ai_agent.sub_agents.ds_agent.agent import ds_agent
-
+from google.adk.models import Gemini
 import datetime 
 date_today = datetime.datetime.today().strftime("%Y-%m-%d")
 
@@ -26,7 +26,7 @@ AGENT_NAME = "root_agent"
 APP_NAME = "Nina_Bazar"
 USER_ID = "user12345"
 SESSION_ID = "session_code_executors_async"
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MODEL = Gemini(model="gemini-2.5-flash-lite")
 
 
 

@@ -14,3 +14,6 @@ class ApplicationRunner():
 
     def get_report(self):
         self.driver.get_report_detail(self.url)
+
+    def chat(self):
+        self.driver.chat_with_agent(self.url)

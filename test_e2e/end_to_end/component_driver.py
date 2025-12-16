@@ -19,3 +19,11 @@ class ComponentDriver(webdriver.Chrome):
     def get_report_detail(self,live_server_url):
         self.get(f"{live_server_url}/dashboard/ai_report")
         time.sleep(4)
+
+    def chat_with_agent(self,live_server_url):
+        self.get(f"{live_server_url}/dashboard/chat_page")
+        user_input = self.find_element(By.ID,'user-input')
+        user_input.send_keys('hi')
+        self.find_element(By.ID,'send-btn').click()
+        time.sleep(3)
+        

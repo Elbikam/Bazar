@@ -169,7 +169,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 from dotenv import load_dotenv
 load_dotenv(os.path.join(BASE_DIR, '.env')) # Specify the path to your .env file
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
 # Ensure it's not None if the key is mandatory
 if GEMINI_API_KEY is None:
     raise ValueError("GEMINI_API_KEY environment variable not set. Please set it in your .env file.")

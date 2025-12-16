@@ -2,15 +2,12 @@ from abc import ABC,abstractmethod
 from ai_agent.agent import GeminiAPI
 import asyncio
 
-
-import json 
-
 class InterfaceAgent(ABC):
     @abstractmethod
-    async def full_response_text(self):
+    async def full_response_text(self,query):
         pass
 class ServiceAgent(InterfaceAgent):
-    def __init__(self,gemini:GeminiAPI) -> None:
+    def __init__(self,gemini=GeminiAPI()) -> None:
         self.gemini  = gemini 
     
     async def full_response_text(self, query):

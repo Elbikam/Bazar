@@ -1,109 +1,54 @@
-# import pytest 
-# from django.test import TestCase, RequestFactory, AsyncRequestFactory
-# from unittest.mock import patch, AsyncMock, MagicMock
+import pytest 
+import json
+from django.test import TestCase, Client
+from unittest.mock import MagicMock, patch, AsyncMock
+from dashboard.models import ChatMessage
 
-# from dashboard.views import GenerateReport
+# Systems Engineering: This is our Test Bench
+class ChatIntegrationTest(TestCase):
 
-# import json
+    def setUp(self):
+        # 1. Setup the Client (The Browser Simulator)
+        self.client = Client()
+        self.url = '/dashboard/chat_api/'
 
-
-# class ReportViewIntegrationTest(TestCase):
-#     """
-#     Integration tests for the GenerateReport view.
-#     Tests the view's interaction with the AI agent service.
-#     """
+    @patch('dashboard.views.ControleConversation.call_agent')
+    def test_full_conversation_flow(self, mock_call_agent):
+        """
+        Integration Scenario:
+        1. User sends "Hello".
+        2. System saves User msg to DB.
+        3. System calls AI (Mocked).
+        4. System saves AI msg to DB.
+        5. System returns JSON.
+        """
+        
+        # --- PHASE 1: PREPARE THE FAKE BEHAVIOR ---
+        # We tell the mock: "When called, wait a bit, then return this string"
      
-#     def setUp(self):
-#         """Setup method called before each test."""
-#         self.factory = AsyncRequestFactory()
-#         self.query = "hi how are you?"
+        mock_call_agent.return_value = 'I am the Test AI'
 
-    
-#     @patch("dashboard.views.GetDataFromAI")
-#     async def test_report_views_integration(self, mock_call_root_agent):
-#         """
-#         Test that GenerateReport view correctly calls the AI agent and renders HTML template.
-#         """
-#         # Setup: Configure the mock to return the expected response format
-#         # call_root_agent returns a dict with 'summary' key (as per agent.py)
-#         # ServiceAgent will parse this and return just the summary string
-#         expected_summary = 'Sales performance improved significantly in Q3, driven by new product launches.'
-#         expected_ai_response = {
-#             'summary': expected_summary
-#         }
-#         # Configure the async mock to return the expected response
-#         # Since call_root_agent is async, we use return_value which will be awaited
+
+        # --- PHASE 2: EXECUTE (The Stimulus) ---
+        payload = {"message": "Hello World"}
+        response = self.client.post(
+            self.url, 
+            data=json.dumps(payload), 
+            content_type='application/json'
+        )
+
+        # --- PHASE 3: VERIFY (The Inspection) ---
         
-#         mock_call_root_agent.return_value = expected_ai_response
+        # Check A: Did the View return success? (Interface Check)
+        self.assertEqual(response.status_code, 200)
+        response_data = response.json()
+        self.assertEqual(response_data['status'], 'success')
+        self.assertEqual(response_data['ai_response'], "I am the Test AI")
 
-#         # Execute: Make a GET request to the view with a query parameter
-#         request = self.factory.get("/dashboard/report_detail", {'query': self.query})
-#         response =  await GenerateReport.as_view()(request)
+        # Check B: Did the Orchestrator call the AI? (Behavioral Check)
+        mock_call_agent.assert_called_once_with("Hello World")
+
        
-#         self.assertEqual(response.status_code, 200)
-
-        
-    
-#     @patch("dashboard.views.GetDataFromAI")
-#     async def test_report_views_integration_default_query(self, mock_call_root_agent):
-#         """
-#         Test that GenerateReport view uses default query when none is provided.
-#         """
-#         # Setup: Configure the mock
-#         expected_ai_response = {"report_data": "Default report generated successfully."}
-#         mock_call_root_agent.call_root_agent= MagicMock()
-#         mock_call_root_agent.call_root_agent.return_value = expected_ai_response
-
-#         # Execute: Make a GET request without query parameter
-#         request = self.factory.get("/dashboard/report_detail")
-#         response = await GenerateReport.as_view()(request)
-
-#         # Assert: Verify the response
-#         assert response.status_code == 200
-        
-#         # Verify it's an HTML response
-#         assert 'text/html' in response.get('Content-Type', '')
-        
-#         response_content = response.content.decode('utf-8')
-        
-#         assert expected_ai_response['report_data'] in response_content
-        
-    
-#     @patch("dashboard.report.GetDataFromAI.call_root_agent")
-#     async def test_report_views_integration_with_chart_data(self, mock_call_root_agent):
-#         """
-#         Test that GenerateReport view handles response with chart data in JSON format.
-#         Note: If AI returns JSON string, the view will try to parse it.
-#         """
-#         # Setup: Configure the mock to return a dict (call_root_agent format)
-#         # The summary contains JSON string that the view will parse
-#         json_string = json.dumps({
-#             'summary': 'Sales report with chart data',
-#             'chart_data': [
-#                 {'label': 'Jan', 'value': 1000},
-#                 {'label': 'Feb', 'value': 2500}
-#             ]
-#         })
-#         # call_root_agent returns dict with 'summary' key containing the JSON string
-#         expected_ai_response = {'summary': json_string}
-#         mock_call_root_agent.return_value = expected_ai_response
-
-#         # Execute: Make a GET request
-#         request = self.factory.get("/dashboard/report_detail", {'query': self.query})
-#         response = await GenerateReport.as_view()(request)
-
-#         # Assert: Verify the response
-#         assert response.status_code == 200
-#         response_content = response.content.decode('utf-8')
-#         # The view should parse the JSON and extract the summary
-#         assert 'Sales report with chart data' in response_content
-        
-
-        
-
-
-
-
 
 
 

@@ -10,11 +10,10 @@ from .prompts import get_ds_agent_instructions
 from .tools import *
 from ai_agent.sub_agents.code_executor_tool.agent import code_executor_agent
 from google.adk.tools import load_artifacts
-
+from google.adk.models import Gemini
 AGENT_NAME = "ds_agent" 
 APP_NAME = "Nina_Bazar"
-GEMINI_MODEL = "gemini-2.0-flash"
-
+GEMINI_MODEL = Gemini(model="gemini-2.5-flash-lite")
 
 
 ds_agent = LlmAgent(

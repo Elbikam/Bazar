@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        /* --- 1. RESET & BASIC --- */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+        }
+
+        /* --- 2. LAYOUT CONTAINER --- */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Full Viewport Height */
+            max-width: 1000px; /* Limits width on big screens so lines aren't too long */
+            margin: 0 auto; /* Centers the chat on wide screens */
+            background: #fff;
+        }
+
+        /* --- 3. HEADER --- */
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eaeaea;
+            display: flex;
+            align-items: center;
+            background: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        /* --- 4. CHAT HISTORY --- */
+        #chat-box {
+            flex: 1; /* Fills available space */
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* --- 5. BUBBLES --- */
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;     /* Increased padding slightly for readability */
+            border-radius: 20px;
+            font-size: 15px;
+            line-height: 1.6;       /* Increased line-height for better spacing */
+            position: relative;
+            word-wrap: break-word;
+            
+            /* ✅ THIS IS THE FIX: Preserves line breaks and lists */
+            white-space: pre-wrap; 
+        }
+
+        /* AI (Left, Light Gray) */
+        .message.ai {
+            align-self: flex-start;
+            background-color: #f0f0f0;
+            color: #000;
+        }
+
+        /* User (Right, Blue) */
+        .message.user {
+            align-self: flex-end;
+            background-color: #0084ff; /* Messenger Blue */
+            color: white;
+        }
+
+        /* --- 6. INPUT AREA --- */
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #eaeaea;
+            background: #fff;
+            display: flex;
+            gap: 10px;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 15px;
+            outline: none;
+            background: #f9f9f9;
+        }
+
+        #user-input:focus {
+            background: #fff;
+            border-color: #0084ff;
+        }
+
+        #send-btn {
+            background-color: transparent;
+            color: #0084ff;
+            border: none;
+            padding: 0 15px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        #send-btn:hover {
+            color: #0056b3;
+        }
+        
+        #send-btn:disabled {
+            color: #ccc;
+        }
+
+        /* Status */
+        .status-text {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <!-- Clean Header -->
+    <div class="chat-header">
+        <h2>AI Assistant</h2>
+    </div>
+
+    <!-- Chat History -->
+    <div id="chat-box">
+        {% for msg in history %}
+            <!-- Logic: Check sender to pick class -->
+            <div class="message {% if 'USER' in msg.sender|upper %}user{% else %}ai{% endif %}">
+                {{ msg.content }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Status -->
+    <p id="status-text" class="status-text">Thinking...</p>
+
+    <!-- Input -->
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Type a message..." onkeypress="handleEnter(event)" />
+        <button id="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    
+    // Auto-scroll on load
+    window.onload = function() {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    };
+
+    function handleEnter(e) {
+        if (e.key === 'Enter') sendMessage();
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    async function sendMessage() {
+        const input = document.getElementById('user-input');
+        const btn = document.getElementById('send-btn');
+        const status = document.getElementById('status-text');
+        
+        const text = input.value.trim();
+        if (!text) return;
+
+        btn.disabled = true;
+        status.style.display = 'block';
+
+        // Add User Message
+        chatBox.innerHTML += `<div class="message user">${text}</div>`;
+        input.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            const response = await fetch('/dashboard/chat_api/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ message: text })
+            });
+
+            if (!response.ok) throw new Error("Server Error");
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                chatBox.innerHTML += `<div class="message ai">${data.ai_response}</div>`;
+            } else {
+                chatBox.innerHTML += `<div class="message ai" style="color:red">Error: ${data.error}</div>`;
+            }
+
+        } catch (err) {
+            chatBox.innerHTML += `<div class="message ai" style="color:red">Error: ${err.message}</div>`;
+        } finally {
+            btn.disabled = false;
+            status.style.display = 'none';
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    }
+</script>
+
+</body>
+</html>

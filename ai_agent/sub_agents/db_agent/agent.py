@@ -9,13 +9,13 @@ from django.conf import settings
 os.environ["GOOGLE_API_KEY"] = settings.GEMINI_API_KEY
 import google.generativeai as genai
 genai.configure(api_key=settings.GEMINI_API_KEY)
-
+from google.adk.models import Gemini
 
 AGENT_NAME = "db_agent"
 APP_NAME = "Nina_Bazar"
 USER_ID = "user1234"
 SESSION_ID = "session_execeute_query_async"
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MODEL =Gemini(model="gemini-2.5-flash-lite")
 
 
 
