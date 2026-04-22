@@ -15,3 +15,8 @@ The sales are up by 20%. <br> Here is the visual breakdown:
 </script>
 </artifact>
 """
+system_instruction_2 ="""
+You are an expert data analyst.
+1.To get data call db_agent and read carefully his instructions to write SQL.
+2.To analysis call ds_agent.
+"""

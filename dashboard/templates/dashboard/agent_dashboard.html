@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nina_Bazar — Business Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#f7f6f2; --white:#ffffff; --navy:#111827; --navy-light:#374151;
+  --border:#e5e2d9; --border2:#d1cec4; --amber:#c8861a; --amber-bg:#fef3dc;
+  --amber-soft:#f9e4b0; --muted:#9ca3af; --success:#16a34a; --danger:#dc2626;
+  --chat-bg:#f0ede6; --serif:'Instrument Serif',Georgia,serif;
+  --sans:'IBM Plex Sans',sans-serif; --mono:'IBM Plex Mono',monospace;
+  --radius:10px; --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+}
+html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--navy);font-size:14px;}
+.app{display:grid;grid-template-rows:52px 1fr;grid-template-columns:380px 1fr;height:100vh;overflow:hidden;}
+header{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:0 24px;background:var(--white);border-bottom:1px solid var(--border);box-shadow:var(--shadow);z-index:20;}
+.wordmark{display:flex;align-items:baseline;gap:6px;}
+.wordmark-main{font-family:var(--serif);font-size:18px;color:var(--navy);letter-spacing:-0.3px;}
+.wordmark-sub{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;padding:2px 7px;background:var(--bg);border-radius:4px;border:1px solid var(--border);}
+.divider-v{width:1px;height:20px;background:var(--border2);}
+.nav-links{display:flex;gap:2px;}
+.nav-link{font-size:12.5px;font-weight:500;color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;transition:all 0.15s;border:none;background:none;}
+.nav-link:hover,.nav-link.active{color:var(--navy);background:var(--bg);}
+.nav-link.active{color:var(--amber);font-weight:600;}
+.status-badge{margin-left:auto;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--muted);}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 2.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(22,163,74,0.4);}50%{opacity:0.7;box-shadow:0 0 0 4px rgba(22,163,74,0);}}
+.chat-sidebar{display:flex;flex-direction:column;background:var(--chat-bg);border-right:1px solid var(--border);overflow:hidden;}
+.sidebar-header{padding:16px 20px 12px;border-bottom:1px solid var(--border);background:var(--white);}
+.sidebar-title{font-family:var(--serif);font-size:15px;color:var(--navy);margin-bottom:10px;font-style:italic;}
+.quick-pills{display:flex;flex-wrap:wrap;gap:5px;}
+.pill{font-family:var(--mono);font-size:10.5px;padding:4px 10px;border-radius:100px;border:1px solid var(--border2);background:var(--white);color:var(--navy-light);cursor:pointer;transition:all 0.15s;font-weight:500;}
+.pill:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-bg);}
+.messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;}
+.messages::-webkit-scrollbar{width:3px;}
+.messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+.msg-wrap{display:flex;flex-direction:column;gap:3px;animation:fadeSlide 0.2s ease;}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.msg-wrap.user{align-items:flex-end;}
+.msg-wrap.agent{align-items:flex-start;}
+.msg-label{font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);padding:0 2px;}
+.msg-wrap.user .msg-label{color:var(--amber);}
+.bubble{max-width:94%;padding:10px 14px;border-radius:var(--radius);font-size:13px;line-height:1.65;box-shadow:var(--shadow);}
+.msg-wrap.user .bubble{background:var(--navy);color:#f9fafb;border-bottom-right-radius:3px;}
+.msg-wrap.agent .bubble{background:var(--white);color:var(--navy);border-bottom-left-radius:3px;border:1px solid var(--border);}
+.bubble strong{color:var(--amber);font-weight:600;}
+.bubble em{color:var(--navy-light);font-style:normal;font-weight:500;}
+.bubble table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12px;font-family:var(--mono);}
+.bubble th{background:var(--bg);color:var(--navy);padding:5px 8px;text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;border-bottom:2px solid var(--border2);}
+.bubble td{padding:5px 8px;border-bottom:1px solid var(--border);color:var(--navy-light);}
+.bubble tr:last-child td{border-bottom:none;}
+.bubble tr:hover td{background:var(--bg);}
+.bubble ul,.bubble ol{padding-left:16px;margin:5px 0;}
+.bubble li{margin-bottom:3px;color:var(--navy-light);}
+.bubble h3{font-family:var(--serif);font-size:13px;color:var(--navy);margin:10px 0 4px;font-weight:400;font-style:italic;}
+.bubble blockquote{border-left:3px solid var(--amber-soft);padding:4px 10px;margin:6px 0;color:var(--muted);font-style:italic;background:var(--amber-bg);border-radius:0 4px 4px 0;}
+.bubble code{font-family:var(--mono);background:var(--bg);padding:1px 5px;border-radius:3px;font-size:11.5px;border:1px solid var(--border);}
+.typing-wrap{display:none;flex-direction:column;gap:3px;}
+.typing-wrap.visible{display:flex;}
+.typing-bubble{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);border-bottom-left-radius:3px;padding:12px 16px;display:flex;gap:4px;align-items:center;box-shadow:var(--shadow);}
+.t-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:tdot 1.2s ease-in-out infinite;}
+.t-dot:nth-child(2){animation-delay:0.15s;}
+.t-dot:nth-child(3){animation-delay:0.30s;}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:0.35;}30%{transform:translateY(-5px);opacity:1;}}
+.input-area{padding:12px 16px 14px;background:var(--white);border-top:1px solid var(--border);flex-shrink:0;}
+.input-box{display:flex;align-items:flex-end;gap:8px;background:var(--bg);border:1.5px solid var(--border2);border-radius:var(--radius);padding:8px 8px 8px 14px;transition:border-color 0.2s;}
+.input-box:focus-within{border-color:var(--amber);background:var(--white);}
+textarea#inp{flex:1;background:none;border:none;outline:none;font-family:var(--sans);font-size:13px;color:var(--navy);resize:none;height:22px;max-height:100px;line-height:1.5;}
+textarea#inp::placeholder{color:var(--muted);}
+button#send{width:34px;height:34px;background:var(--navy);border:none;border-radius:7px;cursor:pointer;display:grid;place-items:center;flex-shrink:0;transition:background 0.15s,transform 0.1s;color:white;}
+button#send:hover{background:var(--amber);}
+button#send:active{transform:scale(0.93);}
+button#send:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+.main-panel{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+.main-topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:44px;background:var(--white);border-bottom:1px solid var(--border);flex-shrink:0;}
+.main-topbar-title{font-family:var(--serif);font-size:14px;color:var(--navy-light);font-style:italic;}
+.clear-btn{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:5px;padding:3px 9px;cursor:pointer;transition:all 0.15s;letter-spacing:0.04em;}
+.clear-btn:hover{color:var(--danger);border-color:var(--danger);}
+.charts-area{flex:1;overflow-y:auto;padding:20px 24px;}
+.charts-area::-webkit-scrollbar{width:3px;}
+.charts-area::-webkit-scrollbar-thumb{background:var(--border2);}
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px;align-content:start;}
+.chart-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);animation:fadeSlide 0.3s ease;transition:box-shadow 0.2s,transform 0.2s;}
+.chart-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.chart-card-header{padding:12px 16px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.chart-icon{width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;}
+.chart-card-title{font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--navy-light);letter-spacing:0.06em;text-transform:uppercase;}
+.chart-card img{width:100%;display:block;}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 40px;gap:16px;text-align:center;}
+.empty-label{font-family:var(--serif);font-size:22px;color:var(--navy-light);font-style:italic;opacity:0.45;}
+.empty-sub{font-family:var(--mono);font-size:11px;color:var(--muted);max-width:240px;line-height:1.7;}
+.empty-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;opacity:0.3;}
+.empty-placeholder{width:160px;height:100px;background:var(--white);border:1px dashed var(--border2);border-radius:var(--radius);}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="wordmark">
+      <span class="wordmark-main">Nina_Bazar</span>
+      <span class="wordmark-sub">BI Agent</span>
+    </div>
+    <div class="divider-v"></div>
+    <nav class="nav-links">
+      <button class="nav-link active">Intelligence</button>
+      <button class="nav-link">Reports</button>
+      <button class="nav-link">Settings</button>
+    </nav>
+    <div class="status-badge">
+      <div class="status-dot"></div>
+      Claude · Live
+    </div>
+  </header>
+
+  <aside class="chat-sidebar">
+    <div class="sidebar-header">
+      <p class="sidebar-title">Ask your data anything</p>
+      <div class="quick-pills">
+        <button class="pill" onclick="ask('Top 5 products by revenue with chart')">Top products</button>
+        <button class="pill" onclick="ask('Monthly revenue breakdown with chart')">Monthly trend</button>
+        <button class="pill" onclick="ask('Stock levels — what needs restocking?')">Stock alerts</button>
+        <button class="pill" onclick="ask('Any anomalies or trends I should know about?')">Anomalies</button>
+        <button class="pill" onclick="ask('Dealer performance and outstanding balances')">Dealers</button>
+      </div>
+    </div>
+    <div class="messages" id="messages">
+      <div class="msg-wrap agent">
+        <div class="msg-label">Agent</div>
+        <div class="bubble">Good day. I have access to your live Nina_Bazar database. Ask me about revenue, products, stock, dealers, or trends — I'll query the data and build charts automatically.</div>
+      </div>
+      <div class="typing-wrap" id="typing">
+        <div class="msg-label">Agent</div>
+        <div class="typing-bubble">
+          <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+        </div>
+      </div>
+    </div>
+    <div class="input-area">
+      <div class="input-box">
+        <textarea id="inp" placeholder="Ask about your business…" rows="1"></textarea>
+        <button id="send" onclick="send()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-panel">
+    <div class="main-topbar">
+      <span class="main-topbar-title">Charts &amp; Insights</span>
+      <button class="clear-btn" onclick="clearCharts()">Clear all</button>
+    </div>
+    <div class="charts-area">
+      <div class="charts-grid" id="grid">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-label">No charts yet</div>
+          <p class="empty-sub">Ask a question on the left — charts will appear here automatically.</p>
+          <div class="empty-grid">
+            <div class="empty-placeholder"></div>
+            <div class="empty-placeholder"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+function md(t){
+  return t
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\n\|(.+)\|\n\|[-| :]+\|\n((?:\|.+\|\n?)+)/g,(_,hdr,rows)=>{
+      const ths=hdr.split('|').filter(c=>c.trim()).map(c=>`<th>${c.trim()}</th>`).join('');
+      const trs=rows.trim().split('\n').map(r=>`<tr>${r.split('|').filter(c=>c.trim()).map(c=>`<td>${c.trim()}</td>`).join('')}</tr>`).join('');
+      return `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+    })
+    .replace(/^[-*] (.+)$/gm,'<li>$1</li>')
+    .replace(/((<li>.*<\/li>\n?)+)/g,'<ul>$1</ul>')
+    .replace(/\n\n/g,'<br/><br/>').replace(/\n/g,'<br/>');
+}
+let history=[],chartCount=0;
+function scrollDown(){const e=document.getElementById('messages');e.scrollTop=e.scrollHeight;}
+function setTyping(v){document.getElementById('typing').classList.toggle('visible',v);scrollDown();}
+function addMsg(role,text){
+  const w=document.createElement('div');
+  w.className=`msg-wrap ${role}`;
+  w.innerHTML=`<div class="msg-label">${role==='user'?'You':'Agent'}</div><div class="bubble">${role==='agent'?md(text):text}</div>`;
+  document.getElementById('messages').insertBefore(w,document.getElementById('typing'));
+  scrollDown();
+}
+function addChart(b64,title){
+  const grid=document.getElementById('grid');
+  if(chartCount===0)grid.innerHTML='';
+  chartCount++;
+  const c=document.createElement('div');
+  c.className='chart-card';
+  c.innerHTML=`<div class="chart-card-header"><div class="chart-icon"></div><div class="chart-card-title">${title}</div></div><img src="data:image/png;base64,${b64}" alt="${title}" loading="lazy"/>`;
+  grid.appendChild(c);
+}
+function clearCharts(){
+  chartCount=0;
+  document.getElementById('grid').innerHTML=`<div class="empty-state"><div class="empty-label">No charts yet</div><p class="empty-sub">Ask a question on the left — charts will appear here automatically.</p><div class="empty-grid"><div class="empty-placeholder"></div><div class="empty-placeholder"></div></div></div>`;
+}
+async function send(){
+  const inp=document.getElementById('inp'),btn=document.getElementById('send'),text=inp.value.trim();
+  if(!text)return;
+  inp.value='';inp.style.height='22px';btn.disabled=true;
+  addMsg('user',text);setTyping(true);
+  try{
+    const res=await fetch('/dashboard/agent/chat/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text,history})});
+    const data=await res.json();
+    setTyping(false);
+    if(data.error){addMsg('agent',`Error: ${data.error}`);}
+    else{addMsg('agent',data.answer);history=data.history;(data.charts||[]).forEach(c=>addChart(c.data,c.title));}
+  }catch(e){setTyping(false);addMsg('agent',`Connection error: ${e.message}`);}
+  btn.disabled=false;inp.focus();
+}
+function ask(q){document.getElementById('inp').value=q;send();}
+const inp=document.getElementById('inp');
+inp.addEventListener('input',function(){this.style.height='22px';this.style.height=Math.min(this.scrollHeight,100)+'px';});
+inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
+</script>
+</body>
+</html>
